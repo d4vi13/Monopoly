@@ -8,16 +8,16 @@ public enum Cor {
     PRETO(0xff, 0x00, 0x00),
     BRANCO(0xff, 0x00, 0x00);
 
-     private short rgb[];
+    private int rgb[];
 
-     Cor(short red, short green, short blue){
-        rgb = new short[3];
+    private Cor(int red, int green, int blue) {
+        rgb = new int[3];
         this.rgb[0] = red;
         this.rgb[1] = blue;
         this.rgb[2] = green;
     }
 
-    public short[] obterValoresRgb(){
+    public int[] obterValoresRgb() {
         return this.rgb;
     } 
 } 
