@@ -19,9 +19,31 @@
  - Os jogadores também podem adquirir o título de posse das companhias
  - Quando um jogador parar em uma companhia que já for de outro, deverá pagar a ele a multiplição do resultado da soma dos dados pelo valor da companhia 
  ### Receita
- - As casas com essa denominação exigem pagamento do jogador ao estado
+ - Ao passar na casa inicial, o jogador pagará imposto para o estado em relação a quantidade de propriedades obtidas do tabuleiro
+
+| Quantidade de Móveis | Nível Fácil (10%) | Nível Médio (15%) | Nível Difícil (20%) |
+| :-------------------: | :---------------: | :---------------: | :------------------: |
+| 1                     | 10                | 15                | 20                  |
+| 2                     | 20                | 30                | 40                  |
+| 3                     | 30                | 45                | 60                  |
+| 4                     | 40                | 60                | 80                  |
+| 5                     | 50                | 75                | 100                 |
+| 6                     | 60                | 90                | 120                 |
+| 7                     | 70                | 105               | 140                 |
+| 8                     | 80                | 120               | 160                 |
+| 9                     | 90                | 135               | 180                 |
+| 10                    | 100               | 150               | 200                 |
+| 11                    | 110               | 165               | 220                 |
+| 12                    | 120               | 180               | 240                 |
+| 13                    | 130               | 195               | 260                 |
+| 14                    | 140               | 210               | 280                 |
+| 15                    | 150               | 225               | 300                 |
+
  ### Prisão
- - /*TO DO*/
+ - Ao entra na prisão, terá três formas de sair:
+ 1. Pagando para o estado
+ 2. Jogar dados e obter uma dupla
+ 3. Após de 3 rodadas (caso não consegiu nenhuma formação de duplas nos dados entre as 3 rodadas)
  ### Sorte/Azar
  - O jogo seleciona aleatoriamente uma carta do monte. A carte pode tanto premiar quanto punir o jogador da vez.
 
