@@ -14,15 +14,16 @@ public class Jogo implements Runnable {
     Thread thread;
 
     Jogo() {
+        estadoJogo = Integer.valueOf(MENU);
         controle = new Controle();
         tela = new Partida();
+        menu = new Menu();
         painel = new Panel(estadoJogo, menu);
         janela = new Frame(painel);
         painel.requestFocus();
     }
 
     void IniciarJogo() {
-        estadoJogo = MENU;
         thread = new Thread(this);
         thread.start();
     }

@@ -28,7 +28,7 @@ public class Panel extends JPanel {
     public void paint(Graphics g) {
         super.paint(g);
         
-        switch (estadoJogo) {
+        switch (estadoJogo.intValue()) {
             case MENU:
                 instanciaMenu.pintar(g);
                 break;

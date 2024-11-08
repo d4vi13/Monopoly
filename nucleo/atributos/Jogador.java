@@ -6,7 +6,7 @@ final public class Jogador {
     private Cor cor;
     private int posicao = 0;
     private int id;
-    private Casa[]; // Mudar para um Id/ fazer com que cada casa tenha um id 
+    private Casa[] vet; // Mudar para um Id/ fazer com que cada casa tenha um id 
     private boolean falido = false; 
 
     Jogador(int id, String nome, Cor cor){
@@ -14,7 +14,7 @@ final public class Jogador {
     }
     
     public int obtemId() {
-
+        return 0;
     }
 
 }
