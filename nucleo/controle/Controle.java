@@ -1,14 +1,27 @@
 package nucleo.controle;
-import nucleo.grafico.Frame;
-import nucleo.grafico.Panel;
+import nucleo.atributos.Banco;
+import nucleo.atributos.Jogador;
+import nucleo.aux.ListaCircular;
+import static nucleo.aux.EstadosJogo.*;
 
 public class Controle {
-    Panel painel; 
-    Frame janela;
+    private ListaCircular<Jogador> jogadores;
+    private Banco banco;
 
     public Controle() {
-        painel = new Panel(this);
-        janela = new Frame(painel);
-        painel.requestFocus();
+        jogadores = new ListaCircular<Jogador>();
+        banco = new Banco();
+    }
+
+    void acaoBotaoVender() {
+
+    }
+
+    void acaoBotaoHipotecar() {
+
+    }
+
+    void acaoBotaoComprar() {
+        
     }
 }
