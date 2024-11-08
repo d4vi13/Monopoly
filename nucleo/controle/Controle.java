@@ -22,6 +22,10 @@ public class Controle {
     }
 
     void acaoBotaoComprar() {
+
+    }
+
+    void acaoBotaoBackup() {
         
     }
 }
