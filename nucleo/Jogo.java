@@ -3,24 +3,18 @@ import nucleo.grafico.*;
 import nucleo.controle.*;
 import static nucleo.aux.EstadosJogo.*;
 
-
 public class Jogo implements Runnable {
-    Panel painel; 
-    Frame janela; 
+    Janela janela;
     Controle controle;
-    Partida tela;
-    Menu menu;
+    
     Integer estadoJogo;
     Thread thread;
 
     Jogo() {
         estadoJogo = Integer.valueOf(MENU);
         controle = new Controle();
-        tela = new Partida();
-        menu = new Menu();
-        painel = new Panel(estadoJogo, menu);
-        janela = new Frame(painel);
-        painel.requestFocus();
+        janela = new Janela(estadoJogo);
+        janela.requestFocus();
     }
 
     void IniciarJogo() {
@@ -35,7 +29,7 @@ public class Jogo implements Runnable {
 
         while (true) {
             if (System.nanoTime() - ultimoFrame >= tempoFrame) {
-                painel.repaint();
+                janela.repaint();
                 ultimoFrame = System.nanoTime();
             }
         }

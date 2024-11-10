@@ -29,7 +29,7 @@ public class ListaCircular<T> {
     }
 }
 
-final class Nodo <T> {
+class Nodo <T> {
     private Nodo<T> prox;
     private T elemento;
 
