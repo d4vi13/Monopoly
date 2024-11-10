@@ -9,6 +9,10 @@ import java.awt.event.ComponentListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.Color;
+import java.awt.Frame;
+import java.awt.Toolkit;
+import java.awt.Dimension;
+
 import nucleo.controle.Controle;
 import nucleo.aux.EstadosJogo;
 import static nucleo.aux.EstadosJogo.*;
@@ -89,7 +93,9 @@ public class Janela extends JPanel {
     // Metodos privados
     //=========================================================================
     private void iniciarFrame() {
+        Dimension dimensaoTela = Toolkit.getDefaultToolkit().getScreenSize();
         frame = new JFrame();
+        frame.setSize(dimensaoTela);
         frame.add(this);
         eventosTela = new EventosTela(this);
         frame.addComponentListener(eventosTela);
