@@ -13,19 +13,23 @@ public class Controle {
         banco = new Banco();
     }
 
-    void acaoBotaoVender() {
+    public void acaoBotaoVender() {
 
     }
 
-    void acaoBotaoHipotecar() {
+    public void acaoBotaoHipotecar() {
 
     }
 
-    void acaoBotaoComprar() {
+    public void acaoBotaoComprar() {
 
     }
 
-    void acaoBotaoBackup() {
-        
+    public void acaoBotaoBackup() {
+        System.out.println("Botão de backup foi pressionado"); 
+    }
+
+    public void acaoBotaoNovaPartida() {
+        System.out.println("Botão nova partida foi pressionado");
     }
 }

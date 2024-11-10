@@ -1,6 +1,5 @@
 package nucleo.grafico;
 import javax.swing.JPanel;
-import javax.print.attribute.standard.JobName;
 import javax.swing.JFrame;
 import java.awt.Graphics;
 import java.awt.event.KeyEvent;
@@ -9,7 +8,9 @@ import java.awt.event.MouseEvent;
 import java.awt.event.ComponentListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.ComponentEvent;
-
+import java.awt.Color;
+import nucleo.controle.Controle;
+import nucleo.aux.EstadosJogo;
 import static nucleo.aux.EstadosJogo.*;
 
 public class Janela extends JPanel {
@@ -17,48 +18,65 @@ public class Janela extends JPanel {
     private EventosTeclado eventosTeclado;
     private EventosMouse eventosMouse;
     private EventosTela eventosTela;
-    private Integer estadoJogo;
+    private EstadosJogo estado;
     private Menu instanciaMenu;
+    private Controle instanciaControle;
 
     //=========================================================================
     // Metodos publicos
     //=========================================================================
-    public Janela(Integer estadoJogo) {
-        this.estadoJogo = estadoJogo;
-        instanciaMenu = new Menu();
+    public Janela(EstadosJogo e, Controle c) {
+        estado = e;
+        instanciaControle = c;
+        instanciaMenu = new Menu(this);
 
         iniciarFrame();
         iniciarPanel();
-        instanciaMenu.setJanela(this);
+        atualizarEstado(MENU);
     }
 
     public JFrame getFrame() {
         return this.frame;
     }
 
+    public Controle getControle() {
+        return this.instanciaControle;
+    }
+
     public EventosMouse getEventosMouse() {
         return this.eventosMouse;
     }
-
-    public void atualizarDimensoes(int comprimento, int altura) {
-        instanciaMenu.setDimensoes(comprimento, altura);
-    }
-
+    
     @Override
     public void paint(Graphics g) {
         super.paint(g);
         
-        switch (estadoJogo.intValue()) {
+        switch (estado.atual) {
             case MENU:
-                instanciaMenu.pintar(g);
-                break;
+            instanciaMenu.pintar(g);
+            break;
+            default:
+            break;
+        }
+    }
+    
+    public void atualizarDimensoes(int comprimento, int altura) {
+        instanciaMenu.setDimensoes(comprimento, altura);
+    }
+
+    public void atualizarEstado(int novoEstado) {
+        estado.atual = novoEstado;
+        switch (novoEstado) {
+            case MENU:
+                setBackground(new Color(0xd4fcd9));
+                break;   
             default:
                 break;
         }
     }
 
     public void mouseAtualiza(MouseEvent e, int evento) {
-        switch (estadoJogo.intValue()) {
+        switch (estado.atual) {
             case MENU:
                 instanciaMenu.mouseAtualiza(e, evento);
                 break;

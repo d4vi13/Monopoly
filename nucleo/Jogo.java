@@ -1,19 +1,19 @@
 package nucleo;
 import nucleo.grafico.*;
 import nucleo.controle.*;
+import nucleo.aux.EstadosJogo;
 import static nucleo.aux.EstadosJogo.*;
 
 public class Jogo implements Runnable {
     Janela janela;
     Controle controle;
-    
-    Integer estadoJogo;
+    EstadosJogo estado;
     Thread thread;
 
     Jogo() {
-        estadoJogo = Integer.valueOf(MENU);
+        estado = new EstadosJogo();
         controle = new Controle();
-        janela = new Janela(estadoJogo);
+        janela = new Janela(estado, controle);
         janela.requestFocus();
     }
 
