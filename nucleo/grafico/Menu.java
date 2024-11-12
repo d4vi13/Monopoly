@@ -109,8 +109,8 @@ public class Menu {
     private void setDimensoesBotoes() {
         int comp, alt, posx, contPosy, iniPosy, sairPosy;
 
-        comp = (int)(0.3 * frame_comprimento);
-        alt = (int)(0.3 * comp);
+        comp = 320;
+        alt = 96;
         posx = (frame_comprimento - comp) / 2;
         iniPosy = logo_posy + logo_alt + frame_altura / 10;
         contPosy = iniPosy + alt + frame_altura / 40;

@@ -96,8 +96,8 @@ public class Janela extends JPanel {
         Dimension dimensaoTela = Toolkit.getDefaultToolkit().getScreenSize();
         int comp, alt;
 
-        comp = (int)0.8 * dimensaoTela.width;
-        alt = (int)0.8 * dimensaoTela.height;
+        comp = (int)(0.8 * dimensaoTela.width);
+        alt = (int)(0.8 * dimensaoTela.height);
         frame = new JFrame();
         frame.setSize(comp, alt);
         frame.add(this);
