@@ -94,8 +94,12 @@ public class Janela extends JPanel {
     //=========================================================================
     private void iniciarFrame() {
         Dimension dimensaoTela = Toolkit.getDefaultToolkit().getScreenSize();
+        int comp, alt;
+
+        comp = (int)(0.8 * dimensaoTela.width);
+        alt = (int)(0.8 * dimensaoTela.height);
         frame = new JFrame();
-        frame.setSize(dimensaoTela);
+        frame.setSize(comp, alt);
         frame.add(this);
         eventosTela = new EventosTela(this);
         frame.addComponentListener(eventosTela);
