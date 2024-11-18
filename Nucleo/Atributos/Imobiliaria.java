@@ -1,4 +1,4 @@
-package nucleo.atributos;
+package Nucleo.Atributos;
 
 public class Imobiliaria {
     

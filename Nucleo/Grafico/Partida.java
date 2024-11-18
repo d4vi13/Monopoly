@@ -1,4 +1,4 @@
-package nucleo.grafico;
+package Nucleo.Grafico;
 
 public class Partida {  
 

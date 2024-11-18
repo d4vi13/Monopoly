@@ -1,8 +1,9 @@
-package nucleo.controle;
-import nucleo.atributos.Banco;
-import nucleo.atributos.Jogador;
-import nucleo.aux.ListaCircular;
-import static nucleo.aux.EstadosJogo.*;
+package Nucleo.Controle;
+import static Nucleo.Aux.EstadosJogo.*;
+
+import Nucleo.Atributos.Banco;
+import Nucleo.Atributos.Jogador;
+import Nucleo.Aux.ListaCircular;
 
 public class Controle {
     private ListaCircular<Jogador> jogadores;

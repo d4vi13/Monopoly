@@ -1,4 +1,4 @@
-package nucleo.grafico;
+package Nucleo.Grafico;
 import java.awt.*;
 import java.awt.event.*;
 

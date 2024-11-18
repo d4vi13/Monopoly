@@ -1,4 +1,4 @@
-package nucleo.grafico;
+package Nucleo.Grafico;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.ImageIcon;
@@ -14,14 +14,14 @@ class Menu {
     public Menu(Janela j) {
         Font fonte = null;
         try {
-            File f = new File("../dados/fontes/HighMount_PersonalUse.otf");
+            File f = new File("./Dados/Fontes/HighMount_PersonalUse.otf");
             fonte = Font.createFont(Font.TRUETYPE_FONT, f).deriveFont(28f);
         } catch(FontFormatException | IOException e) {
             System.out.println("Erro ao carregar fonte");
             System.exit(1);
         }
 
-        monopoly_logo = new ImageIcon("../dados/imagens/monopoly_logo.png").getImage();
+        monopoly_logo = new ImageIcon("./Dados/Imagens/monopoly_logo.png").getImage();
         if (monopoly_logo == null) {
             System.err.println("Erro ao carregar logo");
             System.exit(1);

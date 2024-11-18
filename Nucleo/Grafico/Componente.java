@@ -1,4 +1,4 @@
-package nucleo.grafico;
+package Nucleo.Grafico;
 abstract class Componente {
     protected int posx, posy, comp, alt;
 

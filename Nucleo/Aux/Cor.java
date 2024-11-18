@@ -1,4 +1,4 @@
-package nucleo.aux;
+package Nucleo.Aux;
 
 public enum Cor {
     VERMELHO(0xff, 0x00, 0x00),

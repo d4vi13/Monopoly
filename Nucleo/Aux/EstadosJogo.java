@@ -1,4 +1,4 @@
-package nucleo.aux;
+package Nucleo.Aux;
 public class EstadosJogo {
     public final static int MENU = 0;
     public final static int JOGATINA = 1;

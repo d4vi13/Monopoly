@@ -1,8 +1,9 @@
-package nucleo;
-import nucleo.grafico.*;
-import nucleo.controle.*;
-import nucleo.aux.EstadosJogo;
-import static nucleo.aux.EstadosJogo.*;
+package Nucleo;
+import static Nucleo.Aux.EstadosJogo.*;
+
+import Nucleo.Aux.EstadosJogo;
+import Nucleo.Controle.*;
+import Nucleo.Grafico.*;
 
 public class Jogo implements Runnable {
     Janela janela;

@@ -1,5 +1,5 @@
-package nucleo.atributos;
-import nucleo.aux.Cor;
+package Nucleo.Atributos;
+import Nucleo.Aux.Cor;
 
 final public class Jogador {
     private String nome;

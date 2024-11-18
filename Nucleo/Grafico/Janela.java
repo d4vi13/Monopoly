@@ -1,11 +1,13 @@
-package nucleo.grafico;
+package Nucleo.Grafico;
 import javax.swing.*;
+
+import Nucleo.Aux.EstadosJogo;
+import Nucleo.Controle.Controle;
+
+import static Nucleo.Aux.EstadosJogo.*;
+
 import java.awt.*;
 import java.awt.event.*;
-
-import nucleo.controle.Controle;
-import nucleo.aux.EstadosJogo;
-import static nucleo.aux.EstadosJogo.*;
 
 public class Janela extends JPanel {
     private JFrame frame;

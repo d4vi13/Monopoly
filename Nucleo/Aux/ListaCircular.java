@@ -1,4 +1,4 @@
-package nucleo.aux;
+package Nucleo.Aux;
 
 public class ListaCircular<T> {
     private Nodo<T> iterador, ini, fim;
