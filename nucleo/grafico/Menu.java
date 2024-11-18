@@ -1,28 +1,16 @@
 package nucleo.grafico;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Image;
-import java.awt.RenderingHints;
-import java.awt.event.MouseEvent;
-import java.awt.Font;
-import java.awt.FontFormatException;
-import java.awt.FontMetrics;
+import java.awt.*;
+import java.awt.event.*;
 import javax.swing.ImageIcon;
-import java.awt.Color;
-import java.io.File;
-import java.io.IOException;
-import nucleo.controle.Controle;
+import java.io.*;
 
-public class Menu {
+class Menu {
     private Janela janela;
     private int frame_comprimento, frame_altura;
     private int logo_alt, logo_comp, logo_posx, logo_posy;
     private Image monopoly_logo;
     private Botao bIni, bCont, bSair;
 
-    //=========================================================================
-    // Metodos publicos
-    //=========================================================================
     public Menu(Janela j) {
         Font fonte = null;
         try {
@@ -84,7 +72,7 @@ public class Menu {
                 if (bIni.mouseSolto(e)) {
                     janela.getControle().acaoBotaoNovaPartida();
                 } else if (bCont.mouseSolto(e)) {
-                    janela.getControle().acaoBotaoBackup();
+                    janela.getControle().acaoBotaoBackup();                 
                 } else if (bSair.mouseSolto(e)) {
                     System.exit(0);
                 }
@@ -94,9 +82,6 @@ public class Menu {
         }
     }
     
-    //=========================================================================
-    // Metodos privados
-    //=========================================================================
     private void setDimensoesLogo() {
         double logo_prop;
         logo_prop = (double)monopoly_logo.getHeight(null) / monopoly_logo.getWidth(null);
@@ -125,91 +110,9 @@ public class Menu {
     }
 }
 
-class Botao {
-    private Color corBorda, corMouseSobre, corClicado, corPadrao, corAtual;
-    private boolean mouseSobre;
-    private int raio, posx, posy, comp, alt;
-    private String identificacao;
-    private Font fonte;
-
-    public Botao(String identificacao, Font fonte) {
-        this.identificacao = identificacao;
-        this.fonte = fonte;
-    }
-
-    public void definirCores(Color cB, Color cMS, Color cC, Color cP) {
-        corBorda = cB;
-        corMouseSobre = cMS;
-        corClicado = cC;
-        corPadrao = corAtual = cP;
-    }
-
-    public void definirRaio(int r) {
-        raio = r;
-    }
-
-    public void definirDimensoes(int comp, int alt) {
-        this.comp = comp;
-        this.alt = alt;
-    }
-
-    public void definirLocalizacao(int posx, int posy) {
-        this.posx = posx;
-        this.posy = posy;
-    }
-
-    public void mouseMoveu(MouseEvent e) {
-        if (contem(e.getX(), e.getY())) {
-            corAtual = corMouseSobre;
-            mouseSobre = true;
-        } else {
-            corAtual = corPadrao;
-            mouseSobre = false;
-        }
-    }
-
-    public void mousePressionado(MouseEvent e) {
-        if (mouseSobre) {
-            corAtual = corClicado;
-        }
-    }
+class CaixaTexto extends Componente {
     
-    // Retorna true se botao foi ativado
-    public boolean mouseSolto(MouseEvent e) {
-        if (contem(e.getX(), e.getY())) {
-            if (mouseSobre) {
-            }
-            corAtual = corMouseSobre;
-        } else {
-            mouseSobre = false;
-            corAtual = corPadrao;
-        }
-        
-        return mouseSobre;
-    }
-
     public void pintar(Graphics g) {
-        int compT, altT;
-        Graphics2D g2D = (Graphics2D)g;
-        FontMetrics fm;
-
-        g2D.setFont(fonte);
-        fm = g2D.getFontMetrics();
-
-        g2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        g2D.setColor(corBorda);
-        g2D.fillRoundRect(posx, posy, comp, alt, raio, raio);
-        g2D.setColor(corAtual);
-        g2D.fillRoundRect(posx + 2, posy + 2, comp - 4, alt - 4, raio, raio);
         
-        compT = fm.stringWidth(identificacao);
-        altT = fm.getAscent();
-        g2D.setColor(corBorda);
-        g2D.drawString(identificacao, posx + (comp - compT) / 2, posy + (alt + altT) / 2);
-    }
-
-    private boolean contem(int x, int y) {
-        return ((x >= posx && x <= posx + comp) &&
-                (y >= posy && y <= posy + alt));
     }
 }

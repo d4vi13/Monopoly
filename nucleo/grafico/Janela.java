@@ -1,17 +1,7 @@
 package nucleo.grafico;
-import javax.swing.JPanel;
-import javax.swing.JFrame;
-import java.awt.Graphics;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.ComponentListener;
-import java.awt.event.KeyAdapter;
-import java.awt.event.ComponentEvent;
-import java.awt.Color;
-import java.awt.Frame;
-import java.awt.Toolkit;
-import java.awt.Dimension;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
 
 import nucleo.controle.Controle;
 import nucleo.aux.EstadosJogo;
@@ -57,11 +47,13 @@ public class Janela extends JPanel {
         
         switch (estado.atual) {
             case MENU:
-            instanciaMenu.pintar(g);
-            break;
+                instanciaMenu.pintar(g);
+                break;
             default:
-            break;
+                break;
         }
+        
+        g.dispose();
     }
     
     public void atualizarDimensoes(int comprimento, int altura) {
