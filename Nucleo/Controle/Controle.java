@@ -8,12 +8,10 @@ import Nucleo.Aux.ListaCircular;
 
 public class Controle {
     private ListaCircular<Jogador> jogadores;
-    private Banco banco;
     private Tabuleiro tabuleiro;
 
     public Controle() {
         jogadores = new ListaCircular<Jogador>();
-        banco = new Banco();
         tabuleiro = new Tabuleiro();
     }
 

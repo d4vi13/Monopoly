@@ -10,7 +10,8 @@ public class Casa {
         public final static int tipoCompanhia = 2;
         public final static int tipoPrisao = 3;
         public final static int tipoCarta = 4;
-        public final static int tipoReceita = 5;
+        public final static int casaDeApostas = 5;
+        public final static int tipoReceita = 6;
     }
 
     public Casa () { }
