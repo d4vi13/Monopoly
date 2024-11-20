@@ -37,5 +37,6 @@ public class Controle {
 
     public void acaoBotaoNovaPartida() {
         System.out.println("Botão nova partida foi pressionado");
+        tabuleiro.gerarVetorCasas();
     }
 }

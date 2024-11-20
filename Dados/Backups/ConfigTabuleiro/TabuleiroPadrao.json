@@ -1,0 +1,37 @@
+{   
+    "totalCasas": 32,
+    "casas":[
+        {
+            "tipo": "Inicial",
+            "posicoes": [0]
+        },
+        {
+            "tipo": "Imovel",
+            "posicoes": [1, 2, 4, 5, 7, 9, 10, 13, 14, 15, 18, 19, 21, 22, 25, 26, 28, 30, 31],
+            "temDono": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "donoId": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        },
+        {
+            "tipo": "Companhia",
+            "posicoes": [3, 6, 12, 17, 23, 29],
+            "temDono": [0, 0, 0, 0, 0, 0],
+            "donoId": [0, 0, 0, 0, 0, 0]
+        },
+        {
+            "tipo": "Prisao",
+            "posicoes": [8]
+        },
+        {
+            "tipo": "Carta",
+            "posicoes": [11, 20, 27]
+        },
+        {
+            "tipo": "CasaDeApostas",
+            "posicoes": [16]
+        },
+        {
+            "tipo": "ReceitaFederal",
+            "posicoes": [24]
+        }
+    ]
+}
