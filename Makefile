@@ -1,17 +1,21 @@
 # Diretórios
-SRC_DIR := nucleo
+SRC_DIR := Nucleo
 BIN_DIR := bin
+LIB_DIR := lib
+LIBS := $(LIB_DIR)/jackson-annotations-2.18.1.jar:$(LIB_DIR)/jackson-core-2.18.1.jar:$(LIB_DIR)/jackson-databind-2.18.1.jar
 
 # Classe principal
 MAIN_CLASS := Nucleo.Jogo
 
 # Alvos principais
-.PHONY: all clean run
+.PHONY: all clean run zip
 
 # Compilar tudo
 all: $(BIN_DIR)
 	@echo "Compilando o projeto..."
-	@javac -d $(BIN_DIR) ./Nucleo/*.java
+	@find $(SRC_DIR) -name "*.java" > sources.txt
+	@javac -d $(BIN_DIR) -cp $(LIBS) @sources.txt
+	@rm sources.txt
 	@echo "Compilação concluída com sucesso!"
 
 $(BIN_DIR):
@@ -26,7 +30,7 @@ clean:
 # Executar o programa principal
 run: all
 	@echo "Executando o programa principal..."
-	@java -cp $(BIN_DIR) $(MAIN_CLASS)
+	@java -cp $(BIN_DIR):$(LIBS) $(MAIN_CLASS)
 	@echo "Execução concluída!"
 
 # Compactar o projeto em um arquivo .zip (opcional)
