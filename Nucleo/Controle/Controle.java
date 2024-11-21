@@ -33,7 +33,7 @@ public class Controle {
 
     }
 
-    public void acaoBotaoBackup() {
+    public void acaoBotaoBackup(String arquivo) {
         System.out.println("Botão de backup foi pressionado"); 
     }
 

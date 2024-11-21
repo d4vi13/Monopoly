@@ -18,9 +18,6 @@ public class Janela extends JPanel {
     private Menu instanciaMenu;
     private Controle instanciaControle;
 
-    //=========================================================================
-    // Metodos publicos
-    //=========================================================================
     public Janela(EstadosJogo e, Controle c) {
         estado = e;
         instanciaControle = c;
@@ -31,16 +28,8 @@ public class Janela extends JPanel {
         atualizarEstado(MENU);
     }
 
-    public JFrame getFrame() {
-        return this.frame;
-    }
-
-    public Controle getControle() {
+    public Controle obterControle() {
         return this.instanciaControle;
-    }
-
-    public EventosMouse getEventosMouse() {
-        return this.eventosMouse;
     }
     
     @Override
@@ -58,8 +47,8 @@ public class Janela extends JPanel {
         g.dispose();
     }
     
-    public void atualizarDimensoes(int comprimento, int altura) {
-        instanciaMenu.setDimensoes(comprimento, altura);
+    public void atualizarDimensoes() {
+        instanciaMenu.setDimensoes(frame.getWidth(), frame.getHeight());
     }
 
     public void atualizarEstado(int novoEstado) {
@@ -73,19 +62,26 @@ public class Janela extends JPanel {
         }
     }
 
-    public void mouseAtualiza(MouseEvent e, int evento) {
+    public void mouseAtualiza(MouseEvent e) {
         switch (estado.atual) {
             case MENU:
-                instanciaMenu.mouseAtualiza(e, evento);
+                instanciaMenu.mouseAtualiza(e);
                 break;
             default:
                 break;
         }
     }
 
-    //=========================================================================
-    // Metodos privados
-    //=========================================================================
+    public void tecladoAtualiza(KeyEvent e) {
+        switch (estado.atual) {
+            case MENU:
+                instanciaMenu.tecladoAtualiza(e);
+                break;
+            default:
+                break;
+        }
+    }
+
     private void iniciarFrame() {
         Dimension dimensaoTela = Toolkit.getDefaultToolkit().getScreenSize();
         int comp, alt;
@@ -103,7 +99,7 @@ public class Janela extends JPanel {
     }
 
     private void iniciarPanel() {
-        eventosTeclado = new EventosTeclado();
+        eventosTeclado = new EventosTeclado(this);
         eventosMouse = new EventosMouse(this);
         addKeyListener(eventosTeclado);
         addMouseListener(eventosMouse);
@@ -112,48 +108,34 @@ public class Janela extends JPanel {
     }
 }
 
-class EventosTela implements ComponentListener {
-    private JFrame frame;
+class EventosTela extends ComponentAdapter {
     private Janela janela;
 
     public EventosTela(Janela janela) {
         this.janela = janela;
-        this.frame = janela.getFrame();
-    }
-    
-    @Override
-    public void componentHidden(ComponentEvent e) {
-    }
-
-    @Override
-    public void componentMoved(ComponentEvent e) {
     }
 
     @Override
     public void componentResized(ComponentEvent e) {
-        janela.atualizarDimensoes(frame.getWidth(), frame.getHeight());
-    }
-
-    @Override
-    public void componentShown(ComponentEvent e) {
+        janela.atualizarDimensoes();
     }
 }
 
 class EventosTeclado extends KeyAdapter {
+    private Janela janela;
 
-    @Override
-    public void keyPressed(KeyEvent e) {
-        
+    public EventosTeclado(Janela janela) {
+        this.janela = janela;
     }
 
     @Override
     public void keyReleased(KeyEvent e) {
-        
+        janela.tecladoAtualiza(e);
     }
 
     @Override
     public void keyTyped(KeyEvent e) {
-        
+        janela.tecladoAtualiza(e);
     }
 }
 
@@ -166,16 +148,16 @@ class EventosMouse extends MouseAdapter {
 
     @Override
     public void mousePressed(MouseEvent e) {
-        janela.mouseAtualiza(e, MouseEvent.MOUSE_PRESSED);
+        janela.mouseAtualiza(e);
     }
 
     @Override
     public void mouseMoved(MouseEvent e) {
-        janela.mouseAtualiza(e, MouseEvent.MOUSE_MOVED);
+        janela.mouseAtualiza(e);
     }
 
     @Override
     public void mouseReleased(MouseEvent e) {
-        janela.mouseAtualiza(e, MouseEvent.MOUSE_RELEASED);
+        janela.mouseAtualiza(e);
     }
 }

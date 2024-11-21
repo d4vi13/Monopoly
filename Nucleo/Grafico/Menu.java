@@ -3,19 +3,35 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.ImageIcon;
 import java.io.*;
+import Nucleo.Grafico.Componente;
 
 class Menu {
+    private enum Estado{
+        NADA_CLICADO,
+        CONTINUAR_CLICADO;
+    }
+
     private Janela janela;
     private int frame_comprimento, frame_altura;
     private int logo_alt, logo_comp, logo_posx, logo_posy;
     private Image monopoly_logo;
     private Botao bIni, bCont, bSair;
+    private CaixaTexto caixaT;
+    private Estado estado;
 
     public Menu(Janela j) {
-        Font fonte = null;
+        Color[] coresBotoes = {Color.BLACK, Color.LIGHT_GRAY, Color.GRAY, Color.WHITE};
+        Color[] coresCaixa = {Color.BLACK, Color.WHITE, Color.LIGHT_GRAY};
+        int raio = 40;
+        Font fonteBotoes, fonteCaixa;
+        File f;
+
+        fonteBotoes = fonteCaixa = null;
         try {
-            File f = new File("./Dados/Fontes/HighMount_PersonalUse.otf");
-            fonte = Font.createFont(Font.TRUETYPE_FONT, f).deriveFont(28f);
+            f = new File("./Dados/Fontes/HighMount_PersonalUse.otf");
+            fonteBotoes = Font.createFont(Font.TRUETYPE_FONT, f).deriveFont(28f);
+            f = new File("./Dados/Fontes/times_new_roman.ttf");
+            fonteCaixa = Font.createFont(Font.TRUETYPE_FONT, f).deriveFont(28f);
         } catch(FontFormatException | IOException e) {
             System.out.println("Erro ao carregar fonte");
             System.exit(1);
@@ -27,18 +43,12 @@ class Menu {
             System.exit(1);
         }
 
-        bIni = new Botao("Nova Partida", fonte);
-        bIni.definirCores(Color.BLACK, Color.LIGHT_GRAY, Color.GRAY, Color.WHITE);
-        bIni.definirRaio(40);
-
-        bCont = new Botao("Continuar Partida", fonte);
-        bCont.definirCores(Color.BLACK, Color.LIGHT_GRAY, Color.GRAY, Color.WHITE);
-        bCont.definirRaio(40);
-
-        bSair = new Botao("Sair", fonte);
-        bSair.definirCores(Color.BLACK, Color.LIGHT_GRAY, Color.GRAY, Color.WHITE);
-        bSair.definirRaio(40);
+        bIni = new Botao("Nova Partida", fonteBotoes, raio, coresBotoes);
+        bCont = new Botao("Continuar Partida", fonteBotoes, raio, coresBotoes);
+        bSair = new Botao("Sair", fonteBotoes, raio, coresBotoes);
+        caixaT = new CaixaTexto(fonteCaixa, raio, coresCaixa);
         
+        estado = Estado.NADA_CLICADO;
         janela = j;
     }
 
@@ -46,21 +56,47 @@ class Menu {
         this.frame_comprimento = comprimento;
         this.frame_altura = altura;
         setDimensoesLogo();
-        setDimensoesBotoes();
+        setDimensoesComponentes();
     }
 
     public void pintar(Graphics g) {
         g.drawImage(monopoly_logo, logo_posx, logo_posy, logo_comp, logo_alt, null);
-        bIni.pintar(g);
-        bCont.pintar(g);
+        if (estado == Estado.NADA_CLICADO) {
+            bIni.pintar(g);
+            bCont.pintar(g);
+        } else if (estado == Estado.CONTINUAR_CLICADO) {
+            caixaT.pintar(g);
+        }
+        
         bSair.pintar(g);
     }
 
-    public void mouseAtualiza(MouseEvent e, int evento) {
-        switch (evento) {
+    public void tecladoAtualiza(KeyEvent e) {
+        if (estado == Estado.CONTINUAR_CLICADO) {
+            switch (e.getID()) {
+                case KeyEvent.KEY_TYPED:
+                    caixaT.teclaDigitada(e);
+                    break;
+                case KeyEvent.KEY_RELEASED:
+                    if (caixaT.teclaSolta(e)) {
+                        janela.obterControle().acaoBotaoBackup(caixaT.obterString());
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+
+    public void mouseAtualiza(MouseEvent e) {
+        switch (e.getID()) {
             case MouseEvent.MOUSE_MOVED:
-                bIni.mouseMoveu(e);
-                bCont.mouseMoveu(e);
+                if (estado == Estado.CONTINUAR_CLICADO) {
+                    caixaT.mouseMoveu(e);
+                } else {
+                    bIni.mouseMoveu(e);
+                    bCont.mouseMoveu(e);
+                }
                 bSair.mouseMoveu(e);
                 break;
             case MouseEvent.MOUSE_PRESSED:
@@ -69,13 +105,16 @@ class Menu {
                 bSair.mousePressionado(e);               
                 break;
             case MouseEvent.MOUSE_RELEASED:
-                if (bIni.mouseSolto(e)) {
-                    janela.getControle().acaoBotaoNovaPartida();
-                } else if (bCont.mouseSolto(e)) {
-                    janela.getControle().acaoBotaoBackup();                 
-                } else if (bSair.mouseSolto(e)) {
-                    System.exit(0);
+                if (estado == Estado.CONTINUAR_CLICADO) {
+                    caixaT.mouseSolto(e);
+                } else {
+                    if (bIni.mouseSolto(e)) {
+                        janela.obterControle().acaoBotaoNovaPartida();
+                    } else if (bCont.mouseSolto(e)) {
+                        estado = Estado.CONTINUAR_CLICADO;
+                    }
                 }
+                if (bSair.mouseSolto(e)) System.exit(0);
                 break;
             default:
                 break;
@@ -91,7 +130,7 @@ class Menu {
         logo_posy = frame_altura / 3 - logo_alt;
     }
 
-    private void setDimensoesBotoes() {
+    private void setDimensoesComponentes() {
         int comp, alt, posx, contPosy, iniPosy, sairPosy;
 
         comp = 320;
@@ -100,19 +139,14 @@ class Menu {
         iniPosy = logo_posy + logo_alt + frame_altura / 10;
         contPosy = iniPosy + alt + frame_altura / 40;
         sairPosy = contPosy + alt + frame_altura / 40;
-
+        
+        caixaT.definirDimensoes(comp, alt);
+        caixaT.definirLocalizacao(posx, contPosy);
         bIni.definirDimensoes(comp, alt);
         bIni.definirLocalizacao(posx, iniPosy);
         bCont.definirDimensoes(comp, alt);
         bCont.definirLocalizacao(posx, contPosy);
         bSair.definirDimensoes(comp, alt);
         bSair.definirLocalizacao(posx, sairPosy);
-    }
-}
-
-class CaixaTexto extends Componente {
-    
-    public void pintar(Graphics g) {
-        
     }
 }
