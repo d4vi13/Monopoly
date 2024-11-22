@@ -17,14 +17,18 @@ public class Serializador{
 
     public void restaurarBackup(String backup){
         try{
-            ois = new ObjectInpuStream(new FileInputStream(backup)); 
+            ois = new ObjectInputStream(new FileInputStream(backup)); 
         }catch(IOException exception){
             exception.printStackTrace();
         }
     }
     
     public void salvar(Jogador jogador){
-        oos.writeObject(jogador); 
+        try{
+            oos.writeObject(jogador); 
+        }catch(IOException exception){
+            exception.printStackTrace();
+        }
     }
 
     public void salvar(ListaCircular<Jogador> jogadores){
