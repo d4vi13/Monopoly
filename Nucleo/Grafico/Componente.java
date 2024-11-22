@@ -139,18 +139,14 @@ class CaixaTexto extends Componente {
         }
     }
 
-    public boolean teclaSolta(KeyEvent e) {
+    public void teclaSolta(KeyEvent e) {
         if (selecionado == true) {
             if (e.getKeyCode() == KeyEvent.VK_BACK_SPACE) {
                 if (texto.length() > 0) {
                     texto.deleteCharAt(texto.length() - 1);
                 }
-            } else if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-                return true;
             }
         }
-
-        return false;
     }
 
     public String obterString() {

@@ -3,7 +3,6 @@ import javax.swing.*;
 
 import Nucleo.Aux.EstadosJogo;
 import Nucleo.Controle.Controle;
-
 import static Nucleo.Aux.EstadosJogo.*;
 
 import java.awt.*;
@@ -16,16 +15,20 @@ public class Janela extends JPanel {
     private EventosTela eventosTela;
     private EstadosJogo estado;
     private Menu instanciaMenu;
+    private Cadastro instanciaCadastro;
     private Controle instanciaControle;
+    private volatile float opacidade;
 
     public Janela(EstadosJogo e, Controle c) {
         estado = e;
         instanciaControle = c;
         instanciaMenu = new Menu(this);
+        instanciaCadastro = new Cadastro(this);
 
         iniciarFrame();
         iniciarPanel();
-        atualizarEstado(MENU);
+        estado.atual = MENU;
+        opacidade = 0.0f;
     }
 
     public Controle obterControle() {
@@ -34,29 +37,48 @@ public class Janela extends JPanel {
     
     @Override
     public void paint(Graphics g) {
+        Graphics2D g2d = (Graphics2D)g;
         super.paint(g);
         
         switch (estado.atual) {
             case MENU:
                 instanciaMenu.pintar(g);
                 break;
+            case CADASTRO:
+                instanciaCadastro.pintar(g);
+                break;
             default:
                 break;
         }
+
+        g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, opacidade));
+        g2d.setColor(Color.BLACK);
+        g2d.fillRect(0, 0, frame.getWidth(), frame.getHeight());
         
         g.dispose();
     }
+
+    public void atualizarEstado(int novoEstado) { 
+        Timer timer = new Timer(50, e -> {
+            opacidade += 0.05f;
+            if (opacidade > 1.0f) {
+                opacidade = 0.0f;
+                ((Timer) e.getSource()).stop();
+                estado.atual = novoEstado;
+                atualizarDimensoes();
+            }
+        });
+        timer.start();
+    }
     
     public void atualizarDimensoes() {
-        instanciaMenu.setDimensoes(frame.getWidth(), frame.getHeight());
-    }
-
-    public void atualizarEstado(int novoEstado) {
-        estado.atual = novoEstado;
-        switch (novoEstado) {
+        switch (estado.atual) {
             case MENU:
-                setBackground(new Color(0xd4fcd9));
-                break;   
+                instanciaMenu.setDimensoes(frame.getWidth(), frame.getHeight());
+                break;
+            case CADASTRO:
+                instanciaCadastro.setDimensoes(frame.getWidth(), frame.getHeight());
+                break;
             default:
                 break;
         }
@@ -67,6 +89,8 @@ public class Janela extends JPanel {
             case MENU:
                 instanciaMenu.mouseAtualiza(e);
                 break;
+            case CADASTRO:
+                instanciaCadastro.mouseAtualiza(e);
             default:
                 break;
         }
@@ -77,6 +101,8 @@ public class Janela extends JPanel {
             case MENU:
                 instanciaMenu.tecladoAtualiza(e);
                 break;
+            case CADASTRO:
+                instanciaCadastro.tecladoAtualiza(e);
             default:
                 break;
         }
@@ -105,6 +131,7 @@ public class Janela extends JPanel {
         addMouseListener(eventosMouse);
         addMouseMotionListener(eventosMouse);
         setLayout(null);
+        setBackground(new Color(0xd4fcd9));
     }
 }
 

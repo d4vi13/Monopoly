@@ -1,4 +1,6 @@
 package Nucleo.Grafico;
+import static Nucleo.Aux.EstadosJogo.*;
+
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.ImageIcon;
@@ -78,9 +80,12 @@ class Menu {
                     caixaT.teclaDigitada(e);
                     break;
                 case KeyEvent.KEY_RELEASED:
-                    if (caixaT.teclaSolta(e)) {
+                    if (e.getKeyCode() == KeyEvent.VK_ENTER) {
                         janela.obterControle().acaoBotaoBackup(caixaT.obterString());
+                        janela.atualizarEstado(CADASTRO);
+                        return;
                     }
+                    caixaT.teclaSolta(e);
                     break;
                 default:
                     break;

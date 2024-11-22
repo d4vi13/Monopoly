@@ -38,11 +38,14 @@ public class Controle {
     }
 
     public void acaoBotaoBackup(String arquivo) {
-        System.out.println("Botão de backup foi pressionado"); 
+
     }
 
     public void acaoBotaoNovaPartida() {
-        System.out.println("Botão nova partida foi pressionado");
         tabuleiro.gerarVetorCasas();
+    }
+
+    public void cadastrarJogadores(String[] vetNomes, int qtdJogadores) {
+
     }
 }
