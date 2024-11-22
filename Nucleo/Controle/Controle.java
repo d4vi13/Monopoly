@@ -95,7 +95,8 @@ public class Controle {
 
     // de Fernando para Davi
     public void acaoBotaoSalvarBackup(String nomeArquivo) {
-
+        serializador.IniciarBackup(arquivo);
+        serializador.salvar(jogadores);        
     }
 
     public void acaoBotaoNovaPartida() {
