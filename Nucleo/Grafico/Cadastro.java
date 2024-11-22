@@ -66,7 +66,7 @@ public class Cadastro {
             fm = g.getFontMetrics();
             compTitulo = fm.stringWidth(aviso);
             g.setColor(Color.RED);
-            g.drawString(aviso, 20, frame_altura - fm.getHeight());
+            g.drawString(aviso, 20, frame_altura - fm.getHeight() - 10);
         }
 
         for (int i = 0; i < NUMERO_CAIXAS; i++) {
