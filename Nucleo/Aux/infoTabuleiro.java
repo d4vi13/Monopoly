@@ -5,7 +5,7 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class infoTabuleiro {
-        @JsonProperty("tipo")
+    @JsonProperty("tipo")
     private String tipo;
 
     @JsonProperty("posicoes")

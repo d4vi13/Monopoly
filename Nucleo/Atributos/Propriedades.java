@@ -5,6 +5,7 @@ import Nucleo.Atributos.Jogador;
 public class Propriedades extends Casa {
     private boolean temDono;
     private Jogador dono;
+    private int valor;
 
     public void setDono(Jogador novoDono) {
         this.temDono = true;
