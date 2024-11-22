@@ -4,50 +4,84 @@ import java.util.Arrays;
 import java.util.Random;
 
 public class Cartas {
-    // Definir as cartas e a raridade de cada uma delas (20 a 30 cartas diferentes?)
+
     private Random random;
     private int sorteio;
-    private Cartas carta;
 
-    private List<String> cartasComuns = Arrays.asList(
-        // sorte1,
-        // sorte2,
-        // sorte3,
-        // sorte4,
-        // sorte5,
-        // sorte6,
-        // sorte7,
-        // sorte8,
+    public static class Carta {
+        private String descricao;
+        private int tipo;
+        private int valor;
+
+        private Carta (String descricao, int tipo, int valor) {
+            this.descricao = descricao;
+            this.tipo = tipo;
+            this.valor = valor;
+        }
+
+        public String obtemDescricao() {
+            return descricao;
+        }
+
+        public int obtemTipo() {
+            return tipo;
+        }
+
+        public int obtemValor() {
+            return valor;
+        }
+
+    }
+    // tipo 0 = Ganha dinheiro
+    // tipo 1 = Perde dinheiro
+    // tipo 2 = Avance casas
+    // tipo 3 = Volte casas
+    // tipo 4 = Va para prisao
+    // tipo 5 = Va para inicio
+    // tipo 6 = Recebe dinheiro de todos
+    
+
+    private List<Carta> cartasComuns = Arrays.asList(
+        new Carta ("Você fez um bom investimento, receba 50", 0, 50),
+        new Carta ("Receba um presente de aniversário de todos jogadores", 6, 10),
+        new Carta ("Receba dividendos do banco, receba 50", 0, 50),
+        new Carta ("Você ganhou uma rifa no seu bairro, receba 20", 0, 20),
+        new Carta ("Receba um presente inesperado de um amigo", 0, 25),
+        new Carta ("Encontrou dinheiro na rua, receba 10", 0, 10),
+        new Carta ("O seu curso rendeu dinheiro, receba 90", 0, 90),
+        new Carta ("Você recebeu o prêmio do melhor programador, receba 40", 0, 40),
         // sorte9,
-        // reves1(),
-        // reves2(),
-        // reves3(),
-        // reves4(),
-        // reves5(),
-        // reves6(),
-        // reves7(),
+        new Carta ("Multa de excesso de valocidade, pague 15", 1, 15),
+        new Carta ("Você organizou uma festa de amigos, pague 50", 1, 50),
+        new Carta ("Doação a uma instituição de caridade, pague 50", 1, 50),
+        new Carta ("Despesas inesperadas no carro, pague 80", 1, 80),
+        new Carta ("Você saiu com amigos e gastou 75", 1, 75),
+        new Carta ("Taxa de associação ao clube local, pague 60", 1, 60),
+        new Carta ("Fez compra internacional, pague 50 de imposto", 1, 50),
         // reves8(),
-        // reves9()
+        new Carta ("Reparo urgente no telhado de casa, pague 60", 1, 60)
     );
-    private List<String> cartasRaras = Arrays.asList(
-        // sorte10(),
-        // sorte11(),
-        // sorte12(),
-        // sorte13(),
-        // reves10(),
-        // reves11(),
-        // reves12(),
-        // reves13()
+    private List<Carta> cartasRaras = Arrays.asList(
+        new Carta ("Avance para o início e receba 200", 5, 200),
+        new Carta ("Você ganhou na loteria, receba 100", 0, 100),
+        new Carta ("Trabalhou muito, receba a recompensa de 150", 0, 150),
+        new Carta ("Você vendeu seu carro favorito por 150", 0, 150),
+        // sorte14() avance casas
+        new Carta ("O juiz foi injusto, vá para a prisão", 4, 0),
+        new Carta ("Você negou imposto, pague 150", 1, 150),
+        new Carta ("Gastos escolares do seu filho aumentou, pague 200", 1, 200),
+        new Carta ("Você acabou de ser roubado, perde 150", 1, 150)
+        // reves14() volte casas
     );
-    private List<String> cartasEpicas = Arrays.asList(
-        // sorte14(),
+    private List<Carta> cartasEpicas = Arrays.asList(
+        new Carta ("Você achou petróleo no seu jardim, ganhe 400", 0, 400),
         // sorte15(),
         // reves14(),
-        // reves15()
+        new Carta ("Você teve muita sorte, pague 500", 1, 500)
     );
 
 
-    private String sorteioDaCarta() {
+    private Carta sorteioDaCarta() {
         random = new Random();
 
         // Sorteio baseado em probabilidades fixas
@@ -65,9 +99,8 @@ public class Cartas {
         }
     }
 
-    public String retiraCarta() {
-        carta = new Cartas();
-        return carta.sorteioDaCarta();
+    public Carta retiraCarta() {
+        return sorteioDaCarta();
     }
 
 }
