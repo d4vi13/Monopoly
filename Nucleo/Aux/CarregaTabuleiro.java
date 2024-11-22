@@ -6,8 +6,7 @@ import java.io.IOException;
 import java.util.List;
 
 public class CarregaTabuleiro {
-    @JsonProperty("totalCasas")
-    private int totalCasas;
+    private final int totalCasas = 32;
 
     @JsonProperty("casas")
     private List<infoTabuleiro> casas;

@@ -43,7 +43,6 @@ public class Controle {
 
     public void acaoBotaoNovaPartida() {
         tabuleiro.gerarVetorCasas();
-        tabuleiro.imprimeVetor();
     }
 
     public void cadastrarJogadores(String[] vetNomes, int qtdJogadores) {
