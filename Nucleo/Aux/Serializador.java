@@ -1,4 +1,6 @@
-package Nucleo.Aux
+package Nucleo.Aux;
+import Nucleo.Aux.ListaCircular;
+import Nucleo.Atributos.Jogador;
 
 public class Serializador{
     private ObjectOutputStream oos;
@@ -20,5 +22,15 @@ public class Serializador{
         }
     }
     
+    public void salvar(Jogador jogador){
+        oos.writeObject(jogador); 
+    }
+
+    public void salvar(ListaCircular<Jogador> jogadores){
+        do{
+            this.salvar(jogadores.getIteradorElem());
+            jogadores.iteradorProx();
+        }while(!jogadores.iteradorEhInicio()); 
+    }
 
 }
