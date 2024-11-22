@@ -1,8 +1,11 @@
 package Nucleo.Atributos;
 import Nucleo.Aux.Cor;
 import java.util.ArrayList;
+import java.io.*;
 
-final public class Jogador {
+final public class Jogador implements Serializable{
+    private String nome;
+    private Cor cor;
     private int posicao;
     private int id;
     private ArrayList<Integer> propriedades;
