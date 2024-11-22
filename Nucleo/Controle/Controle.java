@@ -66,14 +66,13 @@ public class Controle {
         return tabuleiro.consultaTabuleiro(jogadores.getIteradorElem());
     }
 
-    // de Fernando para Davi
     public void acaoBotaoCarregarBackup(String nomeArquivo) {
 
     }
 
     public void acaoBotaoSalvarBackup(String nomeArquivo) {
-        serializador.IniciarBackup(arquivo);
-        serializador.salvar(jogadores); 
+        serializador.IniciarBackup(nomeArquivo);
+        serializador.salvar(jogadores);        
     }
 
     public void acaoBotaoNovaPartida() {
