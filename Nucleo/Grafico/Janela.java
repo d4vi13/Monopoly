@@ -16,14 +16,16 @@ public class Janela extends JPanel {
     private EstadosJogo estado;
     private Menu instanciaMenu;
     private Cadastro instanciaCadastro;
+    private Partida instanciaPartida;
     private Controle instanciaControle;
-    private volatile float opacidade;
+    private float opacidade;
 
     public Janela(EstadosJogo e, Controle c) {
         estado = e;
         instanciaControle = c;
         instanciaMenu = new Menu(this);
         instanciaCadastro = new Cadastro(this);
+        instanciaPartida = new Partida(this);
 
         iniciarFrame();
         iniciarPanel();
@@ -46,6 +48,9 @@ public class Janela extends JPanel {
                 break;
             case CADASTRO:
                 instanciaCadastro.pintar(g);
+                break;
+            case JOGATINA:
+                instanciaPartida.pintar(g);
                 break;
             default:
                 break;
@@ -79,6 +84,9 @@ public class Janela extends JPanel {
             case CADASTRO:
                 instanciaCadastro.setDimensoes(frame.getWidth(), frame.getHeight());
                 break;
+            case JOGATINA:
+                instanciaPartida.setDimensoes(frame.getWidth(), frame.getHeight());
+                break;
             default:
                 break;
         }
@@ -91,6 +99,8 @@ public class Janela extends JPanel {
                 break;
             case CADASTRO:
                 instanciaCadastro.mouseAtualiza(e);
+            case JOGATINA:
+                
             default:
                 break;
         }
@@ -103,6 +113,8 @@ public class Janela extends JPanel {
                 break;
             case CADASTRO:
                 instanciaCadastro.tecladoAtualiza(e);
+            case JOGATINA:
+                
             default:
                 break;
         }
@@ -110,10 +122,14 @@ public class Janela extends JPanel {
 
     private void iniciarFrame() {
         Dimension dimensaoTela = Toolkit.getDefaultToolkit().getScreenSize();
+        Insets configuracaoTela = Toolkit.getDefaultToolkit()
+                                         .getScreenInsets(GraphicsEnvironment
+                                         .getLocalGraphicsEnvironment()
+                                         .getDefaultScreenDevice().getDefaultConfiguration());
         int comp, alt;
 
-        comp = (int)(0.8 * dimensaoTela.width);
-        alt = (int)(0.8 * dimensaoTela.height);
+        comp = (dimensaoTela.width);
+        alt = (dimensaoTela.height - configuracaoTela.bottom);
         frame = new JFrame();
         frame.setSize(comp, alt);
         frame.add(this);
