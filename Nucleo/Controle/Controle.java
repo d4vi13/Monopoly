@@ -10,6 +10,7 @@ import Nucleo.Aux.ListaCircular;
 import Nucleo.Aux.Serializador;
 import Nucleo.Aux.MensagemJogador;
 import Nucleo.Grafico.JogadorG;
+import Nucleo.Aux.Serializador;
 import Nucleo.Atributos.D6;
 
 public class Controle {
@@ -20,6 +21,8 @@ public class Controle {
     
     private Serializador serializador;
     private Banco banco;
+    
+    private Serializador serializador;
 
     private D6 d6;
     private int[] numerosD6;
@@ -30,6 +33,7 @@ public class Controle {
         serializador = new Serializador();
         banco = new Banco();
         tabuleiro = new Tabuleiro(banco);
+        serializador = new Serializador();
     }
 
     public void acaoBotaoVender() {
