@@ -82,7 +82,7 @@ class Menu {
                 case KeyEvent.KEY_RELEASED:
                     if (e.getKeyCode() == KeyEvent.VK_ENTER) {
                         janela.obterControle().acaoBotaoBackup(caixaT.obterString());
-                        janela.atualizarEstado(CADASTRO);
+                        janela.atualizarEstado(JOGATINA);
                         return;
                     }
                     caixaT.teclaSolta(e);
@@ -113,8 +113,9 @@ class Menu {
                 if (estado == Estado.CONTINUAR_CLICADO) {
                     caixaT.mouseSolto(e);
                 } else {
-                    if (bIni.mouseSolto(e)) {
+                    if (bIni.mouseSolto(e)) {   
                         janela.obterControle().acaoBotaoNovaPartida();
+                        janela.atualizarEstado(CADASTRO);
                     } else if (bCont.mouseSolto(e)) {
                         estado = Estado.CONTINUAR_CLICADO;
                     }

@@ -90,7 +90,7 @@ public class Cadastro {
                         vetNomes[i] = caixas[i].obterString();
                     }
                     janela.obterControle().cadastrarJogadores(vetNomes, numeroJogadores);
-                    System.exit(0);
+                    janela.atualizarEstado(JOGATINA);
                 }
                 break;
             default:

@@ -59,7 +59,7 @@ public class Janela extends JPanel {
     }
 
     public void atualizarEstado(int novoEstado) { 
-        Timer timer = new Timer(50, e -> {
+        Timer timer = new Timer(30, e -> {
             opacidade += 0.05f;
             if (opacidade > 1.0f) {
                 opacidade = 0.0f;
