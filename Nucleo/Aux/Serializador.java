@@ -1,6 +1,7 @@
 package Nucleo.Aux;
 import Nucleo.Aux.ListaCircular;
 import Nucleo.Atributos.Jogador;
+import java.io.*;
 
 public class Serializador{
     private ObjectOutputStream oos;
