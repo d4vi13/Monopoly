@@ -15,7 +15,7 @@ all: $(BIN_DIR)
 	@echo "Compilando o projeto..."
 	@find $(SRC_DIR) -name "*.java" > sources.txt
 	@javac -d $(BIN_DIR) -cp $(LIBS) @sources.txt
-	@rm sources.txt
+	@rm -f sources.txt
 	@echo "Compilação concluída com sucesso!"
 
 $(BIN_DIR):
