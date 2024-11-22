@@ -9,6 +9,7 @@ import Nucleo.Atributos.Tabuleiro;
 import Nucleo.Aux.ListaCircular;
 import Nucleo.Aux.MensagemJogador;
 import Nucleo.Grafico.JogadorG;
+import Nucleo.Aux.Serializador;
 import Nucleo.Atributos.D6;
 
 public class Controle {
@@ -18,6 +19,8 @@ public class Controle {
     private Banco banco;
     private int numeroJogadores;
     
+    private Serializador serializador;
+
     private D6 d6;
     private int[] numerosD6;
 
@@ -28,6 +31,7 @@ public class Controle {
         tabuleiro = new Tabuleiro(banco);
         d6 = new D6();
         numerosD6 = new int[2];
+        serializador = new Serializador();
     }
 
     // Codigos:
