@@ -15,6 +15,10 @@ public class ListaCircular<T> {
         iterador = iterador.getProx();
     }
 
+    public boolean iteradorEhInicio(){
+        return iterador == ini;
+    }
+
     public void addLista(T elemento) {
         if (ini == null) {
             ini = new Nodo<T>(elemento);
