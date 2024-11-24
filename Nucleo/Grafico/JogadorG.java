@@ -1,7 +1,5 @@
 package Nucleo.Grafico;
 import java.awt.*;
-import java.awt.geom.AffineTransform;
-import java.awt.geom.Point2D;
 
 class Posicao {
     public int posX, posY;
@@ -21,18 +19,9 @@ public class JogadorG {
     }
 
     public void atualizarPosicao(int casa, int tabPosx, int tabPosy, int tabDim) {
-        double xEscala, yEscala;
-        AffineTransform transforma;
-        Point2D transformado;
-        Point2D original = new Point2D.Double(Posicoes.x[casa][id], Posicoes.y[casa][id]);
-
-        xEscala = yEscala = (double)tabDim / 1156;
-        transforma = new AffineTransform();
-        transforma.scale(xEscala, yEscala);
-        transformado = transforma.transform(original, null);
-
-        posicaoAtual.posX = (int)transformado.getX() + tabPosx;
-        posicaoAtual.posY = (int)transformado.getY() + tabPosy;
+        double escala = tabDim / 1156.0;
+        posicaoAtual.posX = (int)(escala * Posicoes.x[casa][id]) + tabPosx;
+        posicaoAtual.posY = (int)(escala * Posicoes.y[casa][id]) + tabPosy;
     }
 
     public int obterX() {

@@ -42,8 +42,8 @@ public class Partida {
     private int numeroJogadores;
     private JogadorG[] jogadores;
     private int[] saldos;
-    private final int altIcone = 35;
-    private final int compIcone = 35;
+    private int altIcone;
+    private int compIcone;
     private int idJogadorAtual;
     private String[] informaJogador;
     private boolean informaLigado;
@@ -111,6 +111,7 @@ public class Partida {
         for (int i = 0; i < numeroJogadores; i++) {
             jogadores[i].atualizarPosicao(0, tabuleiroPosx, tabuleiroPosy, tabuleiroComp);
         }
+        altIcone = compIcone = (int)(35 * tabuleiroComp / 1156.f);
     }
 
     public void pintar(Graphics g) {
