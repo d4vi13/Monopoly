@@ -61,21 +61,21 @@ public class Controle {
         Image iAux;
         numeroJogadores = qtdJogadores;
 
-        iAux = new ImageIcon("./Dados/Imagens/detetive.png").getImage();
+        iAux = new ImageIcon("./Dados/Imagens/cowboy.png").getImage();
         jogadoresG[0] = new JogadorG(iAux, 0, vetNomes[0]);
-        iAux = new ImageIcon("./Dados/Imagens/detetive.png").getImage();
+        iAux = new ImageIcon("./Dados/Imagens/dead.png").getImage();
         jogadoresG[1] = new JogadorG(iAux, 1, vetNomes[1]);
         if (numeroJogadores > 2) {
-            iAux = new ImageIcon("./Dados/Imagens/detetive.png").getImage();
+            iAux = new ImageIcon("./Dados/Imagens/eyeroll.png").getImage();
             jogadoresG[2] = new JogadorG(iAux, 2, vetNomes[2]);
         if (numeroJogadores > 3) {
-            iAux = new ImageIcon("./Dados/Imagens/detetive.png").getImage();
+            iAux = new ImageIcon("./Dados/Imagens/sunglasses.png").getImage();
             jogadoresG[3] = new JogadorG(iAux, 3, vetNomes[3]);
         if (numeroJogadores > 4) {
-            iAux = new ImageIcon("./Dados/Imagens/detetive.png").getImage();
+            iAux = new ImageIcon("./Dados/Imagens/hug.png").getImage();
             jogadoresG[4] = new JogadorG(iAux, 4, vetNomes[4]);
         if (numeroJogadores > 5) {
-            iAux = new ImageIcon("./Dados/Imagens/detetive.png").getImage();
+            iAux = new ImageIcon("./Dados/Imagens/angry.png").getImage();
             jogadoresG[5] = new JogadorG(iAux, 5, vetNomes[5]);
         }}}}
 
