@@ -37,15 +37,22 @@ public class Controle {
 
     }
 
-    // Carrega quanto dinheiro cada jogador tem no momento em vet
-    public void carregarSaldos(String[] vet) {
-
-    }
-
     public int[] acaoBotaoJogarDados() {
         d6 = new D6();
         numerosD6 = d6.jogaDado();
         return numerosD6;
+    }
+
+    public void carregarSaldos(int[] vet) {
+
+    }
+
+    // Retorna um codigo de tipo da casa
+    // Seria interessante se o codigo informasse
+    // possibilidade de comprar/vender/hipotecar
+    // Talvez seja necessario alterar tipo do retorno
+    public int decifraCasa(int somaDados) {
+        return 1;
     }
 
     // de Fernando para Davi

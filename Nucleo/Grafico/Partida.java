@@ -41,7 +41,7 @@ public class Partida {
     // Jogadores
     private int numeroJogadores;
     private JogadorG[] jogadores;
-    private String[] saldos;
+    private int[] saldos;
     private final int altIcone = 35;
     private final int compIcone = 35;
     private int idJogadorAtual;
@@ -49,6 +49,9 @@ public class Partida {
     private boolean informaLigado;
     // Timers
     private Timer temporizadorPulos;
+    // Dados
+    private int[] valoresDados;
+    private boolean valoresLigado;
 
     public Partida(Janela j) {
         File f1;
@@ -87,7 +90,7 @@ public class Partida {
     private void carregarJogadores() {
         numeroJogadores = janela.obterControle().obterNumeroJogadores();
         jogadores = janela.obterControle().obterJogadoresG();
-        saldos = new String[numeroJogadores];
+        saldos = new int[numeroJogadores];
         informaJogador = new String[numeroJogadores];
         for (int i = 0; i < numeroJogadores; i++) {
             informaJogador[i] = jogadores[i].obterNome() + "joga!";
@@ -95,7 +98,7 @@ public class Partida {
     }
 
     private void carregarTemporizadores() {
-
+        //temporizadorPulos = new Timer();
     }
 
     public void setDimensoes(int comprimento, int altura) {
@@ -207,6 +210,7 @@ public class Partida {
             idJogadorAtual = janela.obterControle().obterIdJogadorAtual();
             janela.obterControle().carregarSaldos(saldos);
             dadosLigado = true;
+            valoresLigado = false;
             comprarLigado = false;
             venderLigado = false;
             hipotecarLigado = false;
@@ -216,7 +220,15 @@ public class Partida {
     class mostraJogadorPulando implements Estado {
         @Override
         public void atualizarEstado() {
+            janela.obterControle().acaoBotaoJogarDados();
             temporizadorPulos.start();
+        }
+    }
+
+    class jogadorNaCasa implements Estado {
+        @Override
+        public void atualizarEstado() {
+            
         }
     }
 }
