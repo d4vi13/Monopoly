@@ -47,6 +47,19 @@ public class Controle {
         return numerosD6;
     }
 
+    public void carregarSaldos(int[] vet) {
+
+    }
+
+    // Retorna um codigo de tipo da casa
+    // Seria interessante se o codigo informasse
+    // possibilidade de comprar/vender/hipotecar
+    // Talvez seja necessario alterar tipo do retorno
+    public int decifraCasa(int somaDados) {
+        return 1;
+    }
+
+    // de Fernando para Davi
     public void acaoBotaoCarregarBackup(String nomeArquivo) {
 
     }

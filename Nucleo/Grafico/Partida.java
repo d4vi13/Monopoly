@@ -7,7 +7,7 @@ import Nucleo.Grafico.Componente;
 
 import java.awt.*;
 import java.awt.event.*;
-import javax.swing.ImageIcon;
+import javax.swing.*;
 import java.io.*;
 
 interface Estado {
@@ -30,13 +30,28 @@ public class Partida {
     private Estado[] estados;
     private Estado estadoAtual;
     // Botoes
-    private Botao[] botoesDoJogo;
-    private boolean[] botoesEstado;
+    private Botao botaoDados;
+    private boolean dadosLigado;
+    private Botao botaoVender;
+    private boolean venderLigado;
+    private Botao botaoComprar;
+    private boolean comprarLigado;
+    private Botao botaoHipotecar;
+    private boolean hipotecarLigado;
     // Jogadores
     private int numeroJogadores;
     private JogadorG[] jogadores;
+    private int[] saldos;
     private final int altIcone = 35;
     private final int compIcone = 35;
+    private int idJogadorAtual;
+    private String[] informaJogador;
+    private boolean informaLigado;
+    // Timers
+    private Timer temporizadorPulos;
+    // Dados
+    private int[] valoresDados;
+    private boolean valoresLigado;
 
     public Partida(Janela j) {
         File f1;
@@ -59,23 +74,31 @@ public class Partida {
             System.exit(1);
         }
 
+        carregarTemporizadores();
         carregarJogadores();
         carregarEstados();
-        estadoAtual = estados[0];
-        estadoAtual.atualizarEstado();
         pause = new MenuPause(this);
         botaoPause = new Botao("Pause", fonteBotoes, 20, new Color[]{Color.BLACK, Color.LIGHT_GRAY, Color.GRAY, Color.WHITE});
     }
 
     private void carregarEstados() {
         estados = new Estado[10];
-        estados[0] = new mostraTabuleiro();
-        estados[1] = new ativaBotaoDados();
+        estados[0] = estadoAtual = new ativaBotaoDados();
+        estadoAtual.atualizarEstado();
     }
 
     private void carregarJogadores() {
         numeroJogadores = janela.obterControle().obterNumeroJogadores();
         jogadores = janela.obterControle().obterJogadoresG();
+        saldos = new int[numeroJogadores];
+        informaJogador = new String[numeroJogadores];
+        for (int i = 0; i < numeroJogadores; i++) {
+            informaJogador[i] = jogadores[i].obterNome() + "joga!";
+        }
+    }
+
+    private void carregarTemporizadores() {
+        //temporizadorPulos = new Timer();
     }
 
     public void setDimensoes(int comprimento, int altura) {
@@ -181,21 +204,28 @@ public class Partida {
     }
 
     /* Classes Internas (estados) */
-    class mostraTabuleiro implements Estado {
-        @Override
-        public void atualizarEstado() {
-            
-        }
-    }
-    
     class ativaBotaoDados implements Estado {
         @Override
         public void atualizarEstado() {
-            
+            idJogadorAtual = janela.obterControle().obterIdJogadorAtual();
+            janela.obterControle().carregarSaldos(saldos);
+            dadosLigado = true;
+            valoresLigado = false;
+            comprarLigado = false;
+            venderLigado = false;
+            hipotecarLigado = false;
         }
     }
     
-    class mostraSomaDados implements Estado {
+    class mostraJogadorPulando implements Estado {
+        @Override
+        public void atualizarEstado() {
+            janela.obterControle().acaoBotaoJogarDados();
+            temporizadorPulos.start();
+        }
+    }
+
+    class jogadorNaCasa implements Estado {
         @Override
         public void atualizarEstado() {
             
