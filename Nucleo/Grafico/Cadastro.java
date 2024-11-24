@@ -1,34 +1,38 @@
 package Nucleo.Grafico;
 import static Nucleo.Aux.EstadosJogo.*;
+import Nucleo.Grafico.Componente;
 
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.ImageIcon;
 import java.io.*;
-import Nucleo.Grafico.Componente;
 
 public class Cadastro {
     final private int NUMERO_CAIXAS = 6;
     private Janela janela;
-    private int frame_comprimento, frame_altura;
+    private int frameComprimento, frameAltura;
     private CaixaTexto[] caixas;
-    Font fonteTitulo, fonteAviso;
-    String titulo, aviso;
-    int numeroJogadores;
+    private Font fonteTitulo, fonteAviso;
+    private String titulo, aviso;
+    private int numeroJogadores;
 
     public Cadastro(Janela j) {
         Color[] coresCaixa = {Color.BLACK, Color.WHITE, Color.LIGHT_GRAY};
         int raio = 40;
         Font fonteCaixa;
-        File f;
+        File f1, f2;
 
+        janela = j;
+        numeroJogadores = 0;
+        titulo = "Cadastro dos Jogadores";
+        aviso = "Insira pelo menos dois jogadores";
         fonteTitulo = fonteCaixa = null;
+        f1 = new File("./Dados/Fontes/HighMount_PersonalUse.otf");
+        f2 = new File("./Dados/Fontes/times_new_roman.ttf");
         try {
-            f = new File("./Dados/Fontes/HighMount_PersonalUse.otf");
-            fonteTitulo = Font.createFont(Font.TRUETYPE_FONT, f).deriveFont(40f);
-            fonteAviso = Font.createFont(Font.TRUETYPE_FONT, f).deriveFont(30f);
-            f = new File("./Dados/Fontes/times_new_roman.ttf");
-            fonteCaixa = Font.createFont(Font.TRUETYPE_FONT, f).deriveFont(28f);
+            fonteTitulo = Font.createFont(Font.TRUETYPE_FONT, f1).deriveFont(40f);
+            fonteAviso = Font.createFont(Font.TRUETYPE_FONT, f1).deriveFont(30f);
+            fonteCaixa = Font.createFont(Font.TRUETYPE_FONT, f2).deriveFont(28f);
         } catch(FontFormatException | IOException e) {
             System.out.println("Erro ao carregar fonte");
             System.exit(1);
@@ -38,16 +42,11 @@ public class Cadastro {
         for (int i = 0; i < NUMERO_CAIXAS; i++) {
             caixas[i] = new CaixaTexto(fonteCaixa, raio, coresCaixa);
         }
-
-        numeroJogadores = 0;
-        titulo = "Cadastro dos Jogadores";
-        aviso = "Insira pelo menos dois jogadores";
-        janela = j;
     }
 
     public void setDimensoes(int comprimento, int altura) {
-        this.frame_comprimento = comprimento;
-        this.frame_altura = altura;
+        this.frameComprimento = comprimento;
+        this.frameAltura = altura;
         setDimensoesCaixas();
     }
 
@@ -59,14 +58,14 @@ public class Cadastro {
         fm = g.getFontMetrics();
         compTitulo = fm.stringWidth(titulo);
         g.setColor(Color.BLACK);
-        g.drawString(titulo, (frame_comprimento - compTitulo) / 2, (frame_altura / 5) - fm.getAscent());
+        g.drawString(titulo, (frameComprimento - compTitulo) / 2, (frameAltura / 5) - fm.getAscent());
 
         if (numeroJogadores < 2) {
             g.setFont(fonteAviso);
             fm = g.getFontMetrics();
             compTitulo = fm.stringWidth(aviso);
             g.setColor(Color.RED);
-            g.drawString(aviso, 20, frame_altura - fm.getHeight() - 10);
+            g.drawString(aviso, 20, frameAltura - fm.getHeight() - 10);
         }
 
         for (int i = 0; i < NUMERO_CAIXAS; i++) {
@@ -133,8 +132,8 @@ public class Cadastro {
 
         for (int i = 0; i < NUMERO_CAIXAS; i++) {
             caixas[i].definirDimensoes(comp, alt);
-            posy = (frame_altura / 4) + (i * frame_altura / 40) + alt * i;
-            caixas[i].definirLocalizacao((frame_comprimento - comp) / 2, posy);
+            posy = (frameAltura / 4) + (i * frameAltura / 40) + alt * i;
+            caixas[i].definirLocalizacao((frameComprimento - comp) / 2, posy);
         }
     }
 }

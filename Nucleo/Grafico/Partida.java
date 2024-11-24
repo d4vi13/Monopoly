@@ -1,32 +1,258 @@
 package Nucleo.Grafico;
 import static Nucleo.Aux.EstadosJogo.*;
 
+import Nucleo.Atributos.Jogador;
+import Nucleo.Aux.EstadosJogo;
+import Nucleo.Aux.ListaCircular;
+import Nucleo.Grafico.Componente;
+
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.ImageIcon;
 import java.io.*;
-import Nucleo.Grafico.Componente;
+
+interface Estado {
+    void atualizarEstado();
+    void pintar(Graphics g);
+}
 
 public class Partida {  
-    final private int NUMERO_CAIXAS = 6;
     private Janela janela;
-    private int frame_comprimento, frame_altura;
-    private CaixaTexto[] caixas;
-    Font fonteTitulo, fonteAviso;
-    String titulo, aviso;
-    int numeroJogadores;
+    private int frameComprimento, frameAltura;
+    // Tabuleiro
+    private int tabuleiroComp, tabuleiroAlt, tabuleiroPosx, tabuleiroPosy;
+    private Image tabuleiro;
+    // Pause
+    private boolean pauseAtivado;
+    private MenuPause pause;
+    private Botao botaoPause;
+    private Font fonteBotoes;
+    private float opacidade;
+    // Estados
+    private Estado[] estados;
+    private Estado estadoAtual;
+    // Botoes
+    private Botao[] botoesDoJogo;
+    private boolean[] botoesEstado;
+    // Jogadores
+    private ListaCircular<JogadorG> jogadores;
+    private final int altIcone = 35;
+    private final int compIcone = 35;
 
     public Partida(Janela j) {
+        File f1;
+
+        janela = j;
+        opacidade = 1.0f;
+        fonteBotoes = null;
+        pauseAtivado = false;
+        f1 = new File("./Dados/Fontes/HighMount_PersonalUse.otf");
+        try {
+            fonteBotoes= Font.createFont(Font.TRUETYPE_FONT, f1).deriveFont(40f);
+        } catch(FontFormatException | IOException e) {
+            System.out.println("Erro ao carregar fonte");
+            System.exit(1);
+        }
+
+        tabuleiro = new ImageIcon("./Dados/Imagens/tabuleiro.png").getImage();
+        if (tabuleiro == null) {
+            System.out.println("Erro ao carregar tabuleiro");
+            System.exit(1);
+        }
+
+        carregarJogadores();
+        carregarEstados();
+        estadoAtual = estados[0];
+        pause = new MenuPause(this);
+        botaoPause = new Botao("Pause", fonteBotoes, 20, new Color[]{Color.BLACK, Color.LIGHT_GRAY, Color.GRAY, Color.WHITE});
+    }
+
+    private void carregarEstados() {
+        estados = new Estado[10];
+        estados[0] = new mostraTabuleiro();
+        estados[1] = new ativaBotaoDados();
+    }
+
+    private void carregarJogadores() {
+        JogadorG ini, atual;
+
+        jogadores = janela.obterControle().obterJogadoresG();
+        ini = jogadores.getIteradorElem();
+        ini.atualizarPosicao(0, tabuleiroPosx, tabuleiroPosy);
+        jogadores.iteradorProx();
+        atual = jogadores.getIteradorElem();
+        while (atual != ini) {
+            atual.atualizarPosicao(0, tabuleiroPosx, tabuleiroPosy);
+            jogadores.iteradorProx();
+            atual = jogadores.getIteradorElem();
+        }
+
+    }
+
+    public void setDimensoes(int comprimento, int altura) {
+        this.frameComprimento = comprimento;
+        this.frameAltura = altura;
+        definirTamanhoTabuleiro();
+        definirPosicaoTabuleiro();
+        definirTamanhoComponentes();
+        definirPosicaoComponentes();
+    }
+
+    public void pintar(Graphics g) {
+        Graphics2D g2d = (Graphics2D)g;
+        JogadorG j;
+        
+        g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, opacidade));
+        g.drawImage(tabuleiro, tabuleiroPosx, tabuleiroPosy, null);
+        botaoPause.pintar(g);
+
+        // j = jogadores[0];
+        // g.drawImage(j.obterIcone(), j.obterX(), j.obterY(), compIcone, altIcone, null);
+        // estadoAtual.pintar(g);
+
+        if (pauseAtivado == true) {
+            pause.pintar(g);
+        }
+    }
+
+    public void tecladoAtualiza(KeyEvent e) {
+        if (pauseAtivado == true) {
+            pause.tecladoAtualiza(e);
+        }
+    }
+
+    public void mouseAtualiza(MouseEvent e) {
+        if (pauseAtivado == true) {
+            if (e.getID() == MouseEvent.MOUSE_MOVED) {
+                botaoPause.mouseMoveu(e);
+            }
+            pause.mouseAtualiza(e);
+            return;
+        }
+
+        switch (e.getID()) {
+            case MouseEvent.MOUSE_MOVED:
+                botaoPause.mouseMoveu(e);
+                break;
+            case MouseEvent.MOUSE_PRESSED:
+                botaoPause.mousePressionado(e);
+                break;
+            case MouseEvent.MOUSE_RELEASED:
+                if (botaoPause.mouseSolto(e)) {
+                    ativarPause();
+                }
+                break;
+            default:
+                break;
+        }
+    }
+
+    private void definirTamanhoTabuleiro() {
+        int tmp1, tmp2;
+
+        tmp1 = (int)(frameComprimento * 0.6);
+        tmp2 = frameAltura - 100;
+        if (tmp1 <= tmp2) {
+            tabuleiroComp = tabuleiroAlt = tmp1;
+        } else {
+            tabuleiroComp = tabuleiroAlt = tmp2;
+        }
+
+        System.out.println(tabuleiroComp + " " + tabuleiroAlt);
+    }
+
+    private void definirPosicaoTabuleiro() {
+        tabuleiroPosy = (frameAltura - tabuleiroAlt) / 2;
+        tabuleiroPosx = (frameComprimento - tabuleiroComp) / 2;
+    }
+
+    private void definirTamanhoComponentes() {
+        botaoPause.definirDimensoes(160, 48);
+    }
+
+    private void definirPosicaoComponentes() {
+        botaoPause.definirLocalizacao(20, tabuleiroPosy);
+    }
+
+    void ativarPause() {
+        pause.setDimensoes(frameComprimento, frameAltura);
+        opacidade = 0.5f;
+        pauseAtivado = true;
+    }
+
+    void desativarPause() {
+        opacidade = 1.0f;
+        pauseAtivado = false;
+    }
+
+    public Janela obterJanela() {
+        return janela;
+    }
+
+    /* Classes Internas (estados) */
+    class mostraTabuleiro implements Estado {
+        @Override
+        public void atualizarEstado() {
+            
+        }
+    
+        @Override
+        public void pintar(Graphics g) {
+            
+        }
+    }
+    
+    class ativaBotaoDados implements Estado {
+        @Override
+        public void atualizarEstado() {
+            
+        }
+    
+        @Override
+        public void pintar(Graphics g) {
+            
+        }
+    }
+    
+    class mostraSomaDados implements Estado {
+        @Override
+        public void atualizarEstado() {
+            
+        }
+    
+        @Override
+        public void pintar(Graphics g) {
+            
+        }
+    }
+}
+
+class MenuPause {
+    private enum Estado{
+        NAO_SALVAR,
+        SALVAR;
+    }
+
+    private Partida jogatina;
+    private int frameComprimento, frameAltura;
+    private Botao botaoSalvar, botaoSair;
+    private int compComponentes, altComponentes;
+    private CaixaTexto caixaBackup;
+    private Estado estado;
+
+    public MenuPause(Partida j) {
+        Color[] coresBotoes = {Color.BLACK, Color.LIGHT_GRAY, Color.GRAY, Color.WHITE};
         Color[] coresCaixa = {Color.BLACK, Color.WHITE, Color.LIGHT_GRAY};
         int raio = 40;
-        Font fonteCaixa;
+        Font fonteBotoes, fonteCaixa;
         File f;
 
-        fonteTitulo = fonteCaixa = null;
+        jogatina = j;
+        estado = Estado.NAO_SALVAR;
+        fonteBotoes = fonteCaixa = null;
         try {
             f = new File("./Dados/Fontes/HighMount_PersonalUse.otf");
-            fonteTitulo = Font.createFont(Font.TRUETYPE_FONT, f).deriveFont(40f);
-            fonteAviso = Font.createFont(Font.TRUETYPE_FONT, f).deriveFont(30f);
+            fonteBotoes = Font.createFont(Font.TRUETYPE_FONT, f).deriveFont(28f);
             f = new File("./Dados/Fontes/times_new_roman.ttf");
             fonteCaixa = Font.createFont(Font.TRUETYPE_FONT, f).deriveFont(28f);
         } catch(FontFormatException | IOException e) {
@@ -34,90 +260,75 @@ public class Partida {
             System.exit(1);
         }
 
-        caixas = new CaixaTexto[NUMERO_CAIXAS];
-        for (int i = 0; i < NUMERO_CAIXAS; i++) {
-            caixas[i] = new CaixaTexto(fonteCaixa, raio, coresCaixa);
-        }
-
-        numeroJogadores = 0;
-        titulo = "Cadastro dos Jogadores";
-        aviso = "Insira pelo menos dois jogadores";
-        janela = j;
+        botaoSalvar = new Botao("Salvar Partida", fonteBotoes, raio, coresBotoes);
+        botaoSair = new Botao("Sair", fonteBotoes, raio, coresBotoes);
+        caixaBackup = new CaixaTexto(fonteCaixa, raio, coresCaixa);
     }
 
     public void setDimensoes(int comprimento, int altura) {
-        this.frame_comprimento = comprimento;
-        this.frame_altura = altura;
-        setDimensoesCaixas();
+        this.frameComprimento = comprimento;
+        this.frameAltura = altura;
+        definirTamanhoComponentes();
+        definirPosicaoComponentes();
     }
 
     public void pintar(Graphics g) {
-        FontMetrics fm;
-        int compTitulo;
+        Graphics2D g2d = (Graphics2D)g;
 
-        g.setFont(fonteTitulo);
-        fm = g.getFontMetrics();
-        compTitulo = fm.stringWidth(titulo);
-        g.setColor(Color.BLACK);
-        g.drawString(titulo, (frame_comprimento - compTitulo) / 2, (frame_altura / 5) - fm.getAscent());
-
-        if (numeroJogadores < 2) {
-            g.setFont(fonteAviso);
-            fm = g.getFontMetrics();
-            compTitulo = fm.stringWidth(aviso);
-            g.setColor(Color.RED);
-            g.drawString(aviso, 20, frame_altura - fm.getHeight());
+        g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1.0f));
+        if (estado == Estado.SALVAR) {
+            caixaBackup.pintar(g);
+        } else {
+            botaoSalvar.pintar(g);
         }
 
-        for (int i = 0; i < NUMERO_CAIXAS; i++) {
-            caixas[i].pintar(g);
-        }
+        botaoSair.pintar(g);
     }
 
     public void tecladoAtualiza(KeyEvent e) {
-        String[] vetNomes;
-
-        switch (e.getID()) {
-            case KeyEvent.KEY_TYPED:
-                for (int i = 0; i < NUMERO_CAIXAS; i++) {
-                    caixas[i].teclaDigitada(e);
-                }
-                break;
-            case KeyEvent.KEY_RELEASED:
-                if (e.getKeyCode() == KeyEvent.VK_ENTER && numeroJogadores >= 2) {
-                    vetNomes = new String[NUMERO_CAIXAS];
-                    for (int i = 0; i < numeroJogadores; i++) {
-                        vetNomes[i] = caixas[i].obterString();
-                    }
-                    janela.obterControle().cadastrarJogadores(vetNomes, numeroJogadores);
-                    janela.atualizarEstado(JOGATINA);
-                }
-                break;
-            default:
-                break;
+        if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+            jogatina.desativarPause();
+            return;
         }
 
-        numeroJogadores = 0;
-        for (int i = 0; i < NUMERO_CAIXAS; i++) {
-            caixas[i].teclaSolta(e);
-            if (caixas[i].obterString().length() > 0) {
-                numeroJogadores++;
+        if (estado == Estado.SALVAR) {
+            switch (e.getID()) {
+                case KeyEvent.KEY_TYPED:
+                    caixaBackup.teclaDigitada(e);
+                    break;
+                case KeyEvent.KEY_RELEASED:
+                    if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+                        jogatina.obterJanela().obterControle().acaoBotaoSalvarBackup(caixaBackup.obterString());
+                    } else {     
+                        caixaBackup.teclaSolta(e);
+                    }
+                    break;
+                default:
+                    break;
             }
         }
     }
 
     public void mouseAtualiza(MouseEvent e) {
-        int aux = (numeroJogadores == 6) ? numeroJogadores - 1 : numeroJogadores;
-
         switch (e.getID()) {
             case MouseEvent.MOUSE_MOVED:
-                for (int i = 0; i <= aux; i++) {
-                    caixas[i].mouseMoveu(e);
-                }
+                botaoSalvar.mouseMoveu(e);
+                botaoSair.mouseMoveu(e);
+                caixaBackup.mouseMoveu(e);
+                break;
+            case MouseEvent.MOUSE_PRESSED:
+                botaoSalvar.mousePressionado(e);
+                botaoSair.mousePressionado(e);             
                 break;
             case MouseEvent.MOUSE_RELEASED:
-                for (int i = 0; i <= aux; i++) {
-                    caixas[i].mouseSolto(e);
+                if (estado == Estado.SALVAR) {
+                    caixaBackup.mouseSolto(e);
+                } else if (botaoSalvar.mouseSolto(e)) {
+                    estado = Estado.SALVAR;
+                }
+
+                if (botaoSair.mouseSolto(e)) {
+                    System.exit(0);
                 }
                 break;
             default:
@@ -125,16 +336,24 @@ public class Partida {
         }
     }
 
-    private void setDimensoesCaixas() {
-        int comp, alt, posy;
+    private void definirTamanhoComponentes() {
+        altComponentes = 96;
+        compComponentes = 320;
 
-        comp = 400;
-        alt = 90;
+        botaoSair.definirDimensoes(compComponentes, altComponentes);
+        botaoSalvar.definirDimensoes(compComponentes, altComponentes);
+        caixaBackup.definirDimensoes(compComponentes, altComponentes);
+    }
+    
+    private void definirPosicaoComponentes() {
+        int posy, posx;
+        int alturaTotal = 2 * altComponentes + (int)(frameAltura / 40);
 
-        for (int i = 0; i < NUMERO_CAIXAS; i++) {
-            caixas[i].definirDimensoes(comp, alt);
-            posy = (frame_altura / 4) + (i * frame_altura / 40) + alt * i;
-            caixas[i].definirLocalizacao((frame_comprimento - comp) / 2, posy);
-        }
+        posx = (frameComprimento - compComponentes) / 2;
+        posy = (frameAltura - alturaTotal) / 2;
+        botaoSalvar.definirLocalizacao(posx, posy);
+        caixaBackup.definirLocalizacao(posx, posy);
+        posy += altComponentes + (int)(frameAltura / 40);
+        botaoSair.definirLocalizacao(posx, posy);
     }
 }

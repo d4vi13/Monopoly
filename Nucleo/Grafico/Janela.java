@@ -24,8 +24,6 @@ public class Janela extends JPanel {
         estado = e;
         instanciaControle = c;
         instanciaMenu = new Menu(this);
-        instanciaCadastro = new Cadastro(this);
-        instanciaPartida = new Partida(this);
 
         iniciarFrame();
         iniciarPanel();
@@ -63,7 +61,18 @@ public class Janela extends JPanel {
         g.dispose();
     }
 
-    public void atualizarEstado(int novoEstado) { 
+    public void atualizarEstado(int novoEstado) {
+        switch (novoEstado) {
+            case CADASTRO:
+                instanciaCadastro = new Cadastro(this);
+                break;
+            case JOGATINA:
+                instanciaPartida = new Partida(this);
+                break;
+            default:
+                break;
+        }
+
         Timer timer = new Timer(30, e -> {
             opacidade += 0.05f;
             if (opacidade > 1.0f) {
@@ -99,8 +108,10 @@ public class Janela extends JPanel {
                 break;
             case CADASTRO:
                 instanciaCadastro.mouseAtualiza(e);
+                break;
             case JOGATINA:
-                
+                instanciaPartida.mouseAtualiza(e);
+                break;   
             default:
                 break;
         }
@@ -113,8 +124,10 @@ public class Janela extends JPanel {
                 break;
             case CADASTRO:
                 instanciaCadastro.tecladoAtualiza(e);
+                break;
             case JOGATINA:
-                
+                instanciaPartida.tecladoAtualiza(e);
+                break;    
             default:
                 break;
         }

@@ -1,24 +1,25 @@
 package Nucleo.Grafico;
 import static Nucleo.Aux.EstadosJogo.*;
+import Nucleo.Grafico.Componente;
 
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.ImageIcon;
 import java.io.*;
-import Nucleo.Grafico.Componente;
 
 class Menu {
     private enum Estado{
-        NADA_CLICADO,
-        CONTINUAR_CLICADO;
+        NAO_BACKUP,
+        BACKUP;
     }
 
     private Janela janela;
-    private int frame_comprimento, frame_altura;
-    private int logo_alt, logo_comp, logo_posx, logo_posy;
+    private int frameComprimento, frameAltura;
+    private int logoAlt, logoComp, logoPosx, logoPosy;
+    private int compComponentes, altComponentes;
     private Image monopoly_logo;
-    private Botao bIni, bCont, bSair;
-    private CaixaTexto caixaT;
+    private Botao botaoIniciar, botaoBackup, botaoSair;
+    private CaixaTexto caixaBackup;
     private Estado estado;
 
     public Menu(Janela j) {
@@ -26,14 +27,16 @@ class Menu {
         Color[] coresCaixa = {Color.BLACK, Color.WHITE, Color.LIGHT_GRAY};
         int raio = 40;
         Font fonteBotoes, fonteCaixa;
-        File f;
+        File f1, f2;
 
+        janela = j;
+        estado = Estado.NAO_BACKUP;
         fonteBotoes = fonteCaixa = null;
+        f1 = new File("./Dados/Fontes/HighMount_PersonalUse.otf");
+        f2 = new File("./Dados/Fontes/times_new_roman.ttf");
         try {
-            f = new File("./Dados/Fontes/HighMount_PersonalUse.otf");
-            fonteBotoes = Font.createFont(Font.TRUETYPE_FONT, f).deriveFont(28f);
-            f = new File("./Dados/Fontes/times_new_roman.ttf");
-            fonteCaixa = Font.createFont(Font.TRUETYPE_FONT, f).deriveFont(28f);
+            fonteBotoes = Font.createFont(Font.TRUETYPE_FONT, f1).deriveFont(28f);
+            fonteCaixa = Font.createFont(Font.TRUETYPE_FONT, f2).deriveFont(28f);
         } catch(FontFormatException | IOException e) {
             System.out.println("Erro ao carregar fonte");
             System.exit(1);
@@ -45,47 +48,46 @@ class Menu {
             System.exit(1);
         }
 
-        bIni = new Botao("Nova Partida", fonteBotoes, raio, coresBotoes);
-        bCont = new Botao("Continuar Partida", fonteBotoes, raio, coresBotoes);
-        bSair = new Botao("Sair", fonteBotoes, raio, coresBotoes);
-        caixaT = new CaixaTexto(fonteCaixa, raio, coresCaixa);
-        
-        estado = Estado.NADA_CLICADO;
-        janela = j;
+        botaoIniciar = new Botao("Nova Partida", fonteBotoes, raio, coresBotoes);
+        botaoBackup = new Botao("Continuar Partida", fonteBotoes, raio, coresBotoes);
+        botaoSair = new Botao("Sair", fonteBotoes, raio, coresBotoes);
+        caixaBackup = new CaixaTexto(fonteCaixa, raio, coresCaixa);
     }
 
     public void setDimensoes(int comprimento, int altura) {
-        this.frame_comprimento = comprimento;
-        this.frame_altura = altura;
-        setDimensoesLogo();
-        setDimensoesComponentes();
+        this.frameComprimento = comprimento;
+        this.frameAltura = altura;
+        definirTamanhoLogo();
+        definirPosicaoLogo();
+        definirTamanhoComponentes();
+        definirPosicaoComponentes();
     }
 
     public void pintar(Graphics g) {
-        g.drawImage(monopoly_logo, logo_posx, logo_posy, logo_comp, logo_alt, null);
-        if (estado == Estado.NADA_CLICADO) {
-            bIni.pintar(g);
-            bCont.pintar(g);
-        } else if (estado == Estado.CONTINUAR_CLICADO) {
-            caixaT.pintar(g);
+        g.drawImage(monopoly_logo, logoPosx, logoPosy, logoComp, logoAlt, null);
+        if (estado == Estado.NAO_BACKUP) {
+            botaoIniciar.pintar(g);
+            botaoBackup.pintar(g);
+        } else if (estado == Estado.BACKUP) {
+            caixaBackup.pintar(g);
         }
         
-        bSair.pintar(g);
+        botaoSair.pintar(g);
     }
 
     public void tecladoAtualiza(KeyEvent e) {
-        if (estado == Estado.CONTINUAR_CLICADO) {
+        if (estado == Estado.BACKUP) {
             switch (e.getID()) {
                 case KeyEvent.KEY_TYPED:
-                    caixaT.teclaDigitada(e);
+                    caixaBackup.teclaDigitada(e);
                     break;
                 case KeyEvent.KEY_RELEASED:
                     if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-                        janela.obterControle().acaoBotaoBackup(caixaT.obterString());
+                        janela.obterControle().acaoBotaoCarregarBackup(caixaBackup.obterString());
                         janela.atualizarEstado(JOGATINA);
                         return;
                     }
-                    caixaT.teclaSolta(e);
+                    caixaBackup.teclaSolta(e);
                     break;
                 default:
                     break;
@@ -96,63 +98,67 @@ class Menu {
     public void mouseAtualiza(MouseEvent e) {
         switch (e.getID()) {
             case MouseEvent.MOUSE_MOVED:
-                if (estado == Estado.CONTINUAR_CLICADO) {
-                    caixaT.mouseMoveu(e);
-                } else {
-                    bIni.mouseMoveu(e);
-                    bCont.mouseMoveu(e);
-                }
-                bSair.mouseMoveu(e);
+                caixaBackup.mouseMoveu(e);
+                botaoIniciar.mouseMoveu(e);
+                botaoBackup.mouseMoveu(e);
+                botaoSair.mouseMoveu(e);
                 break;
             case MouseEvent.MOUSE_PRESSED:
-                bIni.mousePressionado(e);
-                bCont.mousePressionado(e);
-                bSair.mousePressionado(e);               
+                botaoIniciar.mousePressionado(e);
+                botaoBackup.mousePressionado(e);
+                botaoSair.mousePressionado(e);               
                 break;
             case MouseEvent.MOUSE_RELEASED:
-                if (estado == Estado.CONTINUAR_CLICADO) {
-                    caixaT.mouseSolto(e);
+                if (estado == Estado.BACKUP) {
+                    caixaBackup.mouseSolto(e);
                 } else {
-                    if (bIni.mouseSolto(e)) {   
+                    if (botaoIniciar.mouseSolto(e)) {   
                         janela.obterControle().acaoBotaoNovaPartida();
                         janela.atualizarEstado(CADASTRO);
-                    } else if (bCont.mouseSolto(e)) {
-                        estado = Estado.CONTINUAR_CLICADO;
+                    } else if (botaoBackup.mouseSolto(e)) {
+                        estado = Estado.BACKUP;
                     }
                 }
-                if (bSair.mouseSolto(e)) System.exit(0);
+                if (botaoSair.mouseSolto(e)) System.exit(0);
                 break;
             default:
                 break;
         }
     }
-    
-    private void setDimensoesLogo() {
+
+    private void definirTamanhoLogo() {
         double logo_prop;
         logo_prop = (double)monopoly_logo.getHeight(null) / monopoly_logo.getWidth(null);
-        logo_comp = (int)(0.6 * frame_comprimento);
-        logo_alt = (int)(logo_prop * logo_comp);
-        logo_posx = (frame_comprimento - logo_comp) / 2;
-        logo_posy = frame_altura / 3 - logo_alt;
+        logoComp = (int)(0.6 * frameComprimento);
+        logoAlt = (int)(logo_prop * logoComp);
+    }
+    
+    private void definirPosicaoLogo() {
+        logoPosx = (frameComprimento - logoComp) / 2;
+        logoPosy = frameAltura / 3 - logoAlt;
     }
 
-    private void setDimensoesComponentes() {
-        int comp, alt, posx, contPosy, iniPosy, sairPosy;
+    private void definirTamanhoComponentes() {
+        compComponentes = 320;
+        altComponentes = 96;
 
-        comp = 320;
-        alt = 96;
-        posx = (frame_comprimento - comp) / 2;
-        iniPosy = logo_posy + logo_alt + frame_altura / 10;
-        contPosy = iniPosy + alt + frame_altura / 40;
-        sairPosy = contPosy + alt + frame_altura / 40;
+        caixaBackup.definirDimensoes(compComponentes, altComponentes);
+        botaoIniciar.definirDimensoes(compComponentes, altComponentes);
+        botaoBackup.definirDimensoes(compComponentes, altComponentes);
+        botaoSair.definirDimensoes(compComponentes, altComponentes);
+    }
+
+    private void definirPosicaoComponentes() {
+        int posx, backupPosy, iniciarPosy, sairPosy;
+
+        posx = (frameComprimento - compComponentes) / 2;
+        iniciarPosy = logoPosy + logoAlt + frameAltura / 10;
+        backupPosy = iniciarPosy + altComponentes + frameAltura / 40;
+        sairPosy = backupPosy + altComponentes + frameAltura / 40;
         
-        caixaT.definirDimensoes(comp, alt);
-        caixaT.definirLocalizacao(posx, contPosy);
-        bIni.definirDimensoes(comp, alt);
-        bIni.definirLocalizacao(posx, iniPosy);
-        bCont.definirDimensoes(comp, alt);
-        bCont.definirLocalizacao(posx, contPosy);
-        bSair.definirDimensoes(comp, alt);
-        bSair.definirLocalizacao(posx, sairPosy);
+        caixaBackup.definirLocalizacao(posx, backupPosy);
+        botaoIniciar.definirLocalizacao(posx, iniciarPosy);
+        botaoBackup.definirLocalizacao(posx, backupPosy);
+        botaoSair.definirLocalizacao(posx, sairPosy);
     }
 }
