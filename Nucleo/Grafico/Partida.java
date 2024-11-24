@@ -3,7 +3,6 @@ import static Nucleo.Aux.EstadosJogo.*;
 
 import Nucleo.Atributos.Jogador;
 import Nucleo.Aux.EstadosJogo;
-import Nucleo.Aux.ListaCircular;
 import Nucleo.Grafico.Componente;
 
 import java.awt.*;
@@ -13,7 +12,6 @@ import java.io.*;
 
 interface Estado {
     void atualizarEstado();
-    void pintar(Graphics g);
 }
 
 public class Partida {  
@@ -35,7 +33,8 @@ public class Partida {
     private Botao[] botoesDoJogo;
     private boolean[] botoesEstado;
     // Jogadores
-    private ListaCircular<JogadorG> jogadores;
+    private int numeroJogadores;
+    private JogadorG[] jogadores;
     private final int altIcone = 35;
     private final int compIcone = 35;
 
@@ -63,6 +62,7 @@ public class Partida {
         carregarJogadores();
         carregarEstados();
         estadoAtual = estados[0];
+        estadoAtual.atualizarEstado();
         pause = new MenuPause(this);
         botaoPause = new Botao("Pause", fonteBotoes, 20, new Color[]{Color.BLACK, Color.LIGHT_GRAY, Color.GRAY, Color.WHITE});
     }
@@ -74,19 +74,8 @@ public class Partida {
     }
 
     private void carregarJogadores() {
-        JogadorG ini, atual;
-
+        numeroJogadores = janela.obterControle().obterNumeroJogadores();
         jogadores = janela.obterControle().obterJogadoresG();
-        ini = jogadores.getIteradorElem();
-        ini.atualizarPosicao(0, tabuleiroPosx, tabuleiroPosy);
-        jogadores.iteradorProx();
-        atual = jogadores.getIteradorElem();
-        while (atual != ini) {
-            atual.atualizarPosicao(0, tabuleiroPosx, tabuleiroPosy);
-            jogadores.iteradorProx();
-            atual = jogadores.getIteradorElem();
-        }
-
     }
 
     public void setDimensoes(int comprimento, int altura) {
@@ -96,6 +85,9 @@ public class Partida {
         definirPosicaoTabuleiro();
         definirTamanhoComponentes();
         definirPosicaoComponentes();
+        for (int i = 0; i < numeroJogadores; i++) {
+            jogadores[i].atualizarPosicao(0, tabuleiroPosx, tabuleiroPosy);
+        }
     }
 
     public void pintar(Graphics g) {
@@ -106,9 +98,10 @@ public class Partida {
         g.drawImage(tabuleiro, tabuleiroPosx, tabuleiroPosy, null);
         botaoPause.pintar(g);
 
-        // j = jogadores[0];
-        // g.drawImage(j.obterIcone(), j.obterX(), j.obterY(), compIcone, altIcone, null);
-        // estadoAtual.pintar(g);
+        for (int i = 0; i < numeroJogadores; i++) {
+            j = jogadores[i];
+            g.drawImage(j.obterIcone(), j.obterX(), j.obterY(), compIcone, altIcone, null);
+        }
 
         if (pauseAtivado == true) {
             pause.pintar(g);
@@ -157,8 +150,6 @@ public class Partida {
         } else {
             tabuleiroComp = tabuleiroAlt = tmp2;
         }
-
-        System.out.println(tabuleiroComp + " " + tabuleiroAlt);
     }
 
     private void definirPosicaoTabuleiro() {
@@ -195,11 +186,6 @@ public class Partida {
         public void atualizarEstado() {
             
         }
-    
-        @Override
-        public void pintar(Graphics g) {
-            
-        }
     }
     
     class ativaBotaoDados implements Estado {
@@ -207,21 +193,11 @@ public class Partida {
         public void atualizarEstado() {
             
         }
-    
-        @Override
-        public void pintar(Graphics g) {
-            
-        }
     }
     
     class mostraSomaDados implements Estado {
         @Override
         public void atualizarEstado() {
-            
-        }
-    
-        @Override
-        public void pintar(Graphics g) {
             
         }
     }

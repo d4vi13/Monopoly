@@ -12,7 +12,7 @@ import Nucleo.Atributos.D6;
 
 public class Controle {
     private ListaCircular<Jogador> jogadores;
-    private ListaCircular<JogadorG> jogadoresG;
+    private JogadorG[] jogadoresG;
     private int numeroJogadores;
     private Tabuleiro tabuleiro;
 
@@ -21,7 +21,7 @@ public class Controle {
 
     public Controle() {
         jogadores = new ListaCircular<Jogador>();
-        jogadoresG = new ListaCircular<JogadorG>();
+        jogadoresG = new JogadorG[6];
         tabuleiro = new Tabuleiro();
     }
 
@@ -62,21 +62,21 @@ public class Controle {
         numeroJogadores = qtdJogadores;
 
         iAux = new ImageIcon("./Dados/Imagens/detetive.png").getImage();
-        jogadoresG.addLista(new JogadorG(iAux, 0, vetNomes[0]));
+        jogadoresG[0] = new JogadorG(iAux, 0, vetNomes[0]);
         iAux = new ImageIcon("./Dados/Imagens/detetive.png").getImage();
-        jogadoresG.addLista(new JogadorG(iAux, 1, vetNomes[1]));
+        jogadoresG[1] = new JogadorG(iAux, 1, vetNomes[1]);
         if (numeroJogadores > 2) {
             iAux = new ImageIcon("./Dados/Imagens/detetive.png").getImage();
-            jogadoresG.addLista(new JogadorG(iAux, 2, vetNomes[2]));
+            jogadoresG[2] = new JogadorG(iAux, 2, vetNomes[2]);
         if (numeroJogadores > 3) {
             iAux = new ImageIcon("./Dados/Imagens/detetive.png").getImage();
-            jogadoresG.addLista(new JogadorG(iAux, 3, vetNomes[3]));
+            jogadoresG[3] = new JogadorG(iAux, 3, vetNomes[3]);
         if (numeroJogadores > 4) {
             iAux = new ImageIcon("./Dados/Imagens/detetive.png").getImage();
-            jogadoresG.addLista(new JogadorG(iAux, 4, vetNomes[4]));
+            jogadoresG[4] = new JogadorG(iAux, 4, vetNomes[4]);
         if (numeroJogadores > 5) {
             iAux = new ImageIcon("./Dados/Imagens/detetive.png").getImage();
-            jogadoresG.addLista(new JogadorG(iAux, 5, vetNomes[5]));
+            jogadoresG[5] = new JogadorG(iAux, 5, vetNomes[5]);
         }}}}
 
         for (int i = 0; i < numeroJogadores; i++) {
@@ -84,7 +84,6 @@ public class Controle {
         }
         
         jogadores.setIterador();
-        jogadoresG.setIterador();
     }
 
     public int obterIdJogadorAtual() {
@@ -95,7 +94,11 @@ public class Controle {
         jogadores.iteradorProx();
     }
 
-    public ListaCircular<JogadorG> obterJogadoresG() {
+    public JogadorG[] obterJogadoresG() {
         return jogadoresG;
+    }
+
+    public int obterNumeroJogadores() {
+        return numeroJogadores;
     }
 }

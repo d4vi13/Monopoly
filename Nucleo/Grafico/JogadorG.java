@@ -21,6 +21,7 @@ public class JogadorG {
     public void atualizarPosicao(int casa, int tabPosx, int tabPosy) {
         posicaoAtual.posX = Posicoes.x[casa][id] + tabPosx;
         posicaoAtual.posy = Posicoes.y[casa][id] + tabPosy;
+        System.out.println(Posicoes.x[casa][id] + " " + Posicoes.y[casa][id]);
     }
 
     public int obterX() {
