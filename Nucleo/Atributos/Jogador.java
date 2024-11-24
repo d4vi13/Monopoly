@@ -7,9 +7,7 @@ final public class Jogador {
     private Casa[] vet; // Mudar para um Id/ fazer com que cada casa tenha um id 
     private boolean falido; 
 
-    public Jogador(){
-
-    }
+    public Jogador(){}
 
     public Jogador(int id){
         this.posicao = 0;
@@ -17,8 +15,12 @@ final public class Jogador {
         this.falido = false;
     }
     
+    public int obtemPosicao() {
+        return this.posicao;
+    }
+
     public int obtemId() {
-        return 0;
+        return this.id;
     }
 }
 

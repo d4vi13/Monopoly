@@ -2,10 +2,14 @@ package Nucleo.Atributos;
 import Nucleo.Atributos.Casa;
 import Nucleo.Atributos.Jogador;
 
-public class Propriedades extends Casa {
+public class Propriedade extends Casa {
     private boolean temDono;
     private Jogador dono;
     private int valor;
+
+    public boolean temDono() {
+        return this.temDono;
+    }
 
     public void setDono(Jogador novoDono) {
         this.temDono = true;
@@ -18,14 +22,14 @@ public class Propriedades extends Casa {
     }
 }
 
-final class Imovel extends Propriedades {
+final class Imovel extends Propriedade {
     public Imovel(int id) {
         this.id = id;
         this.tipo = Config.tipoImovel;
     }
 }
 
-final class Empresa extends Propriedades {
+final class Empresa extends Propriedade {
     public Empresa(int id) {
         this.id = id;
         this.tipo = Config.tipoEmpresa;
