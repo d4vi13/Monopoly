@@ -1,7 +1,7 @@
 # Monopoly
 
 ## Preparação
- - Compile com o comando /*TO DO*/
+ - Compile com o comando make / make run
  - Cadastre de 2 até 6 jogadores
  - Todos rolam 2 dados e quem tiver maior soma começa
  - Os próximo jogadores são escolhidos pela ordem de cadastro
