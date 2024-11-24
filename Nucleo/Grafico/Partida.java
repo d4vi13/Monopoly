@@ -3,15 +3,18 @@ import static Nucleo.Aux.EstadosJogo.*;
 
 import Nucleo.Atributos.Jogador;
 import Nucleo.Aux.EstadosJogo;
+import Nucleo.Aux.ListaCircular;
 import Nucleo.Grafico.Componente;
-import Nucleo.Controle.Controle;
-import Nucleo.Aux.MensagemJogador;
-import Nucleo.Aux.MensagemJogador.Eventos;
 
 import java.awt.*;
 import java.awt.event.*;
-import javax.swing.*;
+import javax.swing.ImageIcon;
 import java.io.*;
+
+interface Estado {
+    void atualizarEstado();
+    void pintar(Graphics g);
+}
 
 public class Partida {  
     private Janela janela;
@@ -23,54 +26,29 @@ public class Partida {
     private boolean pauseAtivado;
     private MenuPause pause;
     private Botao botaoPause;
-    private float opacidade;
-    // Botoes
     private Font fonteBotoes;
-    private Botao botaoDados, botaoVender, botaoComprar, botaoHipotecar;
-    private boolean dadosLigado, venderLigado, comprarLigado, hipotecarLigado;
-    // Jogadores
-    private int numeroJogadores;
-    private JogadorG[] jogadores;
-    private int[] saldos;
-    private int altIcone, compIcone;
-    private int idJogadorAtual;
-    private String[] informaJogador;
-    private int casaDestino, casaAtual;
-    private boolean falirLigado, cartaLigado;
-    private Font fonteCarta1, fonteCarta2, fonteFalir, fonteInforma;
-    // Timers
-    private Timer temporizadorPulos, temporizadorGenerico;
-    // Dados
-    private int[] valoresDados;
-    private StringBuilder[] stringDados;
-    private boolean valoresLigado;
-    private Font fonteNumeros;
-    private MensagemJogador msg;
+    private float opacidade;
     // Estados
-    private final int ATIVA_DADOS = 0;
-    private final int ATUALIZA_DADOS = 1;
-    private final int JOGADOR_NA_CASA = 2;
-    private final int ATUALIZA_JOGADOR = 4;
-    private int estadoAtual;
+    private Estado[] estados;
+    private Estado estadoAtual;
+    // Botoes
+    private Botao[] botoesDoJogo;
+    private boolean[] botoesEstado;
+    // Jogadores
+    private ListaCircular<JogadorG> jogadores;
+    private final int altIcone = 35;
+    private final int compIcone = 35;
 
     public Partida(Janela j) {
-        File f1, f2, f3;
-        Color[] cores1;
+        File f1;
 
         janela = j;
         opacidade = 1.0f;
         fonteBotoes = null;
         pauseAtivado = false;
         f1 = new File("./Dados/Fontes/HighMount_PersonalUse.otf");
-        f2 = new File("./Dados/Fontes/Crashnumberinggothic.ttf");
-        f3 = new File("./Dados/Fontes/times_new_roman.ttf");
         try {
-            fonteBotoes = Font.createFont(Font.TRUETYPE_FONT, f1).deriveFont(40f);
-            fonteInforma = Font.createFont(Font.TRUETYPE_FONT, f1).deriveFont(34f);
-            fonteNumeros = Font.createFont(Font.TRUETYPE_FONT, f2).deriveFont(45f);
-            fonteFalir = Font.createFont(Font.TRUETYPE_FONT, f3).deriveFont(80f);
-            fonteCarta1 = Font.createFont(Font.TRUETYPE_FONT, f1).deriveFont(32f);
-            fonteCarta2 = Font.createFont(Font.TRUETYPE_FONT, f3).deriveFont(45f);
+            fonteBotoes= Font.createFont(Font.TRUETYPE_FONT, f1).deriveFont(40f);
         } catch(FontFormatException | IOException e) {
             System.out.println("Erro ao carregar fonte");
             System.exit(1);
@@ -82,45 +60,33 @@ public class Partida {
             System.exit(1);
         }
 
-        carregarTemporizadores();
         carregarJogadores();
-        ativarBotaoDados();
-
+        carregarEstados();
+        estadoAtual = estados[0];
         pause = new MenuPause(this);
-        cores1 = new Color[]{Color.BLACK, Color.LIGHT_GRAY, Color.GRAY, Color.WHITE};
-        botaoPause = new Botao("Pause", fonteBotoes, 20, cores1);
-        botaoDados = new Botao(new ImageIcon("./Dados/Imagens/dados.png").getImage(), 20, cores1);
+        botaoPause = new Botao("Pause", fonteBotoes, 20, new Color[]{Color.BLACK, Color.LIGHT_GRAY, Color.GRAY, Color.WHITE});
+    }
+
+    private void carregarEstados() {
+        estados = new Estado[10];
+        estados[0] = new mostraTabuleiro();
+        estados[1] = new ativaBotaoDados();
     }
 
     private void carregarJogadores() {
-        numeroJogadores = janela.obterControle().obterNumeroJogadores();
+        JogadorG ini, atual;
+
         jogadores = janela.obterControle().obterJogadoresG();
-        saldos = new int[numeroJogadores];
-        stringDados = new StringBuilder[2];
-        stringDados[0] = new StringBuilder(2);
-        stringDados[1] = new StringBuilder(2);
-        informaJogador = new String[numeroJogadores];
-        for (int i = 0; i < numeroJogadores; i++) {
-            informaJogador[i] = jogadores[i].obterNome() + " joga";
+        ini = jogadores.getIteradorElem();
+        ini.atualizarPosicao(0, tabuleiroPosx, tabuleiroPosy);
+        jogadores.iteradorProx();
+        atual = jogadores.getIteradorElem();
+        while (atual != ini) {
+            atual.atualizarPosicao(0, tabuleiroPosx, tabuleiroPosy);
+            jogadores.iteradorProx();
+            atual = jogadores.getIteradorElem();
         }
-    }
 
-    private void carregarTemporizadores() {
-        temporizadorPulos = new Timer(200, e -> {
-            casaAtual++;
-            casaAtual %= 32;
-            jogadores[idJogadorAtual].atualizarPosicao(casaAtual, tabuleiroPosx, tabuleiroPosy, tabuleiroComp);
-
-            if (casaAtual == casaDestino) {
-                ((Timer) e.getSource()).stop();
-                jogadorNaCasa();
-            }
-        });
-
-        temporizadorGenerico = new Timer(2200, e -> {
-            fimTemporizadorGenerico();
-            ((Timer) e.getSource()).stop();
-        });
     }
 
     public void setDimensoes(int comprimento, int altura) {
@@ -130,137 +96,23 @@ public class Partida {
         definirPosicaoTabuleiro();
         definirTamanhoComponentes();
         definirPosicaoComponentes();
-        for (int i = 0; i < numeroJogadores; i++) {
-            jogadores[i].atualizarPosicao(0, tabuleiroPosx, tabuleiroPosy, tabuleiroComp);
-        }
-        altIcone = compIcone = (int)(35 * tabuleiroComp / 1156.f);
     }
 
     public void pintar(Graphics g) {
         Graphics2D g2d = (Graphics2D)g;
+        JogadorG j;
         
         g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, opacidade));
-        
+        g.drawImage(tabuleiro, tabuleiroPosx, tabuleiroPosy, null);
         botaoPause.pintar(g);
-        pintarTabuleiro(g);
-        pintarIcones(g);
-        pintarInformaJogador(g);
 
-        if (dadosLigado) botaoDados.pintar(g);
-        if (valoresLigado) pintarValoresDados(g2d);
-        if (falirLigado) pintarJogadorFaliu(g);
-        if (cartaLigado) pintarCarta(g2d);
-        if (pauseAtivado) pause.pintar(g);
-    }
+        // j = jogadores[0];
+        // g.drawImage(j.obterIcone(), j.obterX(), j.obterY(), compIcone, altIcone, null);
+        // estadoAtual.pintar(g);
 
-    private void pintarCarta(Graphics2D g2D) {
-        FontMetrics fm;
-        int x, y, w, h, hTmp, wF, hF;
-        final int raio = 20;
-        String vetStr[], str;
-        int tipo = msg.obtemCartaSorteada().obtemTipo();
-
-        h = (int)(0.5 * frameAltura);
-        w = (int)(0.6 * h);
-        x = (frameComprimento - w) / 2;
-        y = (frameAltura - h) / 2;
-        g2D.setColor(Color.BLACK);
-        g2D.fillRoundRect(x, y, w, h, raio, raio);
-        g2D.setColor(Color.LIGHT_GRAY);
-        g2D.fillRoundRect(x + 4, y + 4, w - 8, h - 8, raio, raio);
-        g2D.setColor(Color.BLACK);
-
-        vetStr = msg.obtemCartaSorteada().obtemDescricao();
-        g2D.setFont(fonteCarta1);
-        fm = g2D.getFontMetrics();
-        hF = fm.getAscent() - fm.getDescent();
-        wF = fm.stringWidth("Carta");
-        g2D.drawString("Carta", x + (w - wF) / 2, y + hF + 20);
-        hTmp = h;
-        for (String s : vetStr) {
-            wF = fm.stringWidth(s);
-            g2D.drawString(s, x + (w - wF) / 2, y + hTmp / 2);
-            hTmp += fm.getHeight() + 30;
+        if (pauseAtivado == true) {
+            pause.pintar(g);
         }
-
-        if (tipo == 0 || tipo == 6 || tipo == 1) {
-            if (tipo == 0 || tipo == 6) {
-                str = "+";
-            } else {
-                str = "-";
-            }
-
-            g2D.setFont(fonteNumeros);
-            fm = g2D.getFontMetrics();
-            wF = fm.stringWidth(Integer.toString(msg.obtemCartaSorteada().obtemValor()));
-            g2D.setFont(fonteCarta2);
-            fm = g2D.getFontMetrics();
-            wF += fm.stringWidth(str);
-            g2D.drawString(str, x + (w - wF) / 2, y + h - 50);
-            wF -= 2 * fm.stringWidth(str);
-            g2D.setFont(fonteNumeros);
-            g2D.drawString(Integer.toString(msg.obtemCartaSorteada().obtemValor()), x + (w - wF) / 2, y + h - 50);
-        }
-    }
-
-    private void pintarTabuleiro(Graphics g) {
-        g.drawImage(tabuleiro, tabuleiroPosx, tabuleiroPosy, tabuleiroComp, tabuleiroAlt, null);
-    }
-
-    private void pintarIcones(Graphics g) {
-        JogadorG j;
-
-        for (int i = 0; i < numeroJogadores; i++) {
-            j = jogadores[i];
-            g.drawImage(j.obterIcone(), j.obterX(), j.obterY(), compIcone, altIcone, null);
-        }
-    }
-
-    private void pintarJogadorFaliu(Graphics g) {
-        FontMetrics fm;
-        int comp, alt;
-        String str = jogadores[idJogadorAtual].obterNome() + " acaba de falir :(";
-
-        g.setColor(Color.BLACK);
-        g.setFont(fonteFalir);
-        fm = g.getFontMetrics();
-        comp = fm.stringWidth(str);
-        alt = fm.getAscent();
-        g.drawString(str, (frameComprimento - comp) / 2, frameAltura / 3 + alt / 2);
-    }
-
-    private void pintarInformaJogador(Graphics g) {
-        g.setFont(fonteInforma);
-        g.setColor(Color.BLACK);
-        g.drawString(informaJogador[idJogadorAtual], 20, frameAltura - 20);
-    }
-
-    private void pintarValoresDados(Graphics2D g2D) {
-        Botao bd = botaoDados;
-        FontMetrics fm;
-        int x = bd.obterX(), y = bd.obterY(), w = bd.obterComp(), h = bd.obterAlt(), wF, hF;
-        final int raio = 20;
-
-        g2D.setFont(fonteNumeros);
-        fm = g2D.getFontMetrics();
-        hF = fm.getAscent() - fm.getDescent();
-        
-        g2D.setColor(Color.BLACK);
-        g2D.fillRoundRect(x, y, w, h, raio, raio);
-        g2D.setColor(Color.WHITE);
-        g2D.fillRoundRect(x + 2, y + 2, w - 4, h - 4, raio, raio);
-        g2D.setColor(Color.BLACK);
-        wF = fm.stringWidth(stringDados[0].toString());
-        g2D.drawString(stringDados[0].toString(), x + (w - wF) / 2, y + (h + hF) / 2);
-
-        x += w + 10;
-        g2D.setColor(Color.BLACK);
-        g2D.fillRoundRect(x, y, w, h, raio, raio);
-        g2D.setColor(Color.WHITE);
-        g2D.fillRoundRect(x + 2, y + 2, w - 4, h - 4, raio, raio);
-        g2D.setColor(Color.BLACK);
-        wF = fm.stringWidth(stringDados[1].toString());
-        g2D.drawString(stringDados[1].toString(), x + (w - wF) / 2, y + (h + hF) / 2);
     }
 
     public void tecladoAtualiza(KeyEvent e) {
@@ -281,16 +133,14 @@ public class Partida {
         switch (e.getID()) {
             case MouseEvent.MOUSE_MOVED:
                 botaoPause.mouseMoveu(e);
-                if (dadosLigado) botaoDados.mouseMoveu(e);
                 break;
             case MouseEvent.MOUSE_PRESSED:
                 botaoPause.mousePressionado(e);
-                if (dadosLigado) botaoDados.mousePressionado(e);
                 break;
             case MouseEvent.MOUSE_RELEASED:
-                if (botaoPause.mouseSolto(e)) ativarPause();
-                if (dadosLigado) 
-                    if (botaoDados.mouseSolto(e)) dadosJogados();
+                if (botaoPause.mouseSolto(e)) {
+                    ativarPause();
+                }
                 break;
             default:
                 break;
@@ -307,6 +157,8 @@ public class Partida {
         } else {
             tabuleiroComp = tabuleiroAlt = tmp2;
         }
+
+        System.out.println(tabuleiroComp + " " + tabuleiroAlt);
     }
 
     private void definirPosicaoTabuleiro() {
@@ -316,12 +168,10 @@ public class Partida {
 
     private void definirTamanhoComponentes() {
         botaoPause.definirDimensoes(160, 48);
-        botaoDados.definirDimensoes((int)(0.0417 * frameComprimento), (int)(0.0417 * frameComprimento));
     }
 
     private void definirPosicaoComponentes() {
         botaoPause.definirLocalizacao(20, tabuleiroPosy);
-        botaoDados.definirLocalizacao(20, tabuleiroPosy + botaoPause.obterAlt() + 50);
     }
 
     void ativarPause() {
@@ -339,94 +189,41 @@ public class Partida {
         return janela;
     }
 
-    private void fimTemporizadorGenerico() {
-        switch (estadoAtual) {
-            // Jogador na prisao
-            case ATUALIZA_DADOS:
-                atualizarJogador();
-                break;
-            // Jogador faliu
-            case JOGADOR_NA_CASA:
-                cartaLigado = false;
-                atualizarJogador();
-                break;
-            default:
-                break;
+    /* Classes Internas (estados) */
+    class mostraTabuleiro implements Estado {
+        @Override
+        public void atualizarEstado() {
+            
         }
-    }
-
-    /* Estados do jogo */
-    public void ativarBotaoDados() {
-        estadoAtual = ATIVA_DADOS;
-        idJogadorAtual = janela.obterControle().obterIdJogadorAtual();
-        janela.obterControle().carregarSaldos(saldos);
-        dadosLigado = true;
-        valoresLigado = false;
-        comprarLigado = false;
-        venderLigado = false;
-        hipotecarLigado = false;
-        falirLigado = false;
-        cartaLigado = false;
+    
+        @Override
+        public void pintar(Graphics g) {
+            
+        }
     }
     
-    public void dadosJogados() {
-        Controle controle = janela.obterControle();
-        
-        estadoAtual = ATUALIZA_DADOS;
-        controle.acaoBotaoJogarDados();
-        valoresDados = controle.obterNumerosD6();
-        if (stringDados[0].length() != 0) stringDados[0].deleteCharAt(0);
-        if (stringDados[1].length() != 0) stringDados[1].deleteCharAt(0);
-        stringDados[0].append(Integer.toString(valoresDados[0]));
-        stringDados[1].append(Integer.toString(valoresDados[1]));
-        valoresLigado = true;
-        dadosLigado = false;
-        
-        casaAtual = controle.obterCasaAtualJogador();
-        casaDestino = (11) % 32;
-
-        msg = controle.decifraCasa(casaDestino);
-        if (msg.obtemTipoEvento() == Eventos.jogadorTaPreso) {
-            temporizadorGenerico.start();
-        } else {
-            temporizadorPulos.start();
+    class ativaBotaoDados implements Estado {
+        @Override
+        public void atualizarEstado() {
+            
+        }
+    
+        @Override
+        public void pintar(Graphics g) {
+            
         }
     }
-
-    public void jogadorNaCasa() {
-        estadoAtual = JOGADOR_NA_CASA;
-        switch (msg.obtemTipoEvento()) {
-            case Eventos.jogadorFaliu:
-                falirLigado = true;
-                temporizadorGenerico.start();
-                break;
-            case Eventos.semDonoPodeComprar:
-                
-                break;
-            case Eventos.tirouCarta:
-                cartaLigado = true;
-                temporizadorGenerico.start();
-                break;
-            case Eventos.tirouCartaDeMovimento:
-                cartaLigado = true;
-                temporizadorGenerico.start();
-                // temporizadorPulos.start();
-                break;
-            case Eventos.vendaOuHipoteca:
-
-                break;
-            default:
-                atualizarJogador();
-                break;
+    
+    class mostraSomaDados implements Estado {
+        @Override
+        public void atualizarEstado() {
+            
         }
-    }
-
-    public void atualizarJogador() {
-        estadoAtual = ATUALIZA_JOGADOR;
-        do {
-            janela.obterControle().proximoJogador();
-        } while (janela.obterControle().atualStatusFalido());
-        ativarBotaoDados();
+    
+        @Override
+        public void pintar(Graphics g) {
+            
+        }
     }
 }
 
