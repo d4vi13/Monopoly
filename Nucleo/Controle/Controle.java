@@ -8,6 +8,7 @@ import Nucleo.Atributos.Jogador;
 import Nucleo.Atributos.Tabuleiro;
 import Nucleo.Aux.ListaCircular;
 import Nucleo.Aux.Serializador;
+import Nucleo.Aux.MensagemJogador;
 import Nucleo.Grafico.JogadorG;
 import Nucleo.Atributos.D6;
 
@@ -18,6 +19,7 @@ public class Controle {
     private Tabuleiro tabuleiro;
     
     private Serializador serializador;
+    private Banco banco;
 
     private D6 d6;
     private int[] numerosD6;
@@ -25,8 +27,9 @@ public class Controle {
     public Controle() {
         jogadores = new ListaCircular<Jogador>();
         jogadoresG = new JogadorG[6];
-        tabuleiro = new Tabuleiro();
         serializador = new Serializador();
+        banco = new Banco();
+        tabuleiro = new Tabuleiro(banco);
     }
 
     public void acaoBotaoVender() {
@@ -55,8 +58,8 @@ public class Controle {
     // Seria interessante se o codigo informasse
     // possibilidade de comprar/vender/hipotecar
     // Talvez seja necessario alterar tipo do retorno
-    public int decifraCasa(int somaDados) {
-        return 1;
+    public MensagemJogador decifraCasa(int somaDados) {
+        return tabuleiro.consultaTabuleiro(jogadores.getIteradorElem());
     }
 
     // de Fernando para Davi
