@@ -55,11 +55,11 @@ public class Tabuleiro {
                         }
                         break;
                 
-                    case "Companhia":
+                    case "Empresa":
                         for (int i = 0; i < posCasa.size(); ++i) {
                             casaId = posCasa.get(i);
                             if ((casaId >= 0) && (casaId < totalCasas)){
-                                casasTabuleiro[casaId] = new Companhia(casaId);
+                                casasTabuleiro[casaId] = new Empresa(casaId);
                                 ((Propriedades) casasTabuleiro[casaId]).removeDono();
                             }
                         }
