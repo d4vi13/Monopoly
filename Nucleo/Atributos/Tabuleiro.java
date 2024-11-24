@@ -83,20 +83,20 @@ public class Tabuleiro {
                         }
                         break;
                     
-                    case "CasaDeApostas":
+                    case "CAAD":
                         for (int i = 0; i < posCasa.size(); ++i) {
                             casaId = posCasa.get(i);
                             if ((casaId >= 0) && (casaId < totalCasas)) {
-                                casasTabuleiro[casaId] = new Casa(casaId, Config.tipoCasaDeApostas);
+                                casasTabuleiro[casaId] = new Casa(casaId, Config.tipoCAAD);
                             }
                         }
                         break;
 
-                    case "ReceitaFederal":
+                    case "Recepcao":
                         for (int i = 0; i < posCasa.size(); ++i) {
                             casaId = posCasa.get(i);
                             if ((casaId >= 0) && (casaId < totalCasas)) {
-                                casasTabuleiro[casaId] = new Casa(casaId, Config.tipoReceita);
+                                casasTabuleiro[casaId] = new Casa(casaId, Config.tipoRecepcao);
                             }
                         }
                         break;

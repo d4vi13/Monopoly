@@ -7,11 +7,11 @@ public class Casa {
     public class Config {
         public final static int tipoInicial = 0;
         public final static int tipoImovel = 1;
-        public final static int tipoCompanhia = 2;
+        public final static int tipoEmpresa = 2;
         public final static int tipoPrisao = 3;
         public final static int tipoCarta = 4;
-        public final static int tipoCasaDeApostas = 5;
-        public final static int tipoReceita = 6;
+        public final static int tipoCAAD = 5;
+        public final static int tipoRecepcao = 6;
         public final static int tipoVazia = 7;
     }
 

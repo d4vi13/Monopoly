@@ -25,11 +25,11 @@
             "posicoes": [11, 20, 27]
         },
         {
-            "tipo": "CasaDeApostas",
+            "tipo": "CAAD",
             "posicoes": [16]
         },
         {
-            "tipo": "ReceitaFederal",
+            "tipo": "Recepcao",
             "posicoes": [24]
         }
     ]

@@ -28,6 +28,6 @@ final class Imovel extends Propriedades {
 final class Companhia extends Propriedades {
     public Companhia(int id) {
         this.id = id;
-        this.tipo = Config.tipoCompanhia;
+        this.tipo = Config.tipoEmpresa;
     }
 }
