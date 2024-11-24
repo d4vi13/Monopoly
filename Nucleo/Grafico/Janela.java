@@ -1,11 +1,11 @@
 package Nucleo.Grafico;
-import javax.swing.*;
 
 import Nucleo.Aux.EstadosJogo;
 import Nucleo.Controle.Controle;
 import static Nucleo.Aux.EstadosJogo.*;
 
 import java.awt.*;
+import javax.swing.*;
 import java.awt.event.*;
 
 public class Janela extends JPanel {

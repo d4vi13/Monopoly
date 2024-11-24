@@ -37,6 +37,11 @@ public class Controle {
 
     }
 
+    // Carrega quanto dinheiro cada jogador tem no momento em vet
+    public void carregarSaldos(String[] vet) {
+
+    }
+
     public int[] acaoBotaoJogarDados() {
         d6 = new D6();
         numerosD6 = d6.jogaDado();
