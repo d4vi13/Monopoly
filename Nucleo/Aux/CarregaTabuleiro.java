@@ -1,8 +1,5 @@
 package Nucleo.Aux;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import java.io.File;
-import java.io.IOException;
 import java.util.List;
 
 public class CarregaTabuleiro {

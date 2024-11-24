@@ -11,7 +11,7 @@
             "donoId": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
         },
         {
-            "tipo": "Companhia",
+            "tipo": "Empresa",
             "posicoes": [3, 6, 12, 17, 23, 29],
             "temDono": [0, 0, 0, 0, 0, 0],
             "donoId": [0, 0, 0, 0, 0, 0]
@@ -25,11 +25,11 @@
             "posicoes": [11, 20, 27]
         },
         {
-            "tipo": "CasaDeApostas",
+            "tipo": "CAAD",
             "posicoes": [16]
         },
         {
-            "tipo": "ReceitaFederal",
+            "tipo": "Recepcao",
             "posicoes": [24]
         }
     ]
