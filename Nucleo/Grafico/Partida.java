@@ -109,7 +109,7 @@ public class Partida {
         definirTamanhoComponentes();
         definirPosicaoComponentes();
         for (int i = 0; i < numeroJogadores; i++) {
-            jogadores[i].atualizarPosicao(0, tabuleiroPosx, tabuleiroPosy);
+            jogadores[i].atualizarPosicao(0, tabuleiroPosx, tabuleiroPosy, tabuleiroComp);
         }
     }
 
@@ -118,7 +118,7 @@ public class Partida {
         JogadorG j;
         
         g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, opacidade));
-        g.drawImage(tabuleiro, tabuleiroPosx, tabuleiroPosy, null);
+        g.drawImage(tabuleiro, tabuleiroPosx, tabuleiroPosy, tabuleiroComp, tabuleiroAlt, null);
         botaoPause.pintar(g);
 
         for (int i = 0; i < numeroJogadores; i++) {
