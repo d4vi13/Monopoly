@@ -1,6 +1,4 @@
 package Nucleo.Atributos;
-import java.util.List;
-import java.util.Arrays;
 import java.util.Random;
 
 public class Cartas {
@@ -32,55 +30,53 @@ public class Cartas {
         }
 
     }
-    
     // tipo 0 = Ganha dinheiro
     // tipo 1 = Perde dinheiro
-    // tipo 2 = Avance casas
-    // tipo 3 = Volte casas
+    // tipo 2 = Avance para CAAD
+    // tipo 3 = Volte para Recepcao
     // tipo 4 = Va para prisao
     // tipo 5 = Va para inicio
     // tipo 6 = Recebe dinheiro de todos
+    
 
-    private List<Carta> cartasComuns = Arrays.asList(
-        new Carta ("Você fez um bom investimento", 0, 50),
-        new Carta ("Receba um presente de aniversário de todos jogadores", 6, 10),
-        new Carta ("Receba dividendos do banco", 0, 50),
-        new Carta ("Você ganhou uma rifa no seu bairro", 0, 20),
-        new Carta ("Receba um presente inesperado de um amigo", 0, 25),
-        new Carta ("Encontrou dinheiro na rua", 0, 10),
-        new Carta ("O seu curso rendeu dinheiro", 0, 90),
-        new Carta ("Você recebeu o prêmio do melhor programador", 0, 40),
-        new Carta ("Você ganhou no jogo do Tigrinho", 0, 50),
-        // sorte9,
-        new Carta ("Multa de excesso de valocidade", 1, 15),
-        new Carta ("Você organizou uma festa de amigos", 1, 50),
-        new Carta ("Doação a uma instituição de caridade", 1, 50),
-        new Carta ("Despesas inesperadas no carro", 1, 80),
-        new Carta ("Você saiu com namorada(o)", 1, 75),
-        new Carta ("Taxa de associação ao clube local", 1, 60),
-        new Carta ("Fez compra internacional, pague imposto", 1, 50),
-        new Carta ("Fez viagem para Dubai", 1, 90),
-        // reves8(),
-        new Carta ("Reparo urgente no telhado de casa", 1, 60)
-    );
-    private List<Carta> cartasRaras = Arrays.asList(
-        new Carta ("Avance para o início", 5, 200),
-        new Carta ("Você ganhou na loteria", 0, 100),
-        new Carta ("Trabalhou muito, receba uma recompensa do patrão", 0, 150),
-        new Carta ("Você vendeu sua Ferrari", 0, 150),
-        // sorte14() avance casas
-        new Carta ("O juiz foi injusto, vá para a prisão", 4, 0),
-        new Carta ("Você sonegou imposto", 1, 150),
-        new Carta ("Gastos escolares do seu filho aumentou", 1, 200),
-        new Carta ("Você acabou de ser roubado", 1, 150)
-        // reves14() volte casas
-    );
-    private List<Carta> cartasEpicas = Arrays.asList(
-        new Carta ("Você achou petróleo no seu jardim", 0, 400),
-        new Carta ("Você é herdeiro", 0, 500),
-        // reves15(),
-        new Carta ("Você teve muita sorte", 1, 500)
-    );
+    private Carta[] cartasComuns = {
+        new Carta ("Você fez investiu na ECOMP", 0, 50000),
+        new Carta ("Receba um presente de aniversário de todos jogadores", 6, 20000),
+        new Carta ("Receba dividendos do banco", 0, 50000),
+        new Carta ("Você ganhou uma rifa do RU", 0, 20000),
+        new Carta ("Receba um presente inesperado de um amigo", 0, 25000),
+        new Carta ("Encontrou dinheiro no DINF", 0, 10000),
+        new Carta ("O seu curso de JAVA rendeu dinheiro", 0, 90000),
+        new Carta ("Você recebeu o prêmio do melhor programador", 0, 40000),
+        new Carta ("Você ganhou no jogo do Tigrinho", 0, 50000),
+        new Carta ("Não tinha aula hoje, mas você foi para UFPR", 1, 15000),
+        new Carta ("Você pagou alguns salgados para os amigos", 1, 50000),
+        new Carta ("Doação a uma instituição de caridade", 1, 50000),
+        new Carta ("Despesas inesperadas no servidor do laboratório", 1, 80000),
+        new Carta ("Você esqueceu de apagar as luzes", 1, 75000),
+        new Carta ("Taxa de associação ao CAAD", 1, 60000),
+        new Carta ("Fez compra de peça internacional, pague imposto", 1, 50000),
+        new Carta ("Fez viagem para congressos", 1, 90000),
+        new Carta ("Reparo urgente do servidor", 1, 60000)
+    };
+    private Carta[] cartasRaras = {
+        new Carta ("Avance para o início", 5, 200000),
+        new Carta ("Você ganhou um prêmio no congresso", 0, 100000),
+        new Carta ("Trabalhou muito, receba uma recompensa do chefe", 0, 150000),
+        new Carta ("Você vendeu seu computador", 0, 150000),
+        new Carta ("Você mecere participar de uma festa, vá para CAAD", 2, 0),
+        new Carta ("Você minerou bitcoins com o servidor, vá para sala cofre", 4, 0),
+        new Carta ("Você acabou de quebrar um disco rígido", 1, 150000),
+        new Carta ("Gastos do servidor aumentou", 1, 200000),
+        new Carta ("Você acabou de ser roubado", 1, 150000),
+        new Carta ("Infelizmente você não conhece o DINF, vá para recepção", 3, 0)
+    };
+    private Carta[] cartasEpicas = {
+        new Carta ("Você descobriu uma vulnerabilidade no servidor", 0, 400000),
+        new Carta ("Você foi chamado para um projeto grande", 0, 450000),
+        new Carta ("Você patrocinou a reforma do DINF", 1, 300000),
+        new Carta ("Você teve muita sorte", 1, 500000)
+    };
 
 
     private Carta sorteioDaCarta() {
@@ -89,15 +85,15 @@ public class Cartas {
         // Sorteio baseado em probabilidades fixas
         sorteio = random.nextInt(100);  // sorteio entre 0 e 99
 
-        // Carta Comum tem 85% de chance (0-84)
-        // Carta Rara tem 13% de chance (85-97)
-        // Carta Epica tem 2% de chance (98-99)
-        if (sorteio < 84) {
-            return cartasComuns.get(random.nextInt(cartasComuns.size()));
-        } else if (sorteio < 98) {
-            return cartasRaras.get(random.nextInt(cartasRaras.size()));
+        // Carta Comum tem 80% de chance (0-79)
+        // Carta Rara tem 16% de chance (80-95)
+        // Carta Epica tem 4% de chance (96-99)
+        if (sorteio < 80) {
+            return cartasComuns[random.nextInt(cartasComuns.length)];
+        } else if (sorteio < 96) {
+            return cartasRaras[random.nextInt(cartasRaras.length)];
         } else {
-            return cartasEpicas.get(random.nextInt(cartasEpicas.size()));
+            return cartasEpicas[random.nextInt(cartasEpicas.length)];
         }
     }
 
