@@ -26,6 +26,8 @@ public class Controle {
         jogadoresG = new JogadorG[6];
         banco = new Banco();
         tabuleiro = new Tabuleiro(banco);
+        d6 = new D6();
+        numerosD6 = new int[2];
     }
 
     public void acaoBotaoVender() {
@@ -40,11 +42,15 @@ public class Controle {
 
     }
 
-    public int[] acaoBotaoJogarDados() {
-        d6 = new D6();
-        numerosD6 = d6.jogaDado();
-        return numerosD6;
+    public void acaoBotaoJogarDados() {
+        d6.jogaDado();
     }
+
+    public int[] obterNumerosD6() {
+        numerosD6[0] = d6.obterValorDado(0);
+        numerosD6[1] = d6.obterValorDado(1);
+        return numerosD6;
+    } 
 
     public void carregarSaldos(int[] vet) {
 
