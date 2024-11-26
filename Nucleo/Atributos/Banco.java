@@ -19,6 +19,16 @@ public class Banco implements Serializable {
     public void debitar(int id, int valor){
         clientes[id].debitar(valor);
     }
+
+    public int[] obterSaldos(){
+        int[] saldos = new int[6];
+
+        for(int i = 0; i < 6; i++){
+            saldos[i] = clientes[i].obterSaldo();
+        }
+
+        return saldos;
+    }
 }
 
 class Cliente implements Serializable {
@@ -37,4 +47,9 @@ class Cliente implements Serializable {
     public void receber(int valor){
         this.saldo += valor;
     }
+
+    public int obterSaldo(){
+        return saldo; 
+    }
+
 }
