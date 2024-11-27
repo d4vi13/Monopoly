@@ -39,6 +39,15 @@ public class Controle {
     }
 
     public void acaoBotaoComprar() {
+        int valorCasaAtual, id_imovel; // valor a ser debitado
+
+        Jogador jogadorAtual = jogadores.getIteradorElem();
+
+        banco.debitar(jogadorAtual.id, valorCasaAtual);
+
+        jogadorAtual.apropriaImovel(id_imovel); 
+
+        // Atualiza no tabuleiro
 
     }
 
