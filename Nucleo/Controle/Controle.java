@@ -53,7 +53,10 @@ public class Controle {
     } 
 
     public void carregarSaldos(int[] vet) {
-
+        int[] saldos = banco.obterSaldos();
+        for(int i = 0; i < numeroJogadores; i++){
+            vet[i] = saldos[i];
+        }
     }
 
     // Retorna um codigo de tipo da casa
