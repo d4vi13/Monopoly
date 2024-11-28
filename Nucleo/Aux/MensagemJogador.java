@@ -4,14 +4,18 @@ import Nucleo.Atributos.Propriedade;
 import Nucleo.Atributos.Cartas.Carta;
 
 /* EVENTOS POSSÍVEIS */
-/* 0 = Jogador na casa inicial
- * 
- * 
- * 
- * 
- * 
- * 
- * 
+/* 
+ * 0 = Casa vazia / Prisão 
+ * 1 = Jogador na casa inicial
+ * 2 = Propriedade com dono e pode pagar aluguel
+ * 3 = Precisa vender ou hipotecar
+ * 4 = Propriedade sem dono e pode comprar
+ * 5 = Propriedade sem dono e não pode comprar
+ * 6 = Jogador na prisão
+ * 7 = Tirou uma carta
+ * 8 = Está no CAAD
+ * 9 = Está na Recepção
+ * 10 = Jogador faliu
  */
 
 public class MensagemJogador {

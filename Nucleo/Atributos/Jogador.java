@@ -28,5 +28,10 @@ final public class Jogador {
     public void apropriaPropriedade(int idPropriedade){
         propriedades.add(idPropriedade);
     }
+
+    public ArrayList<Integer> obtemPropriedadesJogador() {
+        return this.propriedades;
+    }
+
 }
 

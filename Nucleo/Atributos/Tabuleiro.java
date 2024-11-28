@@ -2,6 +2,7 @@ package Nucleo.Atributos;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import Nucleo.Atributos.Cartas.Carta;
@@ -158,45 +159,123 @@ public class Tabuleiro {
         }
     }
 
+    public int patrimonioDoJogador(ArrayList<Integer> propriedades) {
+        int total = 0;
+        Propriedade propriedadeAtual;
+        for (int i = 0; i < propriedades.size(); ++i) {
+            propriedadeAtual = (Propriedade)casasTabuleiro[propriedades.get(i)];
+            total += propriedadeAtual.obtemValorPropriedade();
+        }
+        return total;
+    }
+
     public MensagemJogador consultaTabuleiro(Jogador jogadorAtual) {
         Carta cartaAtual;
+        Propriedade propriedadeAtual;
         int posJogador = jogadorAtual.obtemPosicao();
         Casa casaAtual = casasTabuleiro[posJogador];
+        int saldoJogador = banco.obterSaldo(jogadorAtual.obtemId());
+        int aluguelDaPropriedade;
+        int patrimonio;
 
         switch (casaAtual.obtemTipo()) {
             case Config.tipoInicial:
-                mensagemJogador.atualizaMensagem(null, null, 0);
+                mensagemJogador.atualizaMensagem(null, null, 1);
                 break;
 
             case Config.tipoImovel:
+                propriedadeAtual = (Propriedade)casaAtual;
+                if (propriedadeAtual.temDono()) {
+                    // Propriedade tem dono
+                    aluguelDaPropriedade = propriedadeAtual.obtemAluguel();
+                    if (saldoJogador >= aluguelDaPropriedade) {
+                        // Pode pagar o aluguel
+                        mensagemJogador.atualizaMensagem(null, propriedadeAtual, 2);
+                    } else {
+                        // Não pode pagar o aluguel
+                        saldoJogador -= aluguelDaPropriedade;
+                        patrimonio = patrimonioDoJogador(jogadorAtual.obtemPropriedadesJogador());
+                        // Pode vender ou hipotecar para pagar a dívida
+                        if (patrimonio - saldoJogador > 0) {
+                            mensagemJogador.atualizaMensagem(null, propriedadeAtual, 3);
+                        } else {
+                            // Faliu kk
+                            mensagemJogador.atualizaMensagem(null, propriedadeAtual, 10);
+                        }
+                    }
+                } else {
+                    // Propriedade sem dono
+                    if (saldoJogador >= propriedadeAtual.obtemValorPropriedade()) {
+                        // Pode comprar a propriedade
+                        mensagemJogador.atualizaMensagem(null, propriedadeAtual, 4);
+                    } else {
+                        // Não pode comprar a propriedade
+                        mensagemJogador.atualizaMensagem(null, propriedadeAtual, 5);
+                    }
+                }
+
                 break;
 
             case Config.tipoEmpresa:
+                propriedadeAtual = (Propriedade)casaAtual;
+                if (propriedadeAtual.temDono()) {
+                    // Propriedade tem dono
+                    aluguelDaPropriedade = propriedadeAtual.obtemAluguel();
+                    if (saldoJogador >= aluguelDaPropriedade) {
+                        // Pode pagar o aluguel
+                        mensagemJogador.atualizaMensagem(null, propriedadeAtual, 2);
+                    } else {
+                        // Não pode pagar o aluguel
+                        saldoJogador -= aluguelDaPropriedade;
+                        patrimonio = patrimonioDoJogador(jogadorAtual.obtemPropriedadesJogador());
+                        // Pode vender ou hipotecar para pagar a dívida
+                        if (patrimonio - saldoJogador > 0) {
+                            mensagemJogador.atualizaMensagem(null, propriedadeAtual, 3);
+                        } else {
+                            // Faliu kk
+                            mensagemJogador.atualizaMensagem(null, propriedadeAtual, 10);
+                        }
+                    }
+                } else {
+                    // Propriedade sem dono
+                    if (saldoJogador >= propriedadeAtual.obtemValorPropriedade()) {
+                        // Pode comprar a propriedade
+                        mensagemJogador.atualizaMensagem(null, propriedadeAtual, 4);
+                    } else {
+                        // Não pode comprar a propriedade
+                        mensagemJogador.atualizaMensagem(null, propriedadeAtual, 5);
+                    }
+                }
                 break;
 
             case Config.tipoPrisao:
-                mensagemJogador.atualizaMensagem(false, false, false, false, false, null, null, 3);
+                // Jogador na prisão
+                mensagemJogador.atualizaMensagem(null, null, 6);
                 break;
 
             case Config.tipoCarta:
+                // Retira uma carta
                 cartaAtual = cartasDoTabuleiro.retiraCarta();
-                mensagemJogador.atualizaMensagem(false, false, false, false, true, cartaAtual, null, 4);
+                mensagemJogador.atualizaMensagem(cartaAtual, null, 7);
                 break;
 
             case Config.tipoCAAD:
-                mensagemJogador.atualizaMensagem(false, false, false, false, false, null, null, 5);
+                // Jogador no CAAD
+                mensagemJogador.atualizaMensagem(null, null, 8);
                 break;
 
             case Config.tipoRecepcao:
-                mensagemJogador.atualizaMensagem(false, false, false, false, false, null, null, 6);
+                // Jogador na Recepção
+                mensagemJogador.atualizaMensagem(null, null, 9);
                 break;
 
             case Config.tipoVazia:
-                mensagemJogador.atualizaMensagem(false, false, false, false, false, null, null, 7);
+                // Jogador em uma casa vazia
+                mensagemJogador.atualizaMensagem(null, null, 0);
                 break;
 
             default:
-                mensagemJogador.atualizaMensagem(false, false, false, false, false, null, null, 7);
+                mensagemJogador.atualizaMensagem(null, null, 0);
                 break;
         }
 
@@ -225,5 +304,6 @@ public class Tabuleiro {
 
     // Função para atualizar o dono da propriedade 
     public void atualizaDono(int idPropriedade, int  idJogador){
+        
     }
 }

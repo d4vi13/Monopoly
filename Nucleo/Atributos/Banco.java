@@ -37,6 +37,10 @@ public class Banco implements Serializable {
 
         return saldos;
     }
+
+    public int obterSaldo(int id) {
+        return this.clientes[id].obterSaldo();
+    }
 }
 
 class Cliente implements Serializable {
