@@ -222,4 +222,8 @@ public class Tabuleiro {
         
         return propriedade.obtemId();
     }
+
+    // Função para atualizar o dono da propriedade 
+    public void atualizaDono(int idPropriedade, int  idJogador){
+    }
 }
