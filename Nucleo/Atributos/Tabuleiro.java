@@ -212,4 +212,14 @@ public class Tabuleiro {
         
         return propriedade.obtemValorPropriedade();    
     }
+    
+    public int obtemIdCasaAtual(Jogador jogador){
+        Propriedade propriedade;
+        MensagemJogador mensagemJogador;
+
+        mensagemJogador = consultaTabuleiro(jogador);
+        propriedade = mensagemJogador.obtemPropriedadeAtual();
+        
+        return propriedade.obtemId();
+    }
 }
