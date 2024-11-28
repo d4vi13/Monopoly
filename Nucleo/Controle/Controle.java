@@ -65,10 +65,9 @@ public class Controle {
 
     // Valor não inicializado impede funcionamento do jogo
     public void carregarSaldos(int[] vet) {
-        /* int[] saldos = banco.obterSaldos();
+        int[] saldos = banco.obterSaldos();
         for(int i = 0; i < numeroJogadores; i++){
             vet[i] = saldos[i];
-        } */
     }
 
     // Retorna um codigo de tipo da casa
