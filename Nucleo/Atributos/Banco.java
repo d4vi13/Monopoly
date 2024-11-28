@@ -7,7 +7,7 @@ public class Banco implements Serializable {
     public Banco(){
         clientes = new Cliente[6];
         for (int i = 0; i < 6; i++) {
-            clientes[0] = new Cliente(i, 1500);
+            clientes[i] = new Cliente(i, 1500000);
         }
     }
 
