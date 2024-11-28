@@ -200,7 +200,7 @@ public class Tabuleiro {
                             mensagemJogador.atualizaMensagem(null, propriedadeAtual, 3);
                         } else {
                             // Faliu kk
-                            mensagemJogador.atualizaMensagem(null, propriedadeAtual, 10);
+                            mensagemJogador.atualizaMensagem(null, propriedadeAtual, 11);
                         }
                     }
                 } else {
@@ -233,7 +233,7 @@ public class Tabuleiro {
                             mensagemJogador.atualizaMensagem(null, propriedadeAtual, 3);
                         } else {
                             // Faliu kk
-                            mensagemJogador.atualizaMensagem(null, propriedadeAtual, 10);
+                            mensagemJogador.atualizaMensagem(null, propriedadeAtual, 11);
                         }
                     }
                 } else {
@@ -250,23 +250,28 @@ public class Tabuleiro {
 
             case Config.tipoPrisao:
                 // Jogador na prisão
-                mensagemJogador.atualizaMensagem(null, null, 6);
+                if (jogadorAtual.jogadorPreso()) {
+                    mensagemJogador.atualizaMensagem(null, null, 6);
+                } else {
+                    mensagemJogador.atualizaMensagem(null, null, 7);
+                }
+
                 break;
 
             case Config.tipoCarta:
                 // Retira uma carta
                 cartaAtual = cartasDoTabuleiro.retiraCarta();
-                mensagemJogador.atualizaMensagem(cartaAtual, null, 7);
+                mensagemJogador.atualizaMensagem(cartaAtual, null, 8);
                 break;
 
             case Config.tipoCAAD:
                 // Jogador no CAAD
-                mensagemJogador.atualizaMensagem(null, null, 8);
+                mensagemJogador.atualizaMensagem(null, null, 9);
                 break;
 
             case Config.tipoRecepcao:
                 // Jogador na Recepção
-                mensagemJogador.atualizaMensagem(null, null, 9);
+                mensagemJogador.atualizaMensagem(null, null, 10);
                 break;
 
             case Config.tipoVazia:

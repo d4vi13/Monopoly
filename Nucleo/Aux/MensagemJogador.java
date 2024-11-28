@@ -11,11 +11,12 @@ import Nucleo.Atributos.Cartas.Carta;
  * 3 = Precisa vender ou hipotecar
  * 4 = Propriedade sem dono e pode comprar
  * 5 = Propriedade sem dono e não pode comprar
- * 6 = Jogador na prisão
- * 7 = Tirou uma carta
- * 8 = Está no CAAD
- * 9 = Está na Recepção
- * 10 = Jogador faliu
+ * 6 = Jogador está preso
+ * 7 = Jogador está visitando a prisão
+ * 8 = Tirou uma carta
+ * 9 = Está no CAAD
+ * 10 = Está na Recepção
+ * 11 = Jogador faliu
  */
 
 public class MensagemJogador {
