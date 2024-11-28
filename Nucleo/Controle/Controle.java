@@ -50,7 +50,7 @@ public class Controle {
         jogadorAtual.apropriaPropriedade(idPropriedade); 
 
         // Atualiza no tabuleiro
-
+        tabuleiro.atualizaDono(idPropriedade, jogadorAtual.obtemId());
     }
 
     public void acaoBotaoJogarDados() {
