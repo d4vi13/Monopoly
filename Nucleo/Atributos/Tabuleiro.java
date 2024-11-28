@@ -25,8 +25,12 @@ public class Tabuleiro {
     /* Novo Jogo */
     public void gerarVetorCasas () {
         int casaId;
+        int casaValor;
         String tipoCasa;
+        String nomeCasa;
+        List<String> nomesCasas;
         List<Integer> posCasa;
+        List<Integer> valoresPropriedades;
         ObjectMapper objectMapper = new ObjectMapper();
 
         try {
@@ -38,32 +42,39 @@ public class Tabuleiro {
             for (infoTabuleiro casa : novoTabuleiro.obtemCasas()) {
                 tipoCasa = casa.obtemTipo();
                 posCasa = casa.obtemPosicoes();
+                valoresPropriedades = casa.obtemValores();
 
                 switch (tipoCasa) {
                     case "Inicial":
                         for (int i = 0; i < posCasa.size(); ++i) {
                             casaId = posCasa.get(i);
                             if ((casaId >= 0) && (casaId < totalCasas)){
-                                casasTabuleiro[casaId] = new Casa(casaId, Config.tipoInicial);
+                                casasTabuleiro[casaId] = new Casa("INICIAL", casaId, Config.tipoInicial);
                             }
                         }
                         break;
 
                     case "Imovel":
+                        nomesCasas = casa.obtemNomes(); 
                         for (int i = 0; i < posCasa.size(); ++i) {
                             casaId = posCasa.get(i);
+                            nomeCasa = nomesCasas.get(i);
+                            casaValor = valoresPropriedades.get(i);
                             if ((casaId >= 0) && (casaId < totalCasas)) {
-                                casasTabuleiro[casaId] = new Imovel(casaId);
+                                casasTabuleiro[casaId] = new Imovel(nomeCasa, casaId, casaValor);
                                 ((Propriedade) casasTabuleiro[casaId]).removeDono();
                             }
                         }
                         break;
                 
                     case "Empresa":
+                        nomesCasas = casa.obtemNomes();
                         for (int i = 0; i < posCasa.size(); ++i) {
                             casaId = posCasa.get(i);
+                            nomeCasa = nomesCasas.get(i);
+                            casaValor = valoresPropriedades.get(i);
                             if ((casaId >= 0) && (casaId < totalCasas)){
-                                casasTabuleiro[casaId] = new Empresa(casaId);
+                                casasTabuleiro[casaId] = new Empresa(nomeCasa, casaId, casaValor);
                                 ((Propriedade) casasTabuleiro[casaId]).removeDono();
                             }
                         }
@@ -73,7 +84,7 @@ public class Tabuleiro {
                         for (int i = 0; i < posCasa.size(); ++i) {
                             casaId = posCasa.get(i);
                             if ((casaId >= 0) && (casaId < totalCasas)) {
-                                casasTabuleiro[casaId] = new Casa(casaId, Config.tipoPrisao);
+                                casasTabuleiro[casaId] = new Casa("PRISÃO", casaId, Config.tipoPrisao);
                             }
                         }
                         break;
@@ -82,7 +93,7 @@ public class Tabuleiro {
                         for (int i = 0; i < posCasa.size(); ++i) {
                             casaId = posCasa.get(i);
                             if ((casaId >= 0) && (casaId < totalCasas)) {
-                                casasTabuleiro[casaId] = new Casa(casaId, Config.tipoCarta);
+                                casasTabuleiro[casaId] = new Casa("CARTA", casaId, Config.tipoCarta);
                             }
                         }
                         break;
@@ -91,7 +102,7 @@ public class Tabuleiro {
                         for (int i = 0; i < posCasa.size(); ++i) {
                             casaId = posCasa.get(i);
                             if ((casaId >= 0) && (casaId < totalCasas)) {
-                                casasTabuleiro[casaId] = new Casa(casaId, Config.tipoCAAD);
+                                casasTabuleiro[casaId] = new Casa("CAAD", casaId, Config.tipoCAAD);
                             }
                         }
                         break;
@@ -100,7 +111,7 @@ public class Tabuleiro {
                         for (int i = 0; i < posCasa.size(); ++i) {
                             casaId = posCasa.get(i);
                             if ((casaId >= 0) && (casaId < totalCasas)) {
-                                casasTabuleiro[casaId] = new Casa(casaId, Config.tipoRecepcao);
+                                casasTabuleiro[casaId] = new Casa("RECEPÇÃO", casaId, Config.tipoRecepcao);
                             }
                         }
                         break;
@@ -109,7 +120,7 @@ public class Tabuleiro {
                         for (int i = 0; i < posCasa.size(); ++i) {
                             casaId = posCasa.get(i);
                             if ((casaId >= 0) && (casaId < totalCasas)) {
-                                casasTabuleiro[casaId] = new Casa(casaId, Config.tipoVazia);
+                                casasTabuleiro[casaId] = new Casa("CASA VAZIA", casaId, Config.tipoVazia);
                             }
                         }
                     default:
@@ -118,7 +129,7 @@ public class Tabuleiro {
 
                 for (int i = 0; i < totalCasas; ++i) {
                     if (casasTabuleiro[i] == null) {
-                        casasTabuleiro[i] = new Casa(i, Config.tipoVazia);
+                        casasTabuleiro[i] = new Casa("Casa Vazia", i, Config.tipoVazia);
                     }
                 }
             }
@@ -130,7 +141,21 @@ public class Tabuleiro {
 
     /* Continuar Jogo */
     public void carregarVetorCasas () {
-        casasTabuleiro[0] = new Casa(0, Config.tipoInicial);
+
+    }
+
+    public void imprimeCasas () {
+        Casa casaAtual;
+        int tipoAtual;
+        for (int i = 0; i < totalCasas; ++i) {
+            casaAtual = casasTabuleiro[i];
+            tipoAtual = casaAtual.obtemTipo();
+            System.out.print("Nome: " + casaAtual.obtemNome() + " Tipo: " + casaAtual.obtemTipo());
+            if ((tipoAtual == Config.tipoImovel) || (tipoAtual == Config.tipoEmpresa)) {
+                System.out.print(" Valor: " + ((Propriedade) casaAtual).obtemValorPropriedade() + " Dono: " + ((Propriedade) casaAtual).temDono());
+            }
+            System.out.println();
+        }
     }
 
     public MensagemJogador consultaTabuleiro(Jogador jogadorAtual) {

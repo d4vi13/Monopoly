@@ -1,6 +1,7 @@
 package Nucleo.Atributos;
 
 public class Casa {
+    protected String nome;
     protected int id;
     protected int tipo;
 
@@ -17,9 +18,14 @@ public class Casa {
 
     public Casa () { }
 
-    public Casa (int id, int tipo) {
+    public Casa (String s, int id, int tipo) {
+        this.nome = s;
         this.id = id;
         this.tipo = tipo;
+    }
+
+    public String obtemNome() {
+        return this.nome;
     }
 
     public int obtemId() {

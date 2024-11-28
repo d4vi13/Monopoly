@@ -5,6 +5,10 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class infoTabuleiro {
+
+    @JsonProperty("nomes")
+    private List<String> nomes;
+    
     @JsonProperty("tipo")
     private String tipo;
 
@@ -16,6 +20,13 @@ public class infoTabuleiro {
 
     @JsonProperty("donoId")
     private List<Integer> donoId;
+
+    @JsonProperty("valores")
+    private List<Integer> valores;
+
+    public List<String> obtemNomes() {
+        return this.nomes;
+    }
 
     public String obtemTipo() {
         return this.tipo;
@@ -31,6 +42,10 @@ public class infoTabuleiro {
 
     public List<Integer> obtemDonoId() {
         return this.donoId;
+    }
+
+    public List<Integer> obtemValores() {
+        return this.valores;
     }
 
     public boolean casaLivre() {
