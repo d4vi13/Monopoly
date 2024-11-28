@@ -5,7 +5,7 @@ import Nucleo.Atributos.Jogador;
 public class Propriedade extends Casa {
     private boolean temDono;
     private Jogador dono;
-    private int valor;
+    protected int valor;
 
     public boolean temDono() {
         return this.temDono;
@@ -20,18 +20,26 @@ public class Propriedade extends Casa {
         this.temDono = false;
         this.dono = null;
     }
+
+    public int obtemValorPropriedade(){
+        return this.valor;
+    }
 }
 
 final class Imovel extends Propriedade {
-    public Imovel(int id) {
+    public Imovel(String s, int id, int valor) {
+        this.nome = s;
         this.id = id;
         this.tipo = Config.tipoImovel;
+        this.valor = valor;
     }
 }
 
 final class Empresa extends Propriedade {
-    public Empresa(int id) {
+    public Empresa(String s, int id, int valor) {
+        this.nome = s;
         this.id = id;
         this.tipo = Config.tipoEmpresa;
+        this.valor = valor;
     }
 }

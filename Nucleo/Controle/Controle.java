@@ -61,11 +61,12 @@ public class Controle {
         return numerosD6;
     } 
 
+    // Valor não inicializado impede funcionamento do jogo
     public void carregarSaldos(int[] vet) {
-        int[] saldos = banco.obterSaldos();
+        /* int[] saldos = banco.obterSaldos();
         for(int i = 0; i < numeroJogadores; i++){
             vet[i] = saldos[i];
-        }
+        } */
     }
 
     // Retorna um codigo de tipo da casa
@@ -94,21 +95,21 @@ public class Controle {
         Image iAux;
         numeroJogadores = qtdJogadores;
 
-        iAux = new ImageIcon("./Dados/Imagens/cowboy.png").getImage();
+        iAux = new ImageIcon("./Dados/Imagens/Jogador1.png").getImage();
         jogadoresG[0] = new JogadorG(iAux, 0, vetNomes[0]);
-        iAux = new ImageIcon("./Dados/Imagens/dead.png").getImage();
+        iAux = new ImageIcon("./Dados/Imagens/Jogador2.png").getImage();
         jogadoresG[1] = new JogadorG(iAux, 1, vetNomes[1]);
         if (numeroJogadores > 2) {
-            iAux = new ImageIcon("./Dados/Imagens/eyeroll.png").getImage();
+            iAux = new ImageIcon("./Dados/Imagens/Jogador3.png").getImage();
             jogadoresG[2] = new JogadorG(iAux, 2, vetNomes[2]);
         if (numeroJogadores > 3) {
-            iAux = new ImageIcon("./Dados/Imagens/sunglasses.png").getImage();
+            iAux = new ImageIcon("./Dados/Imagens/Jogador4.png").getImage();
             jogadoresG[3] = new JogadorG(iAux, 3, vetNomes[3]);
         if (numeroJogadores > 4) {
-            iAux = new ImageIcon("./Dados/Imagens/hug.png").getImage();
+            iAux = new ImageIcon("./Dados/Imagens/Jogador5.png").getImage();
             jogadoresG[4] = new JogadorG(iAux, 4, vetNomes[4]);
         if (numeroJogadores > 5) {
-            iAux = new ImageIcon("./Dados/Imagens/angry.png").getImage();
+            iAux = new ImageIcon("./Dados/Imagens/Jogador6.png").getImage();
             jogadoresG[5] = new JogadorG(iAux, 5, vetNomes[5]);
         }}}}
 
