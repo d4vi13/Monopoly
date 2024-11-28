@@ -64,6 +64,7 @@ public class Controle {
     // possibilidade de comprar/vender/hipotecar
     // Talvez seja necessario alterar tipo do retorno
     public MensagemJogador decifraCasa(int somaDados) {
+        // ATUALIZAR ESTADO DO JOGADOR
         return tabuleiro.consultaTabuleiro(jogadores.getIteradorElem());
     }
 

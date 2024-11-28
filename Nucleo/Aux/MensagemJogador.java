@@ -5,7 +5,7 @@ import Nucleo.Atributos.Cartas.Carta;
 
 /* EVENTOS POSSÍVEIS */
 /* 
- * 0 = Casa vazia / Prisão 
+ * 0 = Casa vazia
  * 1 = Jogador na casa inicial
  * 2 = Propriedade com dono e pode pagar aluguel
  * 3 = Precisa vender ou hipotecar

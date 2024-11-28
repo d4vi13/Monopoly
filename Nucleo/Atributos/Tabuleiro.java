@@ -303,7 +303,15 @@ public class Tabuleiro {
     }
 
     // Função para atualizar o dono da propriedade 
-    public void atualizaDono(int idPropriedade, int  idJogador){
-        
+    public void defineDono(int idPropriedade, int  idJogador){
+        Propriedade propriedade;
+        propriedade = ((Propriedade) casasTabuleiro[idPropriedade]);
+        propriedade.setDono(idJogador);
+    }
+
+    public void removeDono(int idPropriedade) {
+        Propriedade propriedade;
+        propriedade = ((Propriedade) casasTabuleiro[idPropriedade]);
+        propriedade.removeDono();
     }
 }
