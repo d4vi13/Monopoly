@@ -165,7 +165,7 @@ public class Tabuleiro {
 
         switch (casaAtual.obtemTipo()) {
             case Config.tipoInicial:
-                mensagemJogador.atualizaMensagem(true, false, false, false, false, null, null, 0);
+                mensagemJogador.atualizaMensagem(null, null, 0);
                 break;
 
             case Config.tipoImovel:
