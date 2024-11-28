@@ -1,10 +1,11 @@
 package Nucleo.Atributos;
 import Nucleo.Aux.Cor;
+import java.util.ArrayList;
 
 final public class Jogador {
     private int posicao;
     private int id;
-    private Casa[] vet; // Mudar para um Id/ fazer com que cada casa tenha um id 
+    private ArrayList<int> propriedades;
     private boolean falido; 
 
     public Jogador(){}
@@ -13,6 +14,7 @@ final public class Jogador {
         this.posicao = 0;
         this.id = id;
         this.falido = false;
+        this.propriedades = new ArrayList<int>;
     }
     
     public int obtemPosicao() {
@@ -21,6 +23,10 @@ final public class Jogador {
 
     public int obtemId() {
         return this.id;
+    }
+
+    public void apropriaPropriedade(int idPropriedade){
+        propriedades.add(idPropriedade);
     }
 }
 
