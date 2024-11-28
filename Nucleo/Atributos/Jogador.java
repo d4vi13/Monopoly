@@ -5,7 +5,7 @@ import java.util.ArrayList;
 final public class Jogador {
     private int posicao;
     private int id;
-    private ArrayList<int> propriedades;
+    private ArrayList<Integer> propriedades;
     private boolean falido; 
 
     public Jogador(){}
@@ -14,7 +14,7 @@ final public class Jogador {
         this.posicao = 0;
         this.id = id;
         this.falido = false;
-        this.propriedades = new ArrayList<int>;
+        this.propriedades = new ArrayList<Integer>();
     }
     
     public int obtemPosicao() {
