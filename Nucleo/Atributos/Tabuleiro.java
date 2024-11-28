@@ -202,5 +202,28 @@ public class Tabuleiro {
 
         return mensagemJogador;
     }
+    
+    public int obtemValorPropriedade(Jogador jogador){
+        Propriedade propriedade;
+        MensagemJogador mensagemJogador;
 
+        mensagemJogador = consultaTabuleiro(jogador);
+        propriedade = mensagemJogador.obtemPropriedadeAtual();
+        
+        return propriedade.obtemValorPropriedade();    
+    }
+    
+    public int obtemIdCasaAtual(Jogador jogador){
+        Propriedade propriedade;
+        MensagemJogador mensagemJogador;
+
+        mensagemJogador = consultaTabuleiro(jogador);
+        propriedade = mensagemJogador.obtemPropriedadeAtual();
+        
+        return propriedade.obtemId();
+    }
+
+    // Função para atualizar o dono da propriedade 
+    public void atualizaDono(int idPropriedade, int  idJogador){
+    }
 }
