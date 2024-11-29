@@ -2,9 +2,11 @@ package Nucleo.Atributos;
 import java.util.Random;
 
 public class Cartas {
-
     private Random random;
-    private int sorteio;
+
+    public Cartas () {
+        this.random = new Random();
+    }
 
     public static class Carta {
         private String descricao;
@@ -18,15 +20,15 @@ public class Cartas {
         }
 
         public String obtemDescricao() {
-            return descricao;
+            return this.descricao;
         }
 
         public int obtemTipo() {
-            return tipo;
+            return this.tipo;
         }
 
         public int obtemValor() {
-            return valor;
+            return this.valor;
         }
 
     }
@@ -81,10 +83,8 @@ public class Cartas {
 
 
     private Carta sorteioDaCarta() {
-        random = new Random();
-
         // Sorteio baseado em probabilidades fixas
-        sorteio = random.nextInt(100);  // sorteio entre 0 e 99
+        int sorteio = random.nextInt(100);  // sorteio entre 0 e 99
 
         // Carta Comum tem 80% de chance (0-79)
         // Carta Rara tem 16% de chance (80-95)

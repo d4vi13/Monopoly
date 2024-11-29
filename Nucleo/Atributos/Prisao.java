@@ -1,11 +1,14 @@
 package Nucleo.Atributos;
-import Nucleo.Atributos.Casa;
 
-final public class Prisao extends Casa {
-    private boolean[] statusPreso;
-    
-    public Prisao (int id) {
-        this.id = id;
-        this.tipo = Config.tipoPrisao;
+public class Prisao{
+    // true == esta livre
+    // false == esta preso
+    public Boolean verificaPreso (int[] dados, int qtdRodadas) {
+        if (qtdRodadas > 0) {
+            if (dados[0] == dados[1]) return true;
+            else return false;
+        }
+        return true;
     }
+
 }
