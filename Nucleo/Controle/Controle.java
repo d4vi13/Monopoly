@@ -61,6 +61,8 @@ public class Controle {
 
     public MensagemJogador decifraCasa(int somaDados) {
         // ATUALIZAR ESTADO DO JOGADOR
+        int casaAtual = jogadores.getIteradorElem().obtemPosicao();
+        jogadores.getIteradorElem().defineNovaPosicao((casaAtual + somaDados) % 32);
         return tabuleiro.consultaTabuleiro(jogadores.getIteradorElem());
     }
 
@@ -112,6 +114,10 @@ public class Controle {
 
     public int obterIdJogadorAtual() {
         return jogadores.getIteradorElem().obtemId();
+    }
+
+    public int obterCasaAtualJogador() {
+        return jogadores.getIteradorElem().obtemPosicao();
     }
 
     public void proximoJogador() {
