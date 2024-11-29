@@ -1,12 +1,6 @@
 package Nucleo.Atributos;
-import Nucleo.Atributos.Casa;
 
-final public class Recepcao extends Casa {
-
-    public Recepcao(int id) {
-        this.id = id;
-        this.tipo = Config.tipoRecepcao;
-    }
+public class Recepcao{
 
     // Valor total dos imoveis
     // menor igual 220 mil imposto 0
