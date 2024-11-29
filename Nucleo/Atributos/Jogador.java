@@ -8,6 +8,10 @@ final public class Jogador {
     private ArrayList<Integer> propriedades;
     private boolean falido;
     private boolean preso;
+    private boolean ferias;
+    private int rodadasFerias;
+
+    public Jogador(){}
     private int rodadasPreso;
 
     public Jogador(int id){
@@ -15,6 +19,8 @@ final public class Jogador {
         this.id = id;
         this.falido = false;
         this.preso = false;
+        this.ferias = false;
+        this.rodadasFerias = 0;
         this.rodadasPreso = 0;
         this.propriedades = new ArrayList<Integer>();
     }
@@ -47,6 +53,30 @@ final public class Jogador {
         return this.preso;
     }
 
+
+    public void defineJogadorEntrouDeFerias() {
+        this.ferias = true;
+    }
+
+    public void defineJogadorSaiuDeFerias() {
+        this.ferias = false;
+    }
+
+    public boolean jogadorDeFerias() {
+        return this.ferias;
+    }
+
+    public void defineRodadasDeFerias() {
+        this.rodadasFerias = 1;
+    }
+
+    public int retornaRodadasDeFerias() {
+        return this.rodadasFerias;
+    }
+
+    public void diminuiRodadasFerias() {
+        this.rodadasFerias -= 1;
+    }
     public void defineRodadasPreso() {
         this.rodadasPreso = 3;
     }
@@ -58,6 +88,5 @@ final public class Jogador {
     public int retornaRodadasPreso() {
         return this.rodadasPreso;
     }
-
 }
 
