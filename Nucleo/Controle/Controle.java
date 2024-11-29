@@ -59,10 +59,9 @@ public class Controle {
         } 
     }
 
-    public MensagemJogador decifraCasa(int somaDados) {
+    public MensagemJogador decifraCasa(int casaDestino) {
         // ATUALIZAR ESTADO DO JOGADOR
-        int casaAtual = jogadores.getIteradorElem().obtemPosicao();
-        jogadores.getIteradorElem().defineNovaPosicao((casaAtual + somaDados) % 32);
+        jogadores.getIteradorElem().defineNovaPosicao(casaDestino);
         return tabuleiro.consultaTabuleiro(jogadores.getIteradorElem());
     }
 

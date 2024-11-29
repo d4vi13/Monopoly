@@ -5,6 +5,7 @@ import Nucleo.Atributos.Jogador;
 import Nucleo.Aux.EstadosJogo;
 import Nucleo.Grafico.Componente;
 import Nucleo.Controle.Controle;
+import Nucleo.Aux.MensagemJogador;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -275,7 +276,15 @@ public class Partida {
     class jogadorNaCasa implements Estado {
         @Override
         public void atualizarEstado() {
+            MensagemJogador m = janela.obterControle().decifraCasa(casaDestino);
+            switch (m.obtemTipoEvento()) {
+                case 0:
+                    
+                    break;
             
+                default:
+                    break;
+            }
         }
     }
 }
