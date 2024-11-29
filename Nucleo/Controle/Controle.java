@@ -14,10 +14,10 @@ import Nucleo.Atributos.D6;
 public class Controle {
     private ListaCircular<Jogador> jogadores;
     private JogadorG[] jogadoresG;
-    private int numeroJogadores;
     private Tabuleiro tabuleiro;
     private Banco banco;
-
+    private int numeroJogadores;
+    
     private D6 d6;
     private int[] numerosD6;
 
@@ -59,10 +59,6 @@ public class Controle {
         } 
     }
 
-    // Retorna um codigo de tipo da casa
-    // Seria interessante se o codigo informasse
-    // possibilidade de comprar/vender/hipotecar
-    // Talvez seja necessario alterar tipo do retorno
     public MensagemJogador decifraCasa(int somaDados) {
         // ATUALIZAR ESTADO DO JOGADOR
         return tabuleiro.consultaTabuleiro(jogadores.getIteradorElem());
@@ -93,16 +89,19 @@ public class Controle {
         if (numeroJogadores > 2) {
             iAux = new ImageIcon("./Dados/Imagens/Jogador3.png").getImage();
             jogadoresG[2] = new JogadorG(iAux, 2, vetNomes[2]);
+        }
         if (numeroJogadores > 3) {
             iAux = new ImageIcon("./Dados/Imagens/Jogador4.png").getImage();
             jogadoresG[3] = new JogadorG(iAux, 3, vetNomes[3]);
+        }
         if (numeroJogadores > 4) {
             iAux = new ImageIcon("./Dados/Imagens/Jogador5.png").getImage();
             jogadoresG[4] = new JogadorG(iAux, 4, vetNomes[4]);
+        }
         if (numeroJogadores > 5) {
             iAux = new ImageIcon("./Dados/Imagens/Jogador6.png").getImage();
             jogadoresG[5] = new JogadorG(iAux, 5, vetNomes[5]);
-        }}}}
+        }
 
         for (int i = 0; i < numeroJogadores; i++) {
             jogadores.addLista(new Jogador(i));

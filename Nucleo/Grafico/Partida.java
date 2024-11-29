@@ -46,12 +46,13 @@ public class Partida {
     private int compIcone;
     private int idJogadorAtual;
     private String[] informaJogador;
-    private boolean informaLigado;
     // Timers
     private Timer temporizadorPulos;
     // Dados
     private int[] valoresDados;
     private boolean valoresLigado;
+    // Teclas
+    private boolean enterLigado;
 
     public Partida(Janela j) {
         File f1;
@@ -215,6 +216,7 @@ public class Partida {
             comprarLigado = false;
             venderLigado = false;
             hipotecarLigado = false;
+            enterLigado = false;
         }
     }
     
@@ -222,6 +224,7 @@ public class Partida {
         @Override
         public void atualizarEstado() {
             janela.obterControle().acaoBotaoJogarDados();
+            valoresLigado = true;
             temporizadorPulos.start();
         }
     }

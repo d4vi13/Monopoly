@@ -106,18 +106,17 @@ public class Cadastro {
     }
 
     public void mouseAtualiza(MouseEvent e) {
-        int aux = (numeroJogadores == 6) ? numeroJogadores - 1 : numeroJogadores;
+        int anterior = (numeroJogadores == 0) ? numeroJogadores : numeroJogadores - 1;
+        int atual = (numeroJogadores == 6) ? numeroJogadores - 1 : numeroJogadores;
 
         switch (e.getID()) {
             case MouseEvent.MOUSE_MOVED:
-                for (int i = 0; i <= aux; i++) {
-                    caixas[i].mouseMoveu(e);
-                }
+                caixas[anterior].mouseMoveu(e);
+                caixas[atual].mouseMoveu(e);
                 break;
             case MouseEvent.MOUSE_RELEASED:
-                for (int i = 0; i <= aux; i++) {
-                    caixas[i].mouseSolto(e);
-                }
+                caixas[anterior].mouseSolto(e);
+                caixas[atual].mouseSolto(e);
                 break;
             default:
                 break;
