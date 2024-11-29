@@ -6,7 +6,8 @@ final public class Jogador {
     private int posicao;
     private int id;
     private ArrayList<Integer> propriedades;
-    private boolean falido; 
+    private boolean falido;
+    private boolean preso;
 
     public Jogador(){}
 
@@ -14,6 +15,7 @@ final public class Jogador {
         this.posicao = 0;
         this.id = id;
         this.falido = false;
+        this.preso = false;
         this.propriedades = new ArrayList<Integer>();
     }
     
@@ -28,5 +30,22 @@ final public class Jogador {
     public void apropriaPropriedade(int idPropriedade){
         propriedades.add(idPropriedade);
     }
+
+    public ArrayList<Integer> obtemPropriedadesJogador() {
+        return this.propriedades;
+    }
+
+    public void defineJogadorPreso() {
+        this.preso = true;
+    }
+
+    public void defineJogadorLivre() {
+        this.preso = false;
+    }
+
+    public boolean jogadorPreso() {
+        return this.preso;
+    }
+
 }
 

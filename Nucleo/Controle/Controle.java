@@ -39,18 +39,7 @@ public class Controle {
     }
 
     public void acaoBotaoComprar() {
-        int valorPropriedade, idPropriedade; // valor a ser debitado
 
-        Jogador jogadorAtual = jogadores.getIteradorElem();
-        valorPropriedade = tabuleiro.obtemValorPropriedade(jogadorAtual); 
-        idPropriedade = tabuleiro.obtemIdCasaAtual(jogadorAtual);
-
-        banco.debitar(jogadorAtual.obtemId(), valorPropriedade);
-
-        jogadorAtual.apropriaPropriedade(idPropriedade); 
-
-        // Atualiza no tabuleiro
-        tabuleiro.atualizaDono(idPropriedade, jogadorAtual.obtemId());
     }
 
     public void acaoBotaoJogarDados() {
@@ -63,11 +52,11 @@ public class Controle {
         return numerosD6;
     } 
 
-    // Valor não inicializado impede funcionamento do jogo
     public void carregarSaldos(int[] vet) {
         int[] saldos = banco.obterSaldos();
         for(int i = 0; i < numeroJogadores; i++){
             vet[i] = saldos[i];
+        } 
     }
 
     // Retorna um codigo de tipo da casa
@@ -75,6 +64,7 @@ public class Controle {
     // possibilidade de comprar/vender/hipotecar
     // Talvez seja necessario alterar tipo do retorno
     public MensagemJogador decifraCasa(int somaDados) {
+        // ATUALIZAR ESTADO DO JOGADOR
         return tabuleiro.consultaTabuleiro(jogadores.getIteradorElem());
     }
 
