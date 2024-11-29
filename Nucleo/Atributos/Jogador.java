@@ -29,6 +29,10 @@ final public class Jogador {
         return this.posicao;
     }
 
+    public void defineNovaPosicao(int novaPosicao) {
+        this.posicao = novaPosicao;
+    }
+
     public int obtemId() {
         return this.id;
     }
