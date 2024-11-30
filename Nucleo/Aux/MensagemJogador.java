@@ -36,9 +36,10 @@ public class MensagemJogador {
         public final static int jogadorEstaVisitandoPrisao = 7;
         public final static int tirouCarta = 8;
         public final static int tirouCartaEfoiPreso = 9;
-        public final static int jogadorNoCAAD = 10;
-        public final static int jogadorNaRecepcao = 11;
-        public final static int jogadorFaliu = 12;
+        public final static int tirouCartaDeMovimento = 10;
+        public final static int jogadorNoCAAD = 11;
+        public final static int jogadorNaRecepcao = 12;
+        public final static int jogadorFaliu = 13;
     }
 
     public MensagemJogador() {};
