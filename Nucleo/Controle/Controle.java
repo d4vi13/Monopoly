@@ -60,9 +60,19 @@ public class Controle {
     }
 
     public MensagemJogador decifraCasa(int casaDestino) {
+        Jogador jogadorAtual = jogadores.getIteradorElem();
+        int[] dados = obterNumerosD6();
+        if (jogadorAtual.jogadorPreso()) {
+            if (dados[0] == dados[1]) {
+                // Jogador livre da prisão
+                jogadorAtual.defineNovaPosicao(casaDestino);
+            }
+        } else {
+            // Não está preso, atualiza normalmente
+            jogadorAtual.defineNovaPosicao(casaDestino);
+        }
         // ATUALIZAR ESTADO DO JOGADOR
-        jogadores.getIteradorElem().defineNovaPosicao(casaDestino);
-        return tabuleiro.consultaTabuleiro(jogadores.getIteradorElem());
+        return tabuleiro.consultaTabuleiro(jogadorAtual);
     }
 
     // de Fernando para Davi
