@@ -30,12 +30,19 @@ public class Controle {
         numerosD6 = new int[2];
     }
 
-    public void acaoBotaoVender() {
-
+    // Codigos:
+    // 0 -> Precisa vender mais, mesmo hipotecando todas as outras propriedades nao vai bastar
+    // 1 -> Ja vendeu suficiente, mas ainda precisa hipotecar para ter dinheiro suficiente
+    // 2 -> Ja vendeu suficiente, nao precisa mais hipotecar
+    public int acaoBotaoVender(String[] propriedades) {
+        return 1;
     }
 
-    public void acaoBotaoHipotecar() {
-
+    // 0 -> Precisa hipotecar menos, mesmo vendendo todas as outras propriedades nao vai bastar
+    // 1 -> Hipotecou suficiente. Ainda precisa vender mais um pouco
+    // 2 -> Ja hipotecou suficiente, nao eh necessario vender
+    public int acaoBotaoHipotecar(String[] propriedades) {
+        return 1;
     }
 
     public void acaoBotaoComprar() {
@@ -60,19 +67,23 @@ public class Controle {
     }
 
     public MensagemJogador decifraCasa(int casaDestino) {
+
+        // ATUALIZAR ESTADO DO JOGADOR
         Jogador jogadorAtual = jogadores.getIteradorElem();
         int[] dados = obterNumerosD6();
+
         if (jogadorAtual.jogadorPreso()) {
             if (dados[0] == dados[1]) {
-                // Jogador livre da prisão
+                // Jogador livre da prisao
                 jogadorAtual.defineNovaPosicao(casaDestino);
             }
         } else {
-            // Não está preso, atualiza normalmente
+            // Nao esta preso, atualiza normalmente
             jogadorAtual.defineNovaPosicao(casaDestino);
         }
-        // ATUALIZAR ESTADO DO JOGADOR
+      
         return tabuleiro.consultaTabuleiro(jogadorAtual);
+
     }
 
     // de Fernando para Davi
@@ -127,6 +138,10 @@ public class Controle {
 
     public int obterCasaAtualJogador() {
         return jogadores.getIteradorElem().obtemPosicao();
+    }
+
+    public boolean atualStatusFalido() {
+        return jogadores.getIteradorElem().estaFalido();
     }
 
     public void proximoJogador() {

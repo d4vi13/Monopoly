@@ -24,6 +24,10 @@ final public class Jogador {
         this.rodadasPreso = 0;
         this.propriedades = new ArrayList<Integer>();
     }
+
+    public boolean estaFalido() {
+        return falido;
+    }
     
     public int obtemPosicao() {
         return this.posicao;
