@@ -39,7 +39,6 @@ public class Cartas {
     // tipo 4 = Va para prisao
     // tipo 5 = Va para inicio
     // tipo 6 = Recebe dinheiro de todos
-    
 
     private Carta[] cartasComuns = {
         new Carta (new String[]{"Voce fez investimento", "na ECOMP e rendeu"}, 0, 50000),
@@ -51,28 +50,28 @@ public class Cartas {
         new Carta (new String[]{"O seu curso de", "JAVA rendeu dinheiro"}, 0, 90000),
         new Carta (new String[]{"Voce recebeu o premio", "do melhor programador"}, 0, 40000),
         new Carta (new String[]{"Voce ganhou no", "jogo do Tigrinho"}, 0, 50000),
-        new Carta (new String[]{"Nao tinha aula hoje,", "mas voce foi para", "UFPR e pagou onibus"}, 1, 15000),
+        new Carta (new String[]{"Nao tinha aula hoje", "mas voce foi para", "UFPR e pagou onibus"}, 1, 15000),
         new Carta (new String[]{"Voce pagou alguns", "salgados para os amigos"}, 1, 50000),
         new Carta (new String[]{"Doacao a uma", "instituicao de caridade"}, 1, 50000),
         new Carta (new String[]{"Despesas inesperadas", "no servidor do", "laboratorio"}, 1, 80000),
         new Carta (new String[]{"Voce esqueceu de" ,"apagar as luzes"}, 1, 75000),
         new Carta (new String[]{"Taxa de associacao", "ao CAAD"}, 1, 60000),
-        new Carta (new String[]{"Fez compra de peca", "internacional," ,"pague imposto"}, 1, 50000),
+        new Carta (new String[]{"Fez compra de peca", "internacional" ,"pague imposto"}, 1, 50000),
         new Carta (new String[]{"Fez viagem", "para congressos"}, 1, 90000),
         new Carta (new String[]{"Reparo urgente", "do servidor"}, 1, 60000)
     };
     private Carta[] cartasRaras = {
         new Carta (new String[]{"Avance para", "o inicio"}, 5, 200000),
         new Carta (new String[]{"Voce ganhou um", "premio no congresso"}, 0, 100000),
-        new Carta (new String[]{"Trabalhou muito,", "receba uma recompensa", "do chefe"}, 0, 150000),
+        new Carta (new String[]{"Trabalhou muito", "receba uma recompensa", "do chefe"}, 0, 150000),
         new Carta (new String[]{"Voce vendeu", "seu computador"}, 0, 150000),
-        new Carta (new String[]{"Voce merece participar", "de uma festa," ,"va para CAAD"}, 2, 0),
-        new Carta (new String[]{"Minerou Bitcoins", "com o servidor???", "Va para sala cofre"}, 4, 0),
+        new Carta (new String[]{"Voce merece participar", "de uma festa" ,"va para CAAD"}, 2, 0),
+        new Carta (new String[]{"Minerou Bitcoins", "com o servidor", "Va para sala cofre"}, 4, 0),
         new Carta (new String[]{"Voce acabou de", "quebrar um", "disco rigido"}, 1, 150000),
         new Carta (new String[]{"Gastos de manutencao", "do servidor aumentou"}, 1, 200000),
         new Carta (new String[]{"Voce acabou de", "ser roubado"}, 1, 150000),
-        new Carta (new String[]{"Alguem te denunciou", "jogando Minecraft", "no servidor,", "va para sala cofre"}, 4, 0),
-        new Carta (new String[]{"Infelizmente voce nao", "conhece o DINF,", "va para recepcao"}, 3, 0)
+        new Carta (new String[]{"Alguem te denunciou", "jogando Minecraft", "no servidor", "va para sala cofre"}, 4, 0),
+        new Carta (new String[]{"Infelizmente voce nao", "conhece o DINF", "va para recepcao"}, 3, 0)
     };
     private Carta[] cartasEpicas = {
         new Carta (new String[]{"Voce descobriu uma", "vulnerabilidade no servidor"}, 0, 400000),

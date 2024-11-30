@@ -22,6 +22,7 @@ public class Tabuleiro {
     public Tabuleiro(Banco banco) {
         this.banco = banco;
         mensagemJogador = new MensagemJogador();
+        cartasDoTabuleiro = new Cartas();
     }
 
     public int buscaPorCasa(int tipoCasa) {
@@ -262,12 +263,8 @@ public class Tabuleiro {
                 break;
 
             case Config.tipoPrisao:
-                // Jogador na prisão
-                if (jogadorAtual.jogadorPreso()) {
-                    mensagemJogador.atualizaMensagem(null, null, Eventos.jogadorTaPreso, 0);
-                } else {
-                    mensagemJogador.atualizaMensagem(null, null, Eventos.jogadorEstaVisitandoPrisao, 0);
-                }
+                // Jogador na prisão0 + valoresDados[1] null, Eventos.jogadorEstaVisitandoPrisao, 0);
+                
 
                 break;
 
