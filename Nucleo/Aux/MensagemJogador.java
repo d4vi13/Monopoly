@@ -21,7 +21,7 @@ import Nucleo.Atributos.Cartas.Carta;
 
 public class MensagemJogador {
     private Carta cartaAtual;
-    private Propriedade propriedadeAtual;
+    private String propriedadeAtual;
     private int tipoEvento;
     private int deslocamentoJogador;
 
@@ -45,7 +45,7 @@ public class MensagemJogador {
 
     public void atualizaMensagem(Carta cartaAtual, Propriedade propriedadeAtual, int tipoEvento, int deslocamento) {
         this.cartaAtual = cartaAtual;
-        this.propriedadeAtual = propriedadeAtual;
+        this.propriedadeAtual = propriedadeAtual.obtemNome();
         this.tipoEvento = tipoEvento;
         this.deslocamentoJogador = deslocamento;
     }
@@ -54,7 +54,7 @@ public class MensagemJogador {
         return this.cartaAtual;
     }
 
-    public Propriedade obtemPropriedadeAtual() {
+    public String obtemPropriedadeAtual() {
         return this.propriedadeAtual;
     }
 

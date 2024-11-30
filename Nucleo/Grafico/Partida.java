@@ -6,15 +6,12 @@ import Nucleo.Aux.EstadosJogo;
 import Nucleo.Grafico.Componente;
 import Nucleo.Controle.Controle;
 import Nucleo.Aux.MensagemJogador;
+import Nucleo.Aux.MensagemJogador.Eventos;
 
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 import java.io.*;
-
-interface Estado {
-    void atualizarEstado();
-}
 
 public class Partida {  
     private Janela janela;
@@ -27,9 +24,6 @@ public class Partida {
     private MenuPause pause;
     private Botao botaoPause;
     private float opacidade;
-    // Estados
-    private Estado[] estados;
-    private Estado estadoAtual;
     // Botoes
     private Font fonteBotoes;
     private Botao botaoDados;
@@ -53,14 +47,18 @@ public class Partida {
     private int casaAtual;
     // Timers
     private Timer temporizadorPulos;
+    private Timer temporizadorGenerico;
     // Dados
     private int[] valoresDados;
+    private StringBuilder[] stringDados;
     private boolean valoresLigado;
+    private Font fonteNumeros;
+    private MensagemJogador msg;
     // Teclas
     private boolean enterLigado;
 
     public Partida(Janela j) {
-        File f1;
+        File f1, f2;
         Color[] cores1;
 
         janela = j;
@@ -68,9 +66,11 @@ public class Partida {
         fonteBotoes = null;
         pauseAtivado = false;
         f1 = new File("./Dados/Fontes/HighMount_PersonalUse.otf");
+        f2 = new File("./Dados/Fontes/Crashnumberinggothic.ttf");
         try {
             fonteBotoes = Font.createFont(Font.TRUETYPE_FONT, f1).deriveFont(40f);
             fonteInforma = Font.createFont(Font.TRUETYPE_FONT, f1).deriveFont(34f);
+            fonteNumeros = Font.createFont(Font.TRUETYPE_FONT, f2).deriveFont(45f);
         } catch(FontFormatException | IOException e) {
             System.out.println("Erro ao carregar fonte");
             System.exit(1);
@@ -84,26 +84,21 @@ public class Partida {
 
         carregarTemporizadores();
         carregarJogadores();
-        carregarEstados();
-        pause = new MenuPause(this);
+        ativarBotaoDados();
 
+        pause = new MenuPause(this);
         cores1 = new Color[]{Color.BLACK, Color.LIGHT_GRAY, Color.GRAY, Color.WHITE};
         botaoPause = new Botao("Pause", fonteBotoes, 20, cores1);
         botaoDados = new Botao(new ImageIcon("./Dados/Imagens/dados.png").getImage(), 20, cores1);
-    }
-
-    private void carregarEstados() {
-        estados = new Estado[10];
-        estados[0] = estadoAtual = new ativaBotaoDados();
-        estados[1] = new mostraJogadorPulando();
-        estados[2] = new jogadorNaCasa();
-        estadoAtual.atualizarEstado();
     }
 
     private void carregarJogadores() {
         numeroJogadores = janela.obterControle().obterNumeroJogadores();
         jogadores = janela.obterControle().obterJogadoresG();
         saldos = new int[numeroJogadores];
+        stringDados = new StringBuilder[2];
+        stringDados[0] = new StringBuilder(2);
+        stringDados[1] = new StringBuilder(2);
         informaJogador = new String[numeroJogadores];
         for (int i = 0; i < numeroJogadores; i++) {
             informaJogador[i] = jogadores[i].obterNome() + " joga";
@@ -117,9 +112,12 @@ public class Partida {
 
             if (casaAtual % 32 == casaDestino) {
                 ((Timer) e.getSource()).stop();
-                estadoAtual = estados[2];
-                estadoAtual.atualizarEstado();
+                jogadorNaCasa();
             }
+        });
+
+        temporizadorGenerico = new Timer(200, e -> {
+            ((Timer) e.getSource()).stop();
         });
     }
 
@@ -138,34 +136,57 @@ public class Partida {
 
     public void pintar(Graphics g) {
         Graphics2D g2d = (Graphics2D)g;
-        FontMetrics fm;
         JogadorG j;
-        int comp, alt;
         
         g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, opacidade));
         g.drawImage(tabuleiro, tabuleiroPosx, tabuleiroPosy, tabuleiroComp, tabuleiroAlt, null);
         
         botaoPause.pintar(g);
         if (dadosLigado) botaoDados.pintar(g);
-        if (valoresLigado) pintarValoresDados(g);
+        if (valoresLigado) pintarValoresDados(g2d);
 
         for (int i = 0; i < numeroJogadores; i++) {
             j = jogadores[i];
             g.drawImage(j.obterIcone(), j.obterX(), j.obterY(), compIcone, altIcone, null);
         }
 
-        fm = g.getFontMetrics();
         g.setFont(fonteInforma);
         g.setColor(Color.BLACK);
         g.drawString(informaJogador[idJogadorAtual], 20, frameAltura - 20);
 
-        if (pauseAtivado == true) {
-            pause.pintar(g);
-        }
+        if (pauseAtivado == true) {pause.pintar(g);}
     }
 
-    private void pintarValoresDados(Graphics g) {
+    private void pintarValoresDados(Graphics2D g2D) {
+        Botao bd = botaoDados;
+        FontMetrics fm;
+        int x, y, w, h, wF, hF;
+        final int raio = 20;
 
+        x = bd.obterX();
+        y = bd.obterY();
+        w = bd.obterComp();
+        h = bd.obterAlt();
+        g2D.setFont(fonteNumeros);
+        fm = g2D.getFontMetrics();
+        hF = fm.getAscent() - fm.getDescent();
+        
+        g2D.setColor(Color.BLACK);
+        g2D.fillRoundRect(x, y, w, h, raio, raio);
+        g2D.setColor(Color.WHITE);
+        g2D.fillRoundRect(x + 2, y + 2, w - 4, h - 4, raio, raio);
+        g2D.setColor(Color.BLACK);
+        wF = fm.stringWidth(stringDados[0].toString());
+        g2D.drawString(stringDados[0].toString(), x + (w - wF) / 2, y + (h + hF) / 2);
+
+        x += w + 10;
+        g2D.setColor(Color.BLACK);
+        g2D.fillRoundRect(x, y, w, h, raio, raio);
+        g2D.setColor(Color.WHITE);
+        g2D.fillRoundRect(x + 2, y + 2, w - 4, h - 4, raio, raio);
+        g2D.setColor(Color.BLACK);
+        wF = fm.stringWidth(stringDados[1].toString());
+        g2D.drawString(stringDados[1].toString(), x + (w - wF) / 2, y + (h + hF) / 2);
     }
 
     public void tecladoAtualiza(KeyEvent e) {
@@ -195,7 +216,7 @@ public class Partida {
             case MouseEvent.MOUSE_RELEASED:
                 if (botaoPause.mouseSolto(e)) ativarPause();
                 if (dadosLigado) 
-                    if (botaoDados.mouseSolto(e)) {estadoAtual = estados[1]; estadoAtual.atualizarEstado();}
+                    if (botaoDados.mouseSolto(e)) dadosJogados();
                 break;
             default:
                 break;
@@ -221,7 +242,7 @@ public class Partida {
 
     private void definirTamanhoComponentes() {
         botaoPause.definirDimensoes(160, 48);
-        botaoDados.definirDimensoes(80, 80);
+        botaoDados.definirDimensoes((int)(0.0417 * frameComprimento), (int)(0.0417 * frameComprimento));
     }
 
     private void definirPosicaoComponentes() {
@@ -245,47 +266,73 @@ public class Partida {
     }
 
     /* Classes Internas (estados) */
-    class ativaBotaoDados implements Estado {
-        @Override
-        public void atualizarEstado() {
-            idJogadorAtual = janela.obterControle().obterIdJogadorAtual();
-            janela.obterControle().carregarSaldos(saldos);
-            dadosLigado = true;
-            valoresLigado = false;
-            comprarLigado = false;
-            venderLigado = false;
-            hipotecarLigado = false;
-            enterLigado = false;
-        }
+    public void ativarBotaoDados() {
+        idJogadorAtual = janela.obterControle().obterIdJogadorAtual();
+        janela.obterControle().carregarSaldos(saldos);
+        dadosLigado = true;
+        valoresLigado = false;
+        comprarLigado = false;
+        venderLigado = false;
+        hipotecarLigado = false;
+        enterLigado = false;
     }
     
-    class mostraJogadorPulando implements Estado {
-        @Override
-        public void atualizarEstado() {
-            Controle controle = janela.obterControle();
-            controle.acaoBotaoJogarDados();
-            valoresDados = controle.obterNumerosD6();
-            casaAtual = controle.obterCasaAtualJogador();
-            casaDestino = (casaAtual + valoresDados[0] + valoresDados[1]) % 32;
-            valoresLigado = true;
-            dadosLigado = false;
+    public void dadosJogados() {
+        Controle controle = janela.obterControle();
+        
+        controle.acaoBotaoJogarDados();
+        valoresDados = controle.obterNumerosD6();
+        if (stringDados[0].length() != 0) stringDados[0].deleteCharAt(0);
+        if (stringDados[1].length() != 0) stringDados[1].deleteCharAt(0);
+        stringDados[0].append(Integer.toString(valoresDados[0]));
+        stringDados[1].append(Integer.toString(valoresDados[1]));
+        valoresLigado = true;
+        dadosLigado = false;
+        
+        casaAtual = controle.obterCasaAtualJogador();
+        casaDestino = (casaAtual + valoresDados[0] + valoresDados[1]) % 32;
+
+        msg = controle.decifraCasa(casaDestino);
+        if (msg.obtemTipoEvento() == Eventos.jogadorTaPreso) {
+            temporizadorGenerico.start();
+            jogadorNaCasa();
+        } else {
             temporizadorPulos.start();
         }
     }
 
-    class jogadorNaCasa implements Estado {
-        @Override
-        public void atualizarEstado() {
-            MensagemJogador m = janela.obterControle().decifraCasa(casaDestino);
-            switch (m.obtemTipoEvento()) {
-                case 0:
-                    
-                    break;
-            
-                default:
-                    break;
-            }
+    public void jogadorNaCasa() {
+        MensagemJogador m = janela.obterControle().decifraCasa(casaDestino);
+        switch (m.obtemTipoEvento()) {
+            case Eventos.jogadorFaliu:
+
+                temporizadorGenerico.start();
+                break;
+            case Eventos.semDonoPodeComprar:
+
+                break;
+            case Eventos.tirouCarta:
+            case Eventos.tirouCartaEfoiPreso:
+                retirouCarta();
+                break;
+            case Eventos.vendaOuHipoteca:
+
+                break;
+            default:
+                atualizarJogador();
+                break;
         }
+    }
+
+    public void atualizarJogador() {
+        do {
+            janela.obterControle().proximoJogador();
+        } while (janela.obterControle().atualStatusFalido());
+    }
+
+    public void retirouCarta() {
+        
+        temporizadorGenerico.start();
     }
 }
 

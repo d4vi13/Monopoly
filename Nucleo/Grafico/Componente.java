@@ -18,6 +18,14 @@ abstract class Componente {
         return comp;
     }
 
+    public int obterX() {
+        return posx;
+    }
+
+    public int obterY() {
+        return posy;
+    }
+
     public void definirLocalizacao(int posx, int posy) {
         this.posx = posx;
         this.posy = posy;
