@@ -22,15 +22,12 @@ public class Controle {
     private Serializador serializador;
     private Banco banco;
     
-    private Serializador serializador;
-
     private D6 d6;
     private int[] numerosD6;
 
     public Controle() {
         jogadores = new ListaCircular<Jogador>();
         jogadoresG = new JogadorG[6];
-        serializador = new Serializador();
         banco = new Banco();
         tabuleiro = new Tabuleiro(banco);
         serializador = new Serializador();
@@ -71,7 +68,7 @@ public class Controle {
     }
 
     public void acaoBotaoSalvarBackup(String nomeArquivo) {
-        serializador.IniciarBackup(nomeArquivo);
+        serializador.iniciarBackup(nomeArquivo);
         serializador.salvar(jogadores);        
     }
 
