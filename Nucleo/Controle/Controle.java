@@ -67,6 +67,7 @@ public class Controle {
     }
 
     public MensagemJogador decifraCasa(int casaDestino) {
+
         // ATUALIZAR ESTADO DO JOGADOR
         Jogador jogadorAtual = jogadores.getIteradorElem();
         int[] dados = obterNumerosD6();
@@ -80,8 +81,9 @@ public class Controle {
             // Nao esta preso, atualiza normalmente
             jogadorAtual.defineNovaPosicao(casaDestino);
         }
-        
-        return tabuleiro.consultaTabuleiro(jogadores.getIteradorElem());
+      
+        return tabuleiro.consultaTabuleiro(jogadorAtual);
+
     }
 
     // de Fernando para Davi

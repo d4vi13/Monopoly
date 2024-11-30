@@ -282,25 +282,25 @@ public class Tabuleiro {
                         // Carta de ir para o CAAD
                         idDestino = buscaPorCasa(Config.tipoCAAD);
                         deslocamento = idDestino - idCasaAtual;
-                        mensagemJogador.atualizaMensagem(cartaAtual, null, Eventos.tirouCarta, deslocamento);
+                        mensagemJogador.atualizaMensagem(cartaAtual, null, Eventos.tirouCartaDeMovimento, deslocamento);
                         break;
                     case 3:
                         // Carta de ir para a Recepção
                         idDestino = buscaPorCasa(Config.tipoRecepcao);
                         deslocamento = idDestino - idCasaAtual;
-                        mensagemJogador.atualizaMensagem(cartaAtual, null, Eventos.tirouCarta, deslocamento);
+                        mensagemJogador.atualizaMensagem(cartaAtual, null, Eventos.tirouCartaDeMovimento, deslocamento);
                         break;
                     case 4:
                         // Carta de ir para a Prisão
                         idDestino = buscaPorCasa(Config.tipoPrisao);
                         deslocamento = idDestino - idCasaAtual;
-                        mensagemJogador.atualizaMensagem(cartaAtual, null, Eventos.tirouCarta, deslocamento);
+                        mensagemJogador.atualizaMensagem(cartaAtual, null, Eventos.tirouCartaDeMovimento, deslocamento);
                         break;
                     case 5:
                         // Carta de ir para a casa Inicial
                         idDestino = buscaPorCasa(Config.tipoInicial);
                         deslocamento = totalCasas - idDestino;
-                        mensagemJogador.atualizaMensagem(cartaAtual, null, Eventos.tirouCarta, deslocamento);
+                        mensagemJogador.atualizaMensagem(cartaAtual, null, Eventos.tirouCartaDeMovimento, deslocamento);
                         break;
                     default:
                         mensagemJogador.atualizaMensagem(cartaAtual, null, Eventos.tirouCarta, 0);
