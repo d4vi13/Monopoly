@@ -1,6 +1,4 @@
 package Nucleo.Atributos;
-import Nucleo.Atributos.Casa;
-import Nucleo.Atributos.Jogador;
 
 public class Propriedade extends Casa {
     private boolean temDono;
@@ -8,7 +6,7 @@ public class Propriedade extends Casa {
     protected int valorInicial;
     protected int valorDeVenda;
     protected int valorAluguel;
-    protected final static int taxaAluguel = 10;
+    protected final static int taxaAluguel = 5;
 
     public boolean temDono() {
         return this.temDono;
@@ -24,6 +22,10 @@ public class Propriedade extends Casa {
         this.dono = -1;
     }
 
+    public int obtemIdDono() {
+        return this.dono;
+    }
+
     public int obtemValorPropriedade(){
         return this.valorDeVenda;
     }
@@ -31,11 +33,16 @@ public class Propriedade extends Casa {
     public int obtemAluguel() {
         return this.valorAluguel;
     }
+
 }
 
 final class Imovel extends Propriedade {
     private int nivel;
-    
+    private final static double upgradeUm = 1.2;
+    private final static double upgradeDois = 1.5;
+    private final static double upgradeTres = 2;
+    private final static double upgradeQuatro = 2.5;
+
     public Imovel(String s, int id, int valor) {
         this.nome = s;
         this.id = id;
@@ -46,10 +53,39 @@ final class Imovel extends Propriedade {
         this.nivel = 0;
     }
 
+    public void evoluirImovel(int nivel) {
+        this.nivel = nivel;
+        switch (nivel) {
+            case 1:
+                this.valorDeVenda = (int)(valorInicial + valorInicial * upgradeUm);
+                this.valorAluguel = this.valorDeVenda / taxaAluguel;
+                break;
+            case 2:
+                this.valorDeVenda = (int)(valorInicial + valorInicial * upgradeDois);
+                this.valorAluguel = this.valorDeVenda / taxaAluguel;
+                break;
+            case 3:
+                this.valorDeVenda = (int)(valorInicial + valorInicial * upgradeTres);
+                this.valorAluguel = this.valorDeVenda / taxaAluguel;
+                break;
+            case 4:
+                this.valorDeVenda = (int)(valorInicial + valorInicial * upgradeQuatro);
+                this.valorAluguel = this.valorDeVenda / taxaAluguel;
+                break;
+            default:
+                resetarValores();
+                break;
+        }
+    }
+
     public void resetarValores() {
         this.valorDeVenda = valorInicial;
         this.valorAluguel = valorInicial / taxaAluguel;
         this.nivel = 0;
+    }
+
+    public int obtemNivelImovel() {
+        return this.nivel;
     }
 }
 

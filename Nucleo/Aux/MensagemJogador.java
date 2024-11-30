@@ -23,15 +23,33 @@ public class MensagemJogador {
     private Carta cartaAtual;
     private Propriedade propriedadeAtual;
     private int tipoEvento;
+    private int deslocamentoJogador;
+
+    public class Eventos {
+        public final static int casaVazia = 0;
+        public final static int jogadorNaCasaInicial = 1;
+        public final static int temDonoEPodePagar = 2;
+        public final static int vendaOuHipoteca = 3;
+        public final static int semDonoPodeComprar = 4;
+        public final static int semDonoNaoPodeComprar = 5;
+        public final static int jogadorTaPreso = 6;
+        public final static int jogadorEstaVisitandoPrisao = 7;
+        public final static int tirouCarta = 8;
+        public final static int tirouCartaEfoiPreso = 9;
+        public final static int jogadorNoCAAD = 10;
+        public final static int jogadorNaRecepcao = 11;
+        public final static int jogadorFaliu = 12;
+    }
 
     public MensagemJogador() {};
-    public void atualizaMensagem(Carta cartaAtual, Propriedade propriedadeAtual, int tipoEvento) {
+
+    public void atualizaMensagem(Carta cartaAtual, Propriedade propriedadeAtual, int tipoEvento, int deslocamento) {
         this.cartaAtual = cartaAtual;
         this.propriedadeAtual = propriedadeAtual;
         this.tipoEvento = tipoEvento;
+        this.deslocamentoJogador = deslocamento;
     }
     
-
     public Carta obtemCartaSorteada() {
         return this.cartaAtual;
     }
@@ -42,5 +60,9 @@ public class MensagemJogador {
 
     public int obtemTipoEvento() {
         return this.tipoEvento;
+    }
+
+    public int obtemDeslocamentoDoJogador() {
+        return this.deslocamentoJogador;
     }
 }
