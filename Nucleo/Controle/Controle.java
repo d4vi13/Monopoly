@@ -22,7 +22,7 @@ public class Controle {
     
     private Serializador serializador;
     private Banco banco;
-
+    
     private D6 d6;
     private int[] numerosD6;
 
@@ -97,7 +97,7 @@ public class Controle {
 
     // de Fernando para Davi
     public void acaoBotaoSalvarBackup(String nomeArquivo) {
-        serializador.IniciarBackup(arquivo);
+        serializador.iniciarBackup(nomeArquivo);
         serializador.salvar(jogadores);        
     }
 
