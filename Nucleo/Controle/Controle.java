@@ -81,7 +81,7 @@ public class Controle {
             jogadorAtual.defineNovaPosicao(casaDestino);
         }
         
-        return tabuleiro.consultaTabuleiro(jogadores.getIteradorElem());
+        return tabuleiro.consultaTabuleiro(jogadorAtual);
     }
 
     // de Fernando para Davi
