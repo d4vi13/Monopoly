@@ -99,8 +99,5 @@ final public class Jogador implements Serializable{
     public int retornaRodadasPreso() {
         return this.rodadasPreso;
 
-    public int obtemId() {
-        return this.id;
-    }
 }
 
