@@ -9,17 +9,17 @@ public class Cartas {
     }
 
     public static class Carta {
-        private String descricao;
+        private String[] descricao;
         private int tipo;
         private int valor;
 
-        private Carta (String descricao, int tipo, int valor) {
+        private Carta (String[] descricao, int tipo, int valor) {
             this.descricao = descricao;
             this.tipo = tipo;
             this.valor = valor;
         }
 
-        public String obtemDescricao() {
+        public String[] obtemDescricao() {
             return this.descricao;
         }
 
@@ -42,43 +42,43 @@ public class Cartas {
     
 
     private Carta[] cartasComuns = {
-        new Carta ("Você fez investimento na ECOMP e rendeu", 0, 50000),
-        new Carta ("Recebeu um presente de aniversário de todos jogadores", 6, 20000),
-        new Carta ("Recebeu dividendos do banco", 0, 50000),
-        new Carta ("Você ganhou uma rifa do RU", 0, 20000),
-        new Carta ("Recebeu um presente inesperado de um amigo", 0, 25000),
-        new Carta ("Encontrou dinheiro no DINF", 0, 10000),
-        new Carta ("O seu curso de JAVA rendeu dinheiro", 0, 90000),
-        new Carta ("Você recebeu o prêmio do melhor programador", 0, 40000),
-        new Carta ("Você ganhou no jogo do Tigrinho", 0, 50000),
-        new Carta ("Não tinha aula hoje, mas você foi para UFPR e pagou ônibus", 1, 15000),
-        new Carta ("Você pagou alguns salgados para os amigos", 1, 50000),
-        new Carta ("Doação a uma instituição de caridade", 1, 50000),
-        new Carta ("Despesas inesperadas no servidor do laboratório", 1, 80000),
-        new Carta ("Você esqueceu de apagar as luzes", 1, 75000),
-        new Carta ("Taxa de associação ao CAAD", 1, 60000),
-        new Carta ("Fez compra de peça internacional, pague imposto", 1, 50000),
-        new Carta ("Fez viagem para congressos", 1, 90000),
-        new Carta ("Reparo urgente do servidor", 1, 60000)
+        new Carta (new String[]{"Voce fez investimento", "na ECOMP e rendeu"}, 0, 50000),
+        new Carta (new String[]{"Recebeu um presente", "de aniversario de", "todos jogadores"}, 6, 20000),
+        new Carta (new String[]{"Recebeu dividendos", "do banco"}, 0, 50000),
+        new Carta (new String[]{"Voce ganhou uma", "rifa do RU"}, 0, 20000),
+        new Carta (new String[]{"Recebeu um presente", "inesperado de um amigo"}, 0, 25000),
+        new Carta (new String[]{"Encontrou dinheiro", "no DINF"}, 0, 10000),
+        new Carta (new String[]{"O seu curso de", "JAVA rendeu dinheiro"}, 0, 90000),
+        new Carta (new String[]{"Voce recebeu o premio", "do melhor programador"}, 0, 40000),
+        new Carta (new String[]{"Voce ganhou no", "jogo do Tigrinho"}, 0, 50000),
+        new Carta (new String[]{"Nao tinha aula hoje,", "mas voce foi para", "UFPR e pagou onibus"}, 1, 15000),
+        new Carta (new String[]{"Voce pagou alguns", "salgados para os amigos"}, 1, 50000),
+        new Carta (new String[]{"Doacao a uma", "instituicao de caridade"}, 1, 50000),
+        new Carta (new String[]{"Despesas inesperadas", "no servidor do", "laboratorio"}, 1, 80000),
+        new Carta (new String[]{"Voce esqueceu de" ,"apagar as luzes"}, 1, 75000),
+        new Carta (new String[]{"Taxa de associacao", "ao CAAD"}, 1, 60000),
+        new Carta (new String[]{"Fez compra de peca", "internacional," ,"pague imposto"}, 1, 50000),
+        new Carta (new String[]{"Fez viagem", "para congressos"}, 1, 90000),
+        new Carta (new String[]{"Reparo urgente", "do servidor"}, 1, 60000)
     };
     private Carta[] cartasRaras = {
-        new Carta ("Avance para o início", 5, 200000),
-        new Carta ("Você ganhou um prêmio no congresso", 0, 100000),
-        new Carta ("Trabalhou muito, receba uma recompensa do chefe", 0, 150000),
-        new Carta ("Você vendeu seu computador", 0, 150000),
-        new Carta ("Você merece participar de uma festa, vá para CAAD", 2, 0),
-        new Carta ("Minerou Bitcoins com o servidor??? Vá para sala cofre", 4, 0),
-        new Carta ("Você acabou de quebrar um disco rígido", 1, 150000),
-        new Carta ("Gastos de manutenção do servidor aumentou", 1, 200000),
-        new Carta ("Você acabou de ser roubado", 1, 150000),
-        new Carta ("Alguém te denunciou jogando Minecraft no servidor, vá para sala cofre", 4, 0),
-        new Carta ("Infelizmente você não conhece o DINF, vá para recepção", 3, 0)
+        new Carta (new String[]{"Avance para", "o inicio"}, 5, 200000),
+        new Carta (new String[]{"Voce ganhou um", "premio no congresso"}, 0, 100000),
+        new Carta (new String[]{"Trabalhou muito,", "receba uma recompensa", "do chefe"}, 0, 150000),
+        new Carta (new String[]{"Voce vendeu", "seu computador"}, 0, 150000),
+        new Carta (new String[]{"Voce merece participar", "de uma festa," ,"va para CAAD"}, 2, 0),
+        new Carta (new String[]{"Minerou Bitcoins", "com o servidor???", "Va para sala cofre"}, 4, 0),
+        new Carta (new String[]{"Voce acabou de", "quebrar um", "disco rigido"}, 1, 150000),
+        new Carta (new String[]{"Gastos de manutencao", "do servidor aumentou"}, 1, 200000),
+        new Carta (new String[]{"Voce acabou de", "ser roubado"}, 1, 150000),
+        new Carta (new String[]{"Alguem te denunciou", "jogando Minecraft", "no servidor,", "va para sala cofre"}, 4, 0),
+        new Carta (new String[]{"Infelizmente voce nao", "conhece o DINF,", "va para recepcao"}, 3, 0)
     };
     private Carta[] cartasEpicas = {
-        new Carta ("Você descobriu uma vulnerabilidade no servidor", 0, 400000),
-        new Carta ("Você foi chamado para um projeto grande", 0, 450000),
-        new Carta ("Você patrocinou a reforma do DINF", 1, 350000),
-        new Carta ("Você teve muita sorte", 1, 500000)
+        new Carta (new String[]{"Voce descobriu uma", "vulnerabilidade no servidor"}, 0, 400000),
+        new Carta (new String[]{"Voce foi chamado", "para um projeto grande"}, 0, 450000),
+        new Carta (new String[]{"Voce patrocinou a", "reforma do DINF"}, 1, 350000),
+        new Carta (new String[]{"Voce teve muita sorte"}, 1, 500000)
     };
 
 
