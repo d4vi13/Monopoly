@@ -274,7 +274,7 @@ public class Tabuleiro {
                 int deslocamento;
                 cartaAtual = cartasDoTabuleiro.retiraCarta();
 
-                switch (cartAtual.obtemTipo()) {
+                switch (cartaAtual.obtemTipo()) {
                     case 2:
                         // Carta de ir para o CAAD
                         idDestino = buscaPorCasa(Config.tipoCAAD);
