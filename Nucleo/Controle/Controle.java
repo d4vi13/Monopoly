@@ -27,7 +27,7 @@ public class Controle {
     public Controle() {
         jogadores = new ListaCircular<Jogador>();
         jogadoresG = new JogadorG[6];
-        banco = new Banco();
+        banco = new Banco(numeroJogadores);
         tabuleiro = new Tabuleiro(banco);
         d6 = new D6();
         numerosD6 = new int[2];

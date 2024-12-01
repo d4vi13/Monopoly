@@ -3,8 +3,10 @@ import java.io.*;
 
 public class Banco implements Serializable {
     private Cliente[] clientes; // cada cliente tem seu id identificador  
+    private int numeroDeClientes;
 
-    public Banco(){
+    public Banco(int numeroDeClientes){
+        this.numeroDeClientes = numeroDeClientes;
         clientes = new Cliente[6];
         for (int i = 0; i < 6; i++) {
             clientes[i] = new Cliente(i, 1500000);
@@ -14,6 +16,16 @@ public class Banco implements Serializable {
     public void transferir(int id_remetente, int id_destinatario, int valor){
         clientes[id_remetente].debitar(valor);
         clientes[id_destinatario].receber(valor);
+    }
+
+    public void transferir(int id_remetentes[], int id_destinatario, int valor){
+        for (int id = 0; id < numeroDeClientes; id++)
+            if ((clientes[id].obterSaldo() - valor) > 0)
+                transferir(id, id_destinatario, valor);
+    }
+
+    public void transferir(int id_destinatario, int valor){
+        transferir(new int[]{1,2,3,4,5,6}, id_destinatario, valor); 
     }
 
     public void debitar(int id, int valor){
