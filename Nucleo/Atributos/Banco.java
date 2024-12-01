@@ -16,6 +16,16 @@ public class Banco implements Serializable {
         clientes[id_destinatario].receber(valor);
     }
 
+    public void transferir(int id_remetentes[], int id_destinatario, int valor){
+        for (int id : id_remetentes )
+            if ((clientes[id].obterSaldo() - valor) > 0)
+                transferir(id, id_destinatario, valor);
+    }
+
+    public void transferir(int id_destinatario, int valor){
+        transferir(new int[]{1,2,3,4,5,6}, id_destinatario, valor); 
+    }
+
     public void debitar(int id, int valor){
         clientes[id].debitar(valor);
     }    
