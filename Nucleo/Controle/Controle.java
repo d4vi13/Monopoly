@@ -7,7 +7,6 @@ import Nucleo.Atributos.Banco;
 import Nucleo.Atributos.Jogador;
 import Nucleo.Atributos.Tabuleiro;
 import Nucleo.Aux.ListaCircular;
-import Nucleo.Aux.Serializador;
 import Nucleo.Aux.MensagemJogador;
 import Nucleo.Grafico.JogadorG;
 import Nucleo.Aux.Serializador;
@@ -21,7 +20,6 @@ public class Controle {
     private int numeroJogadores;
     
     private Serializador serializador;
-    private Banco banco;
     
     private D6 d6;
     private int[] numerosD6;
