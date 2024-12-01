@@ -49,8 +49,19 @@ public class Controle {
         return 1;
     }
 
-    public void acaoBotaoComprar() {
+    public void acaoBotaoComprar() {                                                                                                                                      
+        int valorPropriedade, idPropriedade; // valor a ser debitado
 
+        Jogador jogadorAtual = jogadores.getIteradorElem();
+        valorPropriedade = tabuleiro.obtemValorPropriedade(jogadorAtual);
+        idPropriedade = tabuleiro.obtemIdCasaAtual(jogadorAtual);
+
+        banco.debitar(jogadorAtual.obtemId(), valorPropriedade);
+
+        jogadorAtual.apropriaPropriedade(idPropriedade);
+
+        // Atualiza no tabuleiro
+        tabuleiro.defineDono(idPropriedade, jogadorAtual.obtemId());
     }
 
     public void acaoBotaoJogarDados() {
