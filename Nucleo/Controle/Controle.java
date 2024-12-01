@@ -66,7 +66,27 @@ public class Controle {
     // 0 -> Precisa hipotecar menos, mesmo vendendo todas as outras propriedades nao vai bastar
     // 1 -> Hipotecou suficiente. Ainda precisa vender mais um pouco
     // 2 -> Ja hipotecou suficiente, nao eh necessario vender
-    public int acaoBotaoHipotecar(String[] propriedades) {
+    public int acaoBotaoHipotecar(ArrayList<Integer> propriedades) {
+        int divida, valorTotalVenda, patrimonioTotal, patrimonioRestante;
+        Jogador jogador = jogadores.getIteradorElem();
+
+        divida = banco.obterSaldo(jogador.obtemId());
+
+        valorTotalVenda = tabuleiro.patrimonioDoJogador(propriedades);
+        patrimonioTotal = tabuleiro.patrimonioTotalJogador(jogador); 
+        patrimonioRestante = valorTotalVenda - patrimonioTotal;
+    
+        divida += valorTotalVenda; 
+
+        banco.receber(jogador.obtemId(), valorTotalVenda);
+        tabuleiro.hipotecaPropriedade(propriedades);
+
+        if (divida >= 0)
+            return 2;
+
+        if (divida + 0.75*patrimonioRestante < 0)
+            return 0;
+
         return 1;
     }
 
