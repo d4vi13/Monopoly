@@ -19,12 +19,17 @@ public class Propriedade extends Casa {
     }
 
     public void removeDono() {
+        deshipotecar();
         this.temDono = false;
         this.dono = -1;
     }
 
     public void hipotecar(){
         hipotecada = true;
+    }
+
+    public void deshipotecar(){
+        hipotecada = false;
     }
 
     public int obtemIdDono() {
