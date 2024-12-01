@@ -20,6 +20,10 @@ public class Banco implements Serializable {
         clientes[id].debitar(valor);
     }    
 
+    public void receber(int id, int valor){
+        clientes[id].receber(valor);
+    }    
+
     public boolean temSaldoSuficiente(int id, int valor){
         int saldo = clientes[id].obterSaldo();
 

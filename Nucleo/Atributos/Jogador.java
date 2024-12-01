@@ -44,6 +44,10 @@ final public class Jogador {
     public void apropriaPropriedade(int idPropriedade){
         propriedades.add(idPropriedade);
     }
+    
+    public void desapropriaPropriedade(ArrayList<Integer> propriedades){
+        this.propriedades.removeAll(propriedades);
+    }
 
     public ArrayList<Integer> obtemPropriedadesJogador() {
         return this.propriedades;

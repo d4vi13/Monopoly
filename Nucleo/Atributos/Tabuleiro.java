@@ -182,6 +182,10 @@ public class Tabuleiro {
         return total;
     }
 
+    public int patrimonioTotalJogador(Jogador jogador){
+        return patrimonioDoJogador(jogador.obtemPropriedadesJogador());
+    }
+
     public MensagemJogador consultaTabuleiro(Jogador jogadorAtual) {
         Carta cartaAtual;
         Propriedade propriedadeAtual;
@@ -338,7 +342,7 @@ public class Tabuleiro {
         
         return propriedade.obtemValorPropriedade();    
     }
-    
+
     public int obtemIdCasaAtual(Jogador jogador){
         Propriedade propriedade;
         MensagemJogador mensagemJogador;
@@ -360,5 +364,11 @@ public class Tabuleiro {
         Propriedade propriedade;
         propriedade = ((Propriedade) casasTabuleiro[idPropriedade]);
         propriedade.removeDono();
+    }
+
+    public void removeDono(ArrayList<Integer> propriedades){
+        for (int i = 0; i < propriedades.size(); i++){
+            removeDono(i);
+        }
     }
 }
