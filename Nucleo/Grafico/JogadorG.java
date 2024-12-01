@@ -2,7 +2,7 @@ package Nucleo.Grafico;
 import java.awt.*;
 
 class Posicao {
-    public int posX, posY;
+    public int posX, posy;
 }
 
 public class JogadorG {
@@ -18,10 +18,9 @@ public class JogadorG {
         posicaoAtual = new Posicao();
     }
 
-    public void atualizarPosicao(int casa, int tabPosx, int tabPosy, int tabDim) {
-        double escala = tabDim / 1156.0;
-        posicaoAtual.posX = (int)(escala * Posicoes.x[casa][id]) + tabPosx;
-        posicaoAtual.posY = (int)(escala * Posicoes.y[casa][id]) + tabPosy;
+    public void atualizarPosicao(int casa, int tabPosx, int tabPosy) {
+        posicaoAtual.posX = Posicoes.x[casa][id] + tabPosx;
+        posicaoAtual.posy = Posicoes.y[casa][id] + tabPosy;
     }
 
     public int obterX() {
@@ -29,7 +28,7 @@ public class JogadorG {
     }
 
     public int obterY() {
-        return posicaoAtual.posY;
+        return posicaoAtual.posy;
     }
 
     public Image obterIcone() {
