@@ -1,7 +1,7 @@
 package Nucleo.Controle;
 import java.awt.Image;
 import javax.swing.ImageIcon;
-
+import java.util.ArrayList;
 import static Nucleo.Aux.EstadosJogo.*;
 import Nucleo.Atributos.Banco;
 import Nucleo.Atributos.Jogador;
@@ -38,7 +38,28 @@ public class Controle {
     // 0 -> Precisa vender mais, mesmo hipotecando todas as outras propriedades nao vai bastar
     // 1 -> Ja vendeu suficiente, mas ainda precisa hipotecar para ter dinheiro suficiente
     // 2 -> Ja vendeu suficiente, nao precisa mais hipotecar
-    public int acaoBotaoVender(String[] propriedades) {
+    public int acaoBotaoVender(ArrayList<Integer> propriedades) {
+        int divida, valorTotalVenda, patrimonioTotal, patrimonioRestante;
+        Jogador jogador = jogadores.getIteradorElem();
+
+        divida = banco.obterSaldo(jogador.obtemId());
+
+        valorTotalVenda = tabuleiro.patrimonioDoJogador(propriedades);
+        patrimonioTotal = tabuleiro.patrimonioTotalJogador(jogador); 
+        patrimonioRestante = valorTotalVenda - patrimonioTotal;
+    
+        divida += valorTotalVenda; 
+
+        banco.receber(jogador.obtemId(), valorTotalVenda);
+        tabuleiro.removeDono(propriedades);
+        jogador.desapropriaPropriedade(propriedades);
+
+        if (divida >= 0)
+            return 2;
+
+        if (divida + 0.5*patrimonioRestante < 0)
+            return 0;
+
         return 1;
     }
 
