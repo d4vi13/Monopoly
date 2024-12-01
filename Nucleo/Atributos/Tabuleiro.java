@@ -186,6 +186,14 @@ public class Tabuleiro {
         return patrimonioDoJogador(jogador.obtemPropriedadesJogador());
     }
 
+    public void hipotecaPropriedade(ArrayList<Integer> propriedades) {
+        Propriedade propriedadeAtual;
+        for (int i = 0; i < propriedades.size(); ++i) {
+            propriedadeAtual = (Propriedade)casasTabuleiro[propriedades.get(i)];
+            propriedadeAtual.hipotecar();
+        }
+    }
+
     public MensagemJogador consultaTabuleiro(Jogador jogadorAtual) {
         Carta cartaAtual;
         Propriedade propriedadeAtual;

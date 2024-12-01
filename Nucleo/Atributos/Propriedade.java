@@ -2,6 +2,7 @@ package Nucleo.Atributos;
 
 public class Propriedade extends Casa {
     private boolean temDono;
+    private boolean hipotecada = false;
     private int dono;
     protected int valorInicial;
     protected int valorDeVenda;
@@ -20,6 +21,10 @@ public class Propriedade extends Casa {
     public void removeDono() {
         this.temDono = false;
         this.dono = -1;
+    }
+
+    public void hipotecar(){
+        hipotecada = true;
     }
 
     public int obtemIdDono() {
