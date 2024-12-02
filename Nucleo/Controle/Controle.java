@@ -50,6 +50,7 @@ public class Controle {
     
         divida += valorTotalVenda; 
 
+        valorTotalVenda = (valorTotalVenda * 75)/100;
         banco.receber(jogador.obtemId(), valorTotalVenda);
         tabuleiro.removeDono(propriedades);
         jogador.desapropriaPropriedade(propriedades);
@@ -77,7 +78,8 @@ public class Controle {
         patrimonioRestante = valorTotalVenda - patrimonioTotal;
     
         divida += valorTotalVenda; 
-
+        
+        valorTotalVenda = (valorTotalVenda * 50)/100;
         banco.receber(jogador.obtemId(), valorTotalVenda);
         tabuleiro.hipotecaPropriedade(propriedades);
 
@@ -123,7 +125,6 @@ public class Controle {
     }
 
     public MensagemJogador decifraCasa(int casaDestino) {
-        // ATUALIZAR ESTADO DO JOGADOR
         Jogador jogadorAtual = jogadores.getIteradorElem();
         int[] dados = obterNumerosD6();
 
