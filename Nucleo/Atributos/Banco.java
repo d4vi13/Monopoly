@@ -4,6 +4,7 @@ import java.io.*;
 public class Banco implements Serializable {
     private Cliente[] clientes; // cada cliente tem seu id identificador  
     private int numeroDeClientes;
+    private final static int salarioClientes = 200000;
 
     public Banco(int numeroDeClientes){
         this.numeroDeClientes = numeroDeClientes;
@@ -11,6 +12,10 @@ public class Banco implements Serializable {
         for (int i = 0; i < 6; i++) {
             clientes[i] = new Cliente(i, 1500000);
         }
+    }
+
+    public void pagaSalario(int id) {
+        clientes[id].receber(salarioClientes);
     }
 
     public void transferir(int id_remetente, int id_destinatario, int valor){

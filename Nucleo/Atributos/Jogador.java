@@ -4,18 +4,15 @@ import java.util.ArrayList;
 import java.io.*;
 
 final public class Jogador implements Serializable{
-    private String nome;
-    private Cor cor;
     private int posicao;
     private int id;
     private ArrayList<Integer> propriedades;
     private boolean falido;
     private boolean preso;
     private boolean ferias;
-    private int rodadasFerias;
+    private int rodadasPreso;
 
     public Jogador(){}
-    private int rodadasPreso;
 
     public Jogador(int id){
         this.posicao = 0;
@@ -23,7 +20,6 @@ final public class Jogador implements Serializable{
         this.falido = false;
         this.preso = false;
         this.ferias = false;
-        this.rodadasFerias = 0;
         this.rodadasPreso = 0;
         this.propriedades = new ArrayList<Integer>();
     }
@@ -58,6 +54,7 @@ final public class Jogador implements Serializable{
 
     public void defineJogadorPreso() {
         this.preso = true;
+        this.rodadasPreso = 3;
     }
 
     public void defineJogadorLivre() {
@@ -67,7 +64,6 @@ final public class Jogador implements Serializable{
     public boolean jogadorPreso() {
         return this.preso;
     }
-
 
     public void defineJogadorEntrouDeFerias() {
         this.ferias = true;
@@ -81,27 +77,16 @@ final public class Jogador implements Serializable{
         return this.ferias;
     }
 
-    public void defineRodadasDeFerias() {
-        this.rodadasFerias = 1;
-    }
-
-    public int retornaRodadasDeFerias() {
-        return this.rodadasFerias;
-    }
-
-    public void diminuiRodadasFerias() {
-        this.rodadasFerias -= 1;
-    }
-    public void defineRodadasPreso() {
-        this.rodadasPreso = 3;
-    }
-
     public void diminuiRodadasPreso() {
         this.rodadasPreso -= 1;
     }
 
     public int retornaRodadasPreso() {
         return this.rodadasPreso;
+    }
+
+    public void declaraFalencia() {
+        this.falido = true;
     }
 }
 

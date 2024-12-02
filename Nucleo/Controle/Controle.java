@@ -1,15 +1,20 @@
 package Nucleo.Controle;
+import java.awt.Event;
 import java.awt.Image;
 import javax.swing.ImageIcon;
 import java.util.ArrayList;
 import static Nucleo.Aux.EstadosJogo.*;
 import Nucleo.Atributos.Banco;
+import Nucleo.Atributos.Cartas.Carta;
+import Nucleo.Atributos.Casa.Config;
 import Nucleo.Atributos.Jogador;
+import Nucleo.Atributos.Propriedade;
 import Nucleo.Atributos.Tabuleiro;
 import Nucleo.Aux.ListaCircular;
 import Nucleo.Aux.MensagemJogador;
 import Nucleo.Grafico.JogadorG;
 import Nucleo.Aux.Serializador;
+import Nucleo.Aux.MensagemJogador.Eventos;
 import Nucleo.Atributos.D6;
 
 public class Controle {
@@ -23,6 +28,26 @@ public class Controle {
     
     private D6 d6;
     private int[] numerosD6;
+
+    private int defineEventosMonetarios(Jogador jogadorAtual, int valorCobrado) {
+        int divida;
+        int patrimonioTotal;
+        int saldoJogador = banco.obterSaldo(jogadorAtual.obtemId());
+
+        // É possível pagar
+        if (saldoJogador >= valorCobrado) {
+            return Eventos.podePagar;
+        }
+
+        patrimonioTotal = tabuleiro.patrimonioDoJogador(jogadorAtual.obtemPropriedadesJogador());
+        divida = valorCobrado - saldoJogador;
+
+        if (patrimonioTotal >= divida) {
+            return Eventos.vendaOuHipoteca;
+        }
+
+        return Eventos.jogadorFaliu;
+    }
 
     public Controle() {
         jogadores = new ListaCircular<Jogador>();
@@ -111,6 +136,8 @@ public class Controle {
         d6.jogaDado();
     }
 
+    public void acaoBotaoEvoluir() {}
+
     public int[] obterNumerosD6() {
         numerosD6[0] = d6.obterValorDado(0);
         numerosD6[1] = d6.obterValorDado(1);
@@ -125,20 +152,214 @@ public class Controle {
     }
 
     public MensagemJogador decifraCasa(int casaDestino) {
+        MensagemJogador mensagemJogador;
         Jogador jogadorAtual = jogadores.getIteradorElem();
-        int[] dados = obterNumerosD6();
+        Propriedade propriedadeAtual;
+        Carta cartaSorteada;
+        int deslocamento;
+        int casaInicial;
+        int casaFinal;
+        int imposto;
+        int evento;
 
-        if (jogadorAtual.jogadorPreso()) {
-            if (dados[0] == dados[1]) {
-                // Jogador livre da prisao
+        // Se o jogador não está preso e não está de férias, pode se mover
+        if (!(jogadorAtual.jogadorPreso()) && !(jogadorAtual.jogadorDeFerias())) {
+            jogadorAtual.defineNovaPosicao(casaDestino);
+        } else {
+            if ((jogadorAtual.jogadorPreso()) && (d6.dadosIguais())) {
+                // Se o jogador obtem dados iguais, consegue sair da prisão
+                jogadorAtual.defineJogadorLivre();
                 jogadorAtual.defineNovaPosicao(casaDestino);
             }
-        } else {
-            // Nao esta preso, atualiza normalmente
-            jogadorAtual.defineNovaPosicao(casaDestino);
         }
         
-        return tabuleiro.consultaTabuleiro(jogadorAtual);
+        mensagemJogador = tabuleiro.consultaTabuleiro(jogadorAtual);
+        propriedadeAtual = mensagemJogador.obtemPropriedadeAtual();
+        cartaSorteada = mensagemJogador.obtemCartaSorteada();
+
+        switch (mensagemJogador.obtemTipoEvento()) {
+            case Eventos.casaInicial:
+                // Jogador recebe salário do banco
+                banco.pagaSalario(jogadorAtual.obtemId());
+                mensagemJogador.defineNovoEvento(Eventos.jogadorNaCasaInicial);
+                break;
+
+            case Eventos.propriedadeComDono:
+                propriedadeAtual = mensagemJogador.obtemPropriedadeAtual();
+
+                if (propriedadeAtual.obtemIdDono() == jogadorAtual.obtemId()) {
+                    // Jogador é o dono da propriedade
+                } else {
+                    // Não é o dono e precisa pagar aluguel
+                    evento = defineEventosMonetarios(jogadorAtual, propriedadeAtual.obtemAluguel());
+                    banco.transferir(jogadorAtual.obtemId(), propriedadeAtual.obtemIdDono(), propriedadeAtual.obtemAluguel());
+                    if (evento == Eventos.podePagar) {
+                        // Define evento que pode pagar
+                        mensagemJogador.defineNovoEvento(Eventos.temDonoEPodePagar);
+                    } else if (evento == Eventos.vendaOuHipoteca) {
+                        // Define que precisa vender ou hipotecar
+                        mensagemJogador.defineNovoEvento(evento);
+                    } else {
+                        // Jogador faliu, chamada recursiva para atualizar estado
+                        mensagemJogador.defineNovoEvento(evento);
+                        return decifraCasa(jogadorAtual.obtemPosicao());
+                    }
+                }
+                break;
+
+            case Eventos.propriedadeSemDono:
+                propriedadeAtual = mensagemJogador.obtemPropriedadeAtual();
+                if (banco.temSaldoSuficiente(jogadorAtual.obtemId(), propriedadeAtual.obtemValorPropriedade())) {
+                    // Jogador é capaz de comprar a propriedade
+                    mensagemJogador.defineNovoEvento(Eventos.semDonoPodeComprar);
+                } else {
+                    // Jogador não é capaz de comprar a propriedade
+                    mensagemJogador.defineNovoEvento(Eventos.semDonoNaoPodeComprar);
+                }
+                break;
+
+            case Eventos.casaPrisao:
+                if (jogadorAtual.jogadorPreso()) {
+                    if (jogadorAtual.retornaRodadasPreso() == 0) {
+                        // Libera o jogador da prisão
+                        jogadorAtual.defineJogadorLivre();
+                        mensagemJogador.defineNovoEvento(Eventos.jogadorEstaVisitandoPrisao);
+                    } else {
+                        // Jogador continua preso
+                        jogadorAtual.diminuiRodadasPreso();
+                        mensagemJogador.defineNovoEvento(Eventos.jogadorTaPreso);
+                    }
+                } else {
+                    // Jogador está visitando a prisão
+                    mensagemJogador.defineNovoEvento(Eventos.jogadorEstaVisitandoPrisao);
+                }
+                break;
+
+            case Eventos.indoPreso:
+                // Jogador está indo para a cadeia
+                jogadorAtual.defineJogadorPreso();
+                mensagemJogador.defineNovoEvento(Eventos.jogadorTaPreso);
+                break;
+
+            case Eventos.casaCarta:
+                casaInicial = jogadorAtual.obtemPosicao();
+                cartaSorteada = mensagemJogador.obtemCartaSorteada();
+                mensagemJogador.defineNovoEvento(Eventos.tirouCarta);
+
+                switch (cartaSorteada.obtemTipo()) {
+                    case 0:
+                        // Jogador recebe valor da carta
+                        banco.receber(jogadorAtual.obtemId(), cartaSorteada.obtemValor());
+                        break;
+
+                    case 1:
+                        // Jogador paga o valor da carta
+                        evento = defineEventosMonetarios(jogadorAtual, cartaSorteada.obtemValor());
+                        banco.debitar(jogadorAtual.obtemId(), cartaSorteada.obtemValor());
+                        if (evento == Eventos.vendaOuHipoteca) {
+                            // Jogador precisa vender ou hipotecar para pagar
+                            mensagemJogador.defineNovoEvento(evento);
+                        } else if (evento == Eventos.jogadorFaliu) {
+                            // Jogador faliu
+                            mensagemJogador.defineNovoEvento(evento);
+                        }
+                        break;
+
+                        /*
+                         * Eventos 2 ~ 5
+                         * Obtem a localização da casa indicada pela carta
+                         * Obtem a distância do jogador até ela
+                         * Define o deslocamento e novo evento
+                         * Retorna para preencher o jogador com informações novas
+                         */
+                    case 2:
+                        casaFinal = tabuleiro.buscaPorCasa(Config.tipoCAAD);
+                        deslocamento = casaFinal - casaInicial;
+                        mensagemJogador.defineEventoMovimento(true);
+                        mensagemJogador.defineDeslocamento(deslocamento);
+                        mensagemJogador.defineNovoEvento(Eventos.casaCAAD);
+                        return decifraCasa(casaFinal);
+
+                    case 3:
+                        casaFinal = tabuleiro.buscaPorCasa(Config.tipoRecepcao);
+                        deslocamento = casaFinal - casaInicial;
+                        mensagemJogador.defineEventoMovimento(true);
+                        mensagemJogador.defineDeslocamento(deslocamento);
+                        mensagemJogador.defineNovoEvento(Eventos.casaRecepcao);
+                        return decifraCasa(casaFinal);
+                        
+                    case 4:
+                        casaFinal = tabuleiro.buscaPorCasa(Config.tipoPrisao);
+                        deslocamento = casaFinal - casaInicial;
+                        mensagemJogador.defineEventoMovimento(true);
+                        mensagemJogador.defineDeslocamento(deslocamento);
+                        mensagemJogador.defineNovoEvento(Eventos.indoPreso);
+                        return decifraCasa(casaFinal);
+
+                    case 5:
+                        casaFinal = tabuleiro.buscaPorCasa(Config.tipoInicial);
+                        deslocamento = casaFinal - casaInicial;
+                        mensagemJogador.defineEventoMovimento(true);
+                        mensagemJogador.defineDeslocamento(deslocamento);
+                        mensagemJogador.defineNovoEvento(Eventos.casaInicial);
+                        return decifraCasa(casaFinal);
+
+                    case 6:
+                        // Carta onde todos os jogadores mandam dinheiro para um jogador
+                        banco.transferir(jogadorAtual.obtemId(), cartaSorteada.obtemValor());
+                        break;
+                        
+                    default:
+                        mensagemJogador.defineNovoEvento(Eventos.casaVazia);
+                        break;
+                }
+                break;
+
+            case Eventos.casaCAAD:
+                // Jogador entra ou sai de férias 
+                if (jogadorAtual.jogadorDeFerias()) {
+                    jogadorAtual.defineJogadorSaiuDeFerias();
+                } else {
+                    jogadorAtual.defineJogadorEntrouDeFerias();
+                }
+                mensagemJogador.defineNovoEvento(Eventos.jogadorNoCAAD);
+                break;
+
+            case Eventos.casaRecepcao:
+                imposto = tabuleiro.calculaImposto(jogadorAtual.obtemPropriedadesJogador());
+                evento = defineEventosMonetarios(jogadorAtual, imposto);
+
+                banco.debitar(jogadorAtual.obtemId(), imposto);
+                if (evento == Eventos.podePagar) {
+                    // Jogador pode pagar imposto
+                    mensagemJogador.defineNovoEvento(Eventos.jogadorNaRecepcao);
+                } else if (evento == Eventos.vendaOuHipoteca) {
+                    // Jogador precisa vender ou hipotecar
+                    mensagemJogador.defineNovoEvento(evento);
+                } else {
+                    // Jogador faliu, chamada recursiva para atualizar estado
+                    mensagemJogador.defineNovoEvento(Eventos.jogadorFaliu);
+                    return decifraCasa(jogadorAtual.obtemPosicao());
+                }
+                break;
+            
+            case Eventos.jogadorFaliu:
+                // Reseta as propriedades e jogador declara falência
+                tabuleiro.removeDono(jogadorAtual.obtemPropriedadesJogador());
+                jogadorAtual.desapropriaPropriedade(jogadorAtual.obtemPropriedadesJogador());
+                jogadorAtual.declaraFalencia();        
+                break;
+            
+            default:
+                break;
+        }
+
+        if (mensagemJogador.obtemEventoMovimento()) {
+            mensagemJogador.defineEventoMovimento(false);
+            mensagemJogador.defineNovoEvento(Eventos.tirouCartaDeMovimento);
+        }
+
+        return mensagemJogador;
     }
 
     // de Fernando para Davi
