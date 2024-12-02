@@ -12,6 +12,7 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 import java.io.*;
+import java.util.ArrayList;
 
 public class Partida {  
     private Janela janela;
@@ -26,8 +27,8 @@ public class Partida {
     private float opacidade;
     // Botoes
     private Font fonteBotoes;
-    private Botao botaoDados, botaoVender, botaoComprar, botaoHipotecar;
-    private boolean dadosLigado, venderLigado, comprarLigado, hipotecarLigado;
+    private Botao botaoDados, botaoVender, botaoComprar, botaoHipotecar, botaoUpgrade;
+    private boolean dadosLigado, venderLigado, comprarLigado, hipotecarLigado, upgradeLigado;
     // Jogadores
     private int numeroJogadores;
     private JogadorG[] jogadores;
@@ -55,7 +56,6 @@ public class Partida {
 
     public Partida(Janela j) {
         File f1, f2, f3;
-        Color[] cores1;
 
         janela = j;
         opacidade = 1.0f;
@@ -85,11 +85,19 @@ public class Partida {
         carregarTemporizadores();
         carregarJogadores();
         ativarBotaoDados();
-
+        carregarBotoes();
         pause = new MenuPause(this);
-        cores1 = new Color[]{Color.BLACK, Color.LIGHT_GRAY, Color.GRAY, Color.WHITE};
+    }
+
+    private void carregarBotoes() {
+        Color[] cores1 = new Color[]{Color.BLACK, Color.LIGHT_GRAY, Color.GRAY, Color.WHITE};
+
         botaoPause = new Botao("Pause", fonteBotoes, 20, cores1);
         botaoDados = new Botao(new ImageIcon("./Dados/Imagens/dados.png").getImage(), 20, cores1);
+        botaoComprar = new Botao("Comprar", fonteBotoes, 20, cores1);
+        botaoUpgrade = new Botao("Pause", fonteBotoes, 20, cores1);
+        botaoVender = new Botao("Comprar", fonteInforma, 20, cores1);
+        botaoHipotecar = new Botao("Hipotecar", fonteInforma, 20, cores1);
     }
 
     private void carregarJogadores() {
@@ -107,13 +115,28 @@ public class Partida {
 
     private void carregarTemporizadores() {
         temporizadorPulos = new Timer(200, e -> {
-            casaAtual++;
+            boolean soma;
+            if (casaDestino < casaAtual) {
+                if (32 - casaAtual + casaDestino > casaAtual - casaDestino) {
+                    soma = false;
+                } else {
+                    soma = true;
+                }
+            } else {
+                if (32 - casaAtual + casaDestino > casaAtual - casaDestino) {
+                    soma = true;
+                } else {
+                    soma = false;
+                }
+            }
+            if (soma) casaAtual++;
+            else casaAtual--;
             casaAtual %= 32;
             jogadores[idJogadorAtual].atualizarPosicao(casaAtual, tabuleiroPosx, tabuleiroPosy, tabuleiroComp);
 
             if (casaAtual == casaDestino) {
                 ((Timer) e.getSource()).stop();
-                jogadorNaCasa();
+                fimTemporizadorPulos();
             }
         });
 
@@ -144,13 +167,28 @@ public class Partida {
         botaoPause.pintar(g);
         pintarTabuleiro(g);
         pintarIcones(g);
+        // pintarSaldoJogadores(g);
         pintarInformaJogador(g);
 
+        // if (venderLigado || hipotecarLigado) {
+        //     pintarSeleciona(g);
+        //     if (venderLigado) botaoVender.pintar(g);
+        //     if (hipotecarLigado) botaoHipotecar.pintar(g);
+        // }
         if (dadosLigado) botaoDados.pintar(g);
         if (valoresLigado) pintarValoresDados(g2d);
         if (falirLigado) pintarJogadorFaliu(g);
         if (cartaLigado) pintarCarta(g2d);
+        // if (comprarLigado) botaoComprar.pintar(g);
         if (pauseAtivado) pause.pintar(g);
+    }
+
+    private void pintarSaldoJogadores(Graphics g) {
+
+    }
+
+    private void pintarSeleciona(Graphics g) {
+
     }
 
     private void pintarCarta(Graphics2D g2D) {
@@ -196,6 +234,20 @@ public class Partida {
     }
 
     private void pintarTabuleiro(Graphics g) {
+        int tam;
+        Image icon;
+        Posicao p;
+        JogadorG j;
+
+        for (int k = 0; k < numeroJogadores; k++) {
+            j = jogadores[k];
+            tam = j.obtemNumUpgrades();
+            for (int i = 0; i < tam; i++) {
+                icon = j.consultaImagemIconeUp(i);
+                p = j.consultaPosicaoIconeUp(i);
+                g.drawImage(icon, p.posX, p.posY, 30, 30, null);
+            }
+        }
         g.drawImage(tabuleiro, tabuleiroPosx, tabuleiroPosy, tabuleiroComp, tabuleiroAlt, null);
     }
 
@@ -331,6 +383,24 @@ public class Partida {
             // Jogador faliu
             case JOGADOR_NA_CASA:
                 cartaLigado = false;
+                if (msg.obtemTipoEvento() == Eventos.tirouCartaDeMovimento) {
+                    casaDestino += msg.obtemDeslocamentoDoJogador();
+                    temporizadorPulos.start();
+                } else {
+                    atualizarJogador();
+                }
+                break;
+            default:
+                break;
+        }
+    }
+
+    private void fimTemporizadorPulos() {
+        switch (estadoAtual) {
+            case ATUALIZA_DADOS:
+                jogadorNaCasa();
+                break;
+            case JOGADOR_NA_CASA:
                 atualizarJogador();
                 break;
             default:
@@ -384,7 +454,7 @@ public class Partida {
                 temporizadorGenerico.start();
                 break;
             case Eventos.semDonoPodeComprar:
-                
+                comprarLigado = true;
                 break;
             case Eventos.tirouCarta:
                 cartaLigado = true;
@@ -393,7 +463,6 @@ public class Partida {
             case Eventos.tirouCartaDeMovimento:
                 cartaLigado = true;
                 temporizadorGenerico.start();
-                // temporizadorPulos.start();
                 break;
             case Eventos.vendaOuHipoteca:
 
