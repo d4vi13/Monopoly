@@ -190,16 +190,7 @@ public class Tabuleiro {
                 mensagemJogador.atualizaMensagem(null, null, Eventos.casaInicial);
                 break;
             
-            case Config.tipoImovel:
-            
-                propriedadeAtual = (Propriedade)casaAtual;
-                if (propriedadeAtual.temDono()) {
-                    mensagemJogador.atualizaMensagem(null, propriedadeAtual, Eventos.propriedadeComDono);
-                } else {
-                    mensagemJogador.atualizaMensagem(null, propriedadeAtual, Eventos.propriedadeSemDono);
-                }
-                break;
-            
+            case Config.tipoImovel:            
             case Config.tipoEmpresa:
 
                 propriedadeAtual = (Propriedade)casaAtual;

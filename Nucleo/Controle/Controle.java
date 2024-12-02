@@ -1,9 +1,7 @@
 package Nucleo.Controle;
-import java.awt.Event;
 import java.awt.Image;
 import javax.swing.ImageIcon;
 import java.util.ArrayList;
-import static Nucleo.Aux.EstadosJogo.*;
 import Nucleo.Atributos.Banco;
 import Nucleo.Atributos.Cartas.Carta;
 import Nucleo.Atributos.Casa.Config;
@@ -29,6 +27,17 @@ public class Controle {
     private D6 d6;
     private int[] numerosD6;
 
+    public Controle() {
+        jogadores = new ListaCircular<Jogador>();
+        jogadoresG = new JogadorG[6];
+        banco = new Banco(numeroJogadores);
+        tabuleiro = new Tabuleiro(banco);
+        d6 = new D6();
+        numerosD6 = new int[2];
+        serializador = new Serializador();
+    }
+
+    // Define os eventos monetários relacionados ao jogador dependendo do valor cobrado
     private int defineEventosMonetarios(Jogador jogadorAtual, int valorCobrado) {
         int divida;
         int patrimonioTotal;
@@ -41,7 +50,8 @@ public class Controle {
 
         patrimonioTotal = tabuleiro.patrimonioDoJogador(jogadorAtual.obtemPropriedadesJogador());
         divida = valorCobrado - saldoJogador;
-
+        
+        // Precisa vender
         if (patrimonioTotal >= divida) {
             return Eventos.vendaOuHipoteca;
         }
@@ -49,14 +59,11 @@ public class Controle {
         return Eventos.jogadorFaliu;
     }
 
-    public Controle() {
-        jogadores = new ListaCircular<Jogador>();
-        jogadoresG = new JogadorG[6];
-        banco = new Banco(numeroJogadores);
-        tabuleiro = new Tabuleiro(banco);
-        d6 = new D6();
-        numerosD6 = new int[2];
-        serializador = new Serializador();
+    // Reseta as propriedades do jogador e define que ele faliu
+    private void jogadorDeclaraFalencia(Jogador jogadorAtual) {
+        tabuleiro.removeDono(jogadorAtual.obtemPropriedadesJogador());
+        jogadorAtual.desapropriaPropriedade(jogadorAtual.obtemPropriedadesJogador());
+        jogadorAtual.declaraFalencia();
     }
 
     // Codigos:
@@ -151,6 +158,7 @@ public class Controle {
         } 
     }
 
+    // Apartir da casa destino do jogador, define os eventos e atualiza o estado do jogador
     public MensagemJogador decifraCasa(int casaDestino) {
         MensagemJogador mensagemJogador;
         Jogador jogadorAtual = jogadores.getIteradorElem();
@@ -200,9 +208,9 @@ public class Controle {
                         // Define que precisa vender ou hipotecar
                         mensagemJogador.defineNovoEvento(evento);
                     } else {
-                        // Jogador faliu, chamada recursiva para atualizar estado
+                        // Jogador faliu
                         mensagemJogador.defineNovoEvento(evento);
-                        return decifraCasa(jogadorAtual.obtemPosicao());
+                        jogadorDeclaraFalencia(jogadorAtual);
                     }
                 }
                 break;
@@ -262,6 +270,7 @@ public class Controle {
                         } else if (evento == Eventos.jogadorFaliu) {
                             // Jogador faliu
                             mensagemJogador.defineNovoEvento(evento);
+                            jogadorDeclaraFalencia(jogadorAtual);
                         }
                         break;
 
@@ -337,23 +346,20 @@ public class Controle {
                     // Jogador precisa vender ou hipotecar
                     mensagemJogador.defineNovoEvento(evento);
                 } else {
-                    // Jogador faliu, chamada recursiva para atualizar estado
-                    mensagemJogador.defineNovoEvento(Eventos.jogadorFaliu);
-                    return decifraCasa(jogadorAtual.obtemPosicao());
+                    // Jogador faliu
+                    mensagemJogador.defineNovoEvento(evento);
+                    jogadorDeclaraFalencia(jogadorAtual);
                 }
-                break;
-            
-            case Eventos.jogadorFaliu:
-                // Reseta as propriedades e jogador declara falência
-                tabuleiro.removeDono(jogadorAtual.obtemPropriedadesJogador());
-                jogadorAtual.desapropriaPropriedade(jogadorAtual.obtemPropriedadesJogador());
-                jogadorAtual.declaraFalencia();        
                 break;
             
             default:
                 break;
         }
 
+        /*
+         * Se é uma carta de movimento, define como falso pois já foi tratado
+         * Redefine o evento passado na classe mensagemJogador
+         */
         if (mensagemJogador.obtemEventoMovimento()) {
             mensagemJogador.defineEventoMovimento(false);
             mensagemJogador.defineNovoEvento(Eventos.tirouCartaDeMovimento);
