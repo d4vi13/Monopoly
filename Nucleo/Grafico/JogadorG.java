@@ -49,6 +49,11 @@ public class JogadorG {
 
     }
 
+    public void removerUpgrades() {
+        iconesUpgrades.clear();
+        posicoesUpgrades.clear();
+    }
+
     public int obtemNumUpgrades() {
         return iconesUpgrades.size();
     }

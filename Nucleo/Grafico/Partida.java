@@ -451,6 +451,7 @@ public class Partida {
         switch (msg.obtemTipoEvento()) {
             case Eventos.jogadorFaliu:
                 falirLigado = true;
+                jogadores[idJogadorAtual].removerUpgrades();
                 temporizadorGenerico.start();
                 break;
             case Eventos.semDonoPodeComprar:
