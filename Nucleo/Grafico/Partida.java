@@ -69,7 +69,7 @@ public class Partida {
             fonteInforma = Font.createFont(Font.TRUETYPE_FONT, f1).deriveFont(34f);
             fonteNumeros = Font.createFont(Font.TRUETYPE_FONT, f2).deriveFont(45f);
             fonteFalir = Font.createFont(Font.TRUETYPE_FONT, f3).deriveFont(80f);
-            fonteCarta1 = Font.createFont(Font.TRUETYPE_FONT, f1).deriveFont(32f);
+            fonteCarta1 = Font.createFont(Font.TRUETYPE_FONT, f1).deriveFont(31f);
             fonteCarta2 = Font.createFont(Font.TRUETYPE_FONT, f3).deriveFont(45f);
         } catch(FontFormatException | IOException e) {
             System.out.println("Erro ao carregar fonte");
@@ -154,16 +154,12 @@ public class Partida {
     }
 
     private void pintarCarta(Graphics2D g2D) {
-        FontMetrics fm;
-        int x, y, w, h, hTmp, wF, hF;
-        final int raio = 20;
-        String vetStr[], str;
+        int h = (int)(0.5 * frameAltura), w = (int)(0.6 * h), hTmp, wF, hF;
+        int x = (frameComprimento - w) / 2, y = (frameAltura - h) / 2;
+        String vetStr[], str, numero;
         int tipo = msg.obtemCartaSorteada().obtemTipo();
+        final int raio = 20;
 
-        h = (int)(0.5 * frameAltura);
-        w = (int)(0.6 * h);
-        x = (frameComprimento - w) / 2;
-        y = (frameAltura - h) / 2;
         g2D.setColor(Color.BLACK);
         g2D.fillRoundRect(x, y, w, h, raio, raio);
         g2D.setColor(Color.LIGHT_GRAY);
@@ -171,35 +167,31 @@ public class Partida {
         g2D.setColor(Color.BLACK);
 
         vetStr = msg.obtemCartaSorteada().obtemDescricao();
-        g2D.setFont(fonteCarta1);
-        fm = g2D.getFontMetrics();
-        hF = fm.getAscent() - fm.getDescent();
-        wF = fm.stringWidth("Carta");
+        g2D.setFont(fonteBotoes);
+        hF = g2D.getFontMetrics().getAscent() - g2D.getFontMetrics().getDescent();
+        wF = g2D.getFontMetrics().stringWidth("Carta");
         g2D.drawString("Carta", x + (w - wF) / 2, y + hF + 20);
         hTmp = h;
+        g2D.setFont(fonteCarta1);
         for (String s : vetStr) {
-            wF = fm.stringWidth(s);
+            wF = g2D.getFontMetrics().stringWidth(s);
             g2D.drawString(s, x + (w - wF) / 2, y + hTmp / 2);
-            hTmp += fm.getHeight() + 30;
+            hTmp += g2D.getFontMetrics().getHeight() + 30;
         }
 
         if (tipo == 0 || tipo == 6 || tipo == 1) {
-            if (tipo == 0 || tipo == 6) {
-                str = "+";
-            } else {
-                str = "-";
-            }
+            if (tipo == 0 || tipo == 6) str = "+";
+            else str = "-";
 
+            numero = Integer.toString(msg.obtemCartaSorteada().obtemValor());
             g2D.setFont(fonteNumeros);
-            fm = g2D.getFontMetrics();
-            wF = fm.stringWidth(Integer.toString(msg.obtemCartaSorteada().obtemValor()));
+            wF = g2D.getFontMetrics().stringWidth(numero);
             g2D.setFont(fonteCarta2);
-            fm = g2D.getFontMetrics();
-            wF += fm.stringWidth(str);
+            wF += g2D.getFontMetrics().stringWidth(str);
             g2D.drawString(str, x + (w - wF) / 2, y + h - 50);
-            wF -= 2 * fm.stringWidth(str);
+            wF -= 2 * g2D.getFontMetrics().stringWidth(str);
             g2D.setFont(fonteNumeros);
-            g2D.drawString(Integer.toString(msg.obtemCartaSorteada().obtemValor()), x + (w - wF) / 2, y + h - 50);
+            g2D.drawString(numero, x + (w - wF) / 2, y + h - 50);
         }
     }
 
@@ -209,7 +201,6 @@ public class Partida {
 
     private void pintarIcones(Graphics g) {
         JogadorG j;
-
         for (int i = 0; i < numeroJogadores; i++) {
             j = jogadores[i];
             g.drawImage(j.obterIcone(), j.obterX(), j.obterY(), compIcone, altIcone, null);
@@ -232,7 +223,7 @@ public class Partida {
     private void pintarInformaJogador(Graphics g) {
         g.setFont(fonteInforma);
         g.setColor(Color.BLACK);
-        g.drawString(informaJogador[idJogadorAtual], 20, frameAltura - 20);
+        g.drawString(informaJogador[idJogadorAtual], 20, frameAltura  - g.getFontMetrics().getHeight() - 10);
     }
 
     private void pintarValoresDados(Graphics2D g2D) {
@@ -264,9 +255,7 @@ public class Partida {
     }
 
     public void tecladoAtualiza(KeyEvent e) {
-        if (pauseAtivado == true) {
-            pause.tecladoAtualiza(e);
-        }
+        if (pauseAtivado == true) pause.tecladoAtualiza(e);
     }
 
     public void mouseAtualiza(MouseEvent e) {
@@ -298,15 +287,9 @@ public class Partida {
     }
 
     private void definirTamanhoTabuleiro() {
-        int tmp1, tmp2;
-
-        tmp1 = (int)(frameComprimento * 0.6);
-        tmp2 = frameAltura - 100;
-        if (tmp1 <= tmp2) {
-            tabuleiroComp = tabuleiroAlt = tmp1;
-        } else {
-            tabuleiroComp = tabuleiroAlt = tmp2;
-        }
+        int tmp1 = (int)(frameComprimento * 0.6), tmp2 = frameAltura - 100;
+        if (tmp1 <= tmp2) tabuleiroComp = tabuleiroAlt = tmp1;
+        else tabuleiroComp = tabuleiroAlt = tmp2;
     }
 
     private void definirPosicaoTabuleiro() {
