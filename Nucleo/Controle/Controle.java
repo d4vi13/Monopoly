@@ -99,12 +99,17 @@ public class Controle {
         valorPropriedade = tabuleiro.obtemValorPropriedade(jogadorAtual);
         idPropriedade = tabuleiro.obtemIdCasaAtual(jogadorAtual);
 
-        banco.debitar(jogadorAtual.obtemId(), valorPropriedade);
-
-        jogadorAtual.apropriaPropriedade(idPropriedade);
-
-        // Atualiza no tabuleiro
-        tabuleiro.defineDono(idPropriedade, jogadorAtual.obtemId());
+        if (!tabuleiro.estaHipotecada(idPropriedade)){
+            banco.debitar(jogadorAtual.obtemId(), valorPropriedade);
+            jogadorAtual.apropriaPropriedade(idPropriedade);
+            tabuleiro.defineDono(idPropriedade, jogadorAtual.obtemId());
+        }
+        else{ 
+            if (jogadorAtual.ehDono(idPropriedade)){
+                banco.debitar(jogadorAtual.obtemId(), valorPropriedade*50/100);
+                tabuleiro.deshipotecar(idPropriedade); 
+            }
+        }
     }
 
     public void acaoBotaoJogarDados() {
