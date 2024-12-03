@@ -1,7 +1,5 @@
 package Nucleo.Aux;
 
-import java.security.PublicKey;
-
 import Nucleo.Atributos.Propriedade;
 import Nucleo.Atributos.Cartas.Carta;
 

@@ -48,7 +48,7 @@ public class Controle {
             return Eventos.podePagar;
         }
 
-        patrimonioTotal = tabuleiro.patrimonioDoJogador(jogadorAtual.obtemPropriedadesJogador());
+        patrimonioTotal = tabuleiro.patrimonioTotalJogador(jogadorAtual);
         divida = valorCobrado - saldoJogador;
         
         // Precisa vender
@@ -64,6 +64,7 @@ public class Controle {
         tabuleiro.removeDono(jogadorAtual.obtemPropriedadesJogador());
         jogadorAtual.desapropriaPropriedade(jogadorAtual.obtemPropriedadesJogador());
         jogadorAtual.declaraFalencia();
+        // Metodo remover da lista ligada
     }
 
     // Codigos:
