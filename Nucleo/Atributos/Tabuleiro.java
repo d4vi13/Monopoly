@@ -258,6 +258,18 @@ public class Tabuleiro {
         return propriedade.obtemId();
     }
 
+    public boolean estaHipotecada(int idPropriedade){
+        Propriedade propriedade;
+        propriedade = ((Propriedade) casasTabuleiro[idPropriedade]);
+        return propriedade.estaHipotecada();
+    }
+
+    public void deshipotecar(int idPropriedade){
+        Propriedade propriedade;
+        propriedade = ((Propriedade) casasTabuleiro[idPropriedade]);
+        propriedade.deshipotecar();
+    }
+
     // Função para atualizar o dono da propriedade 
     public void defineDono(int idPropriedade, int  idJogador){
         Propriedade propriedade;

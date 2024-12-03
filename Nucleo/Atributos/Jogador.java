@@ -88,5 +88,9 @@ final public class Jogador implements Serializable{
     public void declaraFalencia() {
         this.falido = true;
     }
+  
+    public boolean ehDono(int id){
+        return propriedades.contains(id);
+    }
 }
 

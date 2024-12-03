@@ -32,6 +32,11 @@ public class Propriedade extends Casa {
         hipotecada = false;
     }
 
+
+    public boolean estaHipotecada(){
+        return hipotecada;
+    }
+
     public int obtemIdDono() {
         return this.dono;
     }
