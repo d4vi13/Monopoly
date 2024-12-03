@@ -103,5 +103,9 @@ final public class Jogador implements Serializable{
     public int retornaRodadasPreso() {
         return this.rodadasPreso;
     }
+
+    public boolean ehDono(int id){
+        return propriedades.contains(id);
+    }
 }
 
