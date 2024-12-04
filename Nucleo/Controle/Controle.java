@@ -64,7 +64,8 @@ public class Controle {
         tabuleiro.removeDono(jogadorAtual.obtemPropriedadesJogador());
         jogadorAtual.desapropriaPropriedade(jogadorAtual.obtemPropriedadesJogador());
         jogadorAtual.declaraFalencia();
-        // Metodo remover da lista ligada
+        jogadores.tiraLista(jogadorAtual);
+        numeroJogadores--;
     }
 
     // Codigos:
@@ -313,7 +314,7 @@ public class Controle {
 
                     case 5:
                         casaFinal = tabuleiro.buscaPorCasa(Config.tipoInicial);
-                        deslocamento = casaFinal - casaInicial;
+                        deslocamento = 32 - casaInicial;
                         mensagemJogador.defineEventoMovimento(true);
                         mensagemJogador.defineDeslocamento(deslocamento);
                         mensagemJogador.defineNovoEvento(Eventos.casaInicial);

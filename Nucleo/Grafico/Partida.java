@@ -123,15 +123,20 @@ public class Partida {
                     soma = true;
                 }
             } else {
-                if (32 - casaAtual + casaDestino > casaAtual - casaDestino) {
+                if (casaAtual + 32 - casaDestino > casaDestino - casaAtual) {
                     soma = true;
                 } else {
                     soma = false;
                 }
             }
-            if (soma) casaAtual++;
-            else casaAtual--;
-            casaAtual %= 32;
+            if (soma) {
+                casaAtual++;
+                casaAtual &= 0x1f;
+            } else {
+                casaAtual--;
+                if (casaAtual == -1) casaAtual = 31; 
+            }
+
             jogadores[idJogadorAtual].atualizarPosicao(casaAtual, tabuleiroPosx, tabuleiroPosy, tabuleiroComp);
 
             if (casaAtual == casaDestino) {
@@ -379,9 +384,9 @@ public class Partida {
                 break;
             // Jogador faliu
             case JOGADOR_NA_CASA:
-                cartaLigado = false;
                 if (msg.obtemTipoEvento() == Eventos.tirouCartaDeMovimento) {
-                    casaDestino += msg.obtemDeslocamentoDoJogador();
+                    casaDestino = (casaDestino + msg.obtemDeslocamentoDoJogador()) & 0x1f;
+                    System.out.println(msg.obtemDeslocamentoDoJogador());
                     temporizadorPulos.start();
                 } else {
                     atualizarJogador();
@@ -473,7 +478,9 @@ public class Partida {
 
     public void atualizarJogador() {
         estadoAtual = ATUALIZA_JOGADOR;
-        janela.obterControle().proximoJogador();
+        if (msg.obtemTipoEvento() != Eventos.jogadorFaliu) {
+            janela.obterControle().proximoJogador();
+        }
         ativarBotaoDados();
     }
 }
