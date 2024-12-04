@@ -234,28 +234,25 @@ public class Partida {
     }
 
     private void pintarTabuleiro(Graphics g) {
-        int tam;
-        Image icon;
-        Posicao p;
-        JogadorG j;
-
-        for (int k = 0; k < numeroJogadores; k++) {
-            j = jogadores[k];
-            tam = j.obtemNumUpgrades();
-            for (int i = 0; i < tam; i++) {
-                icon = j.consultaImagemIconeUp(i);
-                p = j.consultaPosicaoIconeUp(i);
-                g.drawImage(icon, p.posX, p.posY, 30, 30, null);
-            }
-        }
         g.drawImage(tabuleiro, tabuleiroPosx, tabuleiroPosy, tabuleiroComp, tabuleiroAlt, null);
     }
 
     private void pintarIcones(Graphics g) {
         JogadorG j;
+        int tam;
+        Posicao p;
+
         for (int i = 0; i < numeroJogadores; i++) {
             j = jogadores[i];
-            g.drawImage(j.obterIcone(), j.obterX(), j.obterY(), compIcone, altIcone, null);
+            if (j.estaFalido()) continue;
+
+            p = j.obterPosicaoJogador();
+            g.drawImage(j.obterIcone(), p.posX, p.posY, compIcone, altIcone, null);
+            tam = j.obtemNumUpgrades();
+            for (int k = 0; k < tam; k++) {
+                p = j.obterPosicaoIconeUp(i);
+                g.drawImage(j.obterImagemIconeUp(i), p.posX, p.posY, 30, 30, null);
+            }
         }
     }
 
@@ -451,7 +448,7 @@ public class Partida {
         switch (msg.obtemTipoEvento()) {
             case Eventos.jogadorFaliu:
                 falirLigado = true;
-                jogadores[idJogadorAtual].removerUpgrades();
+                jogadores[idJogadorAtual].defineFalido();
                 temporizadorGenerico.start();
                 break;
             case Eventos.semDonoPodeComprar:
@@ -476,9 +473,7 @@ public class Partida {
 
     public void atualizarJogador() {
         estadoAtual = ATUALIZA_JOGADOR;
-        do {
-            janela.obterControle().proximoJogador();
-        } while (janela.obterControle().atualStatusFalido());
+        janela.obterControle().proximoJogador();
         ativarBotaoDados();
     }
 }

@@ -23,12 +23,14 @@ public class JogadorG {
     private Image icone, up1, up2, up3, up4;
     private String nome;
     private int id;
+    private boolean faliu;
 
     public JogadorG(Image i, int id, String nome) {
         icone = i;
         this.nome = nome;
         this.id = id;
         posicaoAtual = new Posicao();
+        faliu = false;
 
         posicoesUpgrades = new ArrayList<>();
         iconesUpgrades = new ArrayList<>();
@@ -49,20 +51,12 @@ public class JogadorG {
 
     }
 
-    public void removerUpgrades() {
-        iconesUpgrades.clear();
-        posicoesUpgrades.clear();
-    }
-
     public int obtemNumUpgrades() {
         return iconesUpgrades.size();
     }
 
-    public Posicao consultaPosicaoIconeUp(int i) {
-        return posicoesUpgrades.get(i).segundo;
-    }
-
-    public Image consultaImagemIconeUp(int i) {
+    
+    public Image obterImagemIconeUp(int i) {
         switch (iconesUpgrades.get(i)) {
             case 0: return up1;
             case 1: return up2;
@@ -71,13 +65,13 @@ public class JogadorG {
             default:return null;
         }
     }
-
-    public int obterX() {
-        return posicaoAtual.posX;
+    
+    public Posicao obterPosicaoIconeUp(int i) {
+        return posicoesUpgrades.get(i).segundo;
     }
 
-    public int obterY() {
-        return posicaoAtual.posY;
+    public Posicao obterPosicaoJogador() {
+        return posicaoAtual;
     }
 
     public Image obterIcone() {
@@ -86,6 +80,14 @@ public class JogadorG {
 
     public String obterNome() {
         return nome;
+    }
+
+    public void defineFalido() {
+        faliu = true;
+    }
+
+    public boolean estaFalido() {
+        return faliu;
     }
 }
 
