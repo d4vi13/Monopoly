@@ -1,5 +1,4 @@
 package Nucleo;
-import static Nucleo.Aux.EstadosJogo.*;
 
 import Nucleo.Aux.EstadosJogo;
 import Nucleo.Controle.*;
