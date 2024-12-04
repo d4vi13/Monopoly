@@ -201,10 +201,6 @@ public class Controle {
         return jogadores.getIteradorElem().obtemPosicao();
     }
 
-    public boolean atualStatusFalido() {
-        return jogadores.getIteradorElem().estaFalido();
-    }
-
     public void proximoJogador() {
         jogadores.iteradorProx();
     }

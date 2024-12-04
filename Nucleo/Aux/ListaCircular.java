@@ -31,6 +31,22 @@ public class ListaCircular<T> {
             fim = tmp;
         }
     }
+
+    // iteradorProx NAO deve ser chamado caso elemento removido foi o mesmo
+    public void tiraLista(T elemento) {
+        if (ini.getElemento() == elemento) {
+            ini = ini.getProx();
+        } else {
+            for (Nodo<T> n = ini; n != fim; n = n.getProx()) {
+                if (n.getProx().getElemento() == elemento) {
+                    n.setProx(n.getProx().getProx());
+                    break;
+                }
+            }
+        }
+
+        if (iterador.getElemento() == elemento) iterador = iterador.getProx();
+    }
 }
 
 class Nodo <T> {
