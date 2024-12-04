@@ -21,4 +21,12 @@ public class D6 {
         }
         return this.numero[indice];
     }
+
+    public boolean dadosIguais() {
+        if (numero[0] == numero[1]) {
+            return true;
+        }
+
+        return false;
+    }
 }
