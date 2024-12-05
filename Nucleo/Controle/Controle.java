@@ -137,8 +137,7 @@ public class Controle {
             banco.debitar(jogadorAtual.obtemId(), valorPropriedade);
             jogadorAtual.apropriaPropriedade(idPropriedade);
             tabuleiro.defineDono(idPropriedade, jogadorAtual.obtemId());
-        }
-        else{ 
+        } else { 
             if (jogadorAtual.ehDono(idPropriedade)){
                 banco.debitar(jogadorAtual.obtemId(), valorPropriedade*50/100);
                 tabuleiro.deshipotecar(idPropriedade); 
@@ -169,13 +168,9 @@ public class Controle {
     public MensagemJogador decifraCasa(int casaDestino) {
         MensagemJogador mensagemJogador;
         Jogador jogadorAtual = jogadores.getIteradorElem();
+        int deslocamento, casaInicial, casaFinal, imposto, evento;
         Propriedade propriedadeAtual;
         Carta cartaSorteada;
-        int deslocamento;
-        int casaInicial;
-        int casaFinal;
-        int imposto;
-        int evento;
 
         // Se o jogador não está preso e não está de férias, pode se mover
         if (!(jogadorAtual.jogadorPreso()) && !(jogadorAtual.jogadorDeFerias())) {
@@ -371,6 +366,9 @@ public class Controle {
             mensagemJogador.defineEventoMovimento(false);
             mensagemJogador.defineNovoEvento(Eventos.tirouCartaDeMovimento);
         }
+
+        mensagemJogador.defineNovoEvento(Eventos.jogadorFaliu);
+        jogadorDeclaraFalencia(jogadorAtual);
 
         return mensagemJogador;
     }

@@ -377,6 +377,7 @@ public class Partida {
     }
 
     private void fimTemporizadorGenerico() {
+        int tipoEvento = msg.obtemTipoEvento();
         switch (estadoAtual) {
             // Jogador na prisao
             case ATUALIZA_DADOS:
@@ -384,11 +385,14 @@ public class Partida {
                 break;
             // Jogador faliu
             case JOGADOR_NA_CASA:
-                if (msg.obtemTipoEvento() == Eventos.tirouCartaDeMovimento) {
+                if (tipoEvento == Eventos.tirouCartaDeMovimento) {
                     casaDestino = (casaDestino + msg.obtemDeslocamentoDoJogador()) & 0x1f;
                     System.out.println(msg.obtemDeslocamentoDoJogador());
                     temporizadorPulos.start();
                 } else {
+                    if (tipoEvento == Eventos.jogadorFaliu) {
+                        jogadores[idJogadorAtual].defineFalido();
+                    }
                     atualizarJogador();
                 }
                 break;
@@ -453,7 +457,6 @@ public class Partida {
         switch (msg.obtemTipoEvento()) {
             case Eventos.jogadorFaliu:
                 falirLigado = true;
-                jogadores[idJogadorAtual].defineFalido();
                 temporizadorGenerico.start();
                 break;
             case Eventos.semDonoPodeComprar:
