@@ -68,7 +68,7 @@ final class Imovel extends Propriedade {
         this.nivel = 0;
     }
 
-    public void evoluirImovel(int nivel) {
+    private void evoluirImovel(int nivel) {
         this.nivel = nivel;
         switch (nivel) {
             case 1:
@@ -90,6 +90,12 @@ final class Imovel extends Propriedade {
             default:
                 resetarValores();
                 break;
+        }
+    }
+
+    public void evoluirImovel() {
+        if (this.nivel < 3) {
+            evoluirImovel(nivel + 1);
         }
     }
 

@@ -159,7 +159,10 @@ public class Controle {
         d6.jogaDado();
     }
 
-    public void acaoBotaoEvoluir() {}
+    public void acaoBotaoEvoluir() {
+        Jogador jogadorAtual = jogadores.getIteradorElem();
+        tabuleiro.evoluirImovel(jogadorAtual.obtemPosicao());
+    }
 
     public int[] obterNumerosD6() {
         numerosD6[0] = d6.obterValorDado(0);

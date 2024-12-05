@@ -293,4 +293,9 @@ public class Tabuleiro {
         int patrimonio = patrimonioDoJogador(propriedades);
         return recepcaoDoDinf.pagarImposto(patrimonio);
     }
+
+    public void evoluirImovel(int idPropriedade) {
+        Imovel imovelAtual = ((Imovel) casasTabuleiro[idPropriedade]);
+        imovelAtual.evoluirImovel();
+    }
 }
