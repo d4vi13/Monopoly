@@ -59,6 +59,16 @@ public class Controle {
         return Eventos.jogadorFaliu;
     }
 
+    private int calculaDeslocamento(int casaInicial, int casaFinal) {
+        int totalCasas = tabuleiro.obtemCasasTotais();
+
+        if (casaFinal != 0) {
+            return (casaFinal - casaInicial) % totalCasas;
+        }
+
+        return totalCasas - casaFinal;
+    }
+
     // Reseta as propriedades do jogador e define que ele faliu
     private void jogadorDeclaraFalencia(Jogador jogadorAtual) {
         tabuleiro.removeDono(jogadorAtual.obtemPropriedadesJogador());

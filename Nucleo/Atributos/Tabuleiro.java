@@ -24,6 +24,10 @@ public class Tabuleiro {
         this.recepcaoDoDinf = new Recepcao();
     }
 
+    public int obtemCasasTotais () {
+        return totalCasas;
+    }
+
     public int buscaPorCasa(int tipoCasa) {
         Casa casaAtual;
         for (int i = 0; i < totalCasas; ++i) {
@@ -228,14 +232,6 @@ public class Tabuleiro {
         }
 
         return mensagemJogador;
-    }
-    
-    public int obtemCasaDestino(int casaInicial, int deslocamento) {
-        int casaFinal = casaInicial + deslocamento;
-        casaFinal = Math.abs(casaFinal);
-        casaFinal = casaFinal % totalCasas;
-
-        return casaFinal;
     }
 
     public int obtemValorPropriedade(Jogador jogador){
