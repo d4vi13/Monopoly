@@ -61,11 +61,10 @@ public class Cadastro {
         g.drawString(titulo, (frameComprimento - compTitulo) / 2, (frameAltura / 5) - fm.getAscent());
 
         if (numeroJogadores < 2) {
-            g.setFont(fonteAviso);
-            fm = g.getFontMetrics();
-            compTitulo = fm.stringWidth(aviso);
             g.setColor(Color.RED);
-            g.drawString(aviso, 20, frameAltura - fm.getHeight() - 10);
+            g.setFont(fonteAviso);
+            compTitulo = g.getFontMetrics().stringWidth(aviso);
+            g.drawString(aviso, 20, frameAltura - g.getFontMetrics().getHeight() - 10);
         }
 
         for (int i = 0; i < NUMERO_CAIXAS; i++) {
