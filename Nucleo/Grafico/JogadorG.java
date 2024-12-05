@@ -1,35 +1,77 @@
 package Nucleo.Grafico;
 import java.awt.*;
+import java.util.ArrayList;
 
 class Posicao {
     public int posX, posY;
 }
 
+class Dupla<A, B> {
+    public A primeiro;
+    public B segundo;
+
+    public Dupla(A primeiro, B segundo) {
+        this.primeiro = primeiro;
+        this.segundo = segundo;
+    }
+}
+
 public class JogadorG {
     private Posicao posicaoAtual;
-    private Image icone;
+    private ArrayList<Dupla<Integer, Posicao>> posicoesUpgrades;
+    private ArrayList<Integer> iconesUpgrades;
+    private Image icone, up1, up2, up3, up4;
     private String nome;
     private int id;
+    private boolean faliu;
 
     public JogadorG(Image i, int id, String nome) {
         icone = i;
         this.nome = nome;
         this.id = id;
         posicaoAtual = new Posicao();
+        faliu = false;
+
+        posicoesUpgrades = new ArrayList<>();
+        iconesUpgrades = new ArrayList<>();
     }
 
     public void atualizarPosicao(int casa, int tabPosx, int tabPosy, int tabDim) {
         double escala = tabDim / 1156.0;
         posicaoAtual.posX = (int)(escala * Posicoes.x[casa][id]) + tabPosx;
         posicaoAtual.posY = (int)(escala * Posicoes.y[casa][id]) + tabPosy;
+        // Atualizar posicoes upgrades
     }
 
-    public int obterX() {
-        return posicaoAtual.posX;
+    public void adicionarUpgrade(int casa) {
+
     }
 
-    public int obterY() {
-        return posicaoAtual.posY;
+    public void atualizarUpgrade(int casa, boolean remover) {
+
+    }
+
+    public int obtemNumUpgrades() {
+        return iconesUpgrades.size();
+    }
+
+    
+    public Image obterImagemIconeUp(int i) {
+        switch (iconesUpgrades.get(i)) {
+            case 0: return up1;
+            case 1: return up2;
+            case 2: return up3;
+            case 3: return up4;
+            default:return null;
+        }
+    }
+    
+    public Posicao obterPosicaoIconeUp(int i) {
+        return posicoesUpgrades.get(i).segundo;
+    }
+
+    public Posicao obterPosicaoJogador() {
+        return posicaoAtual;
     }
 
     public Image obterIcone() {
@@ -38,6 +80,14 @@ public class JogadorG {
 
     public String obterNome() {
         return nome;
+    }
+
+    public void defineFalido() {
+        faliu = true;
+    }
+
+    public boolean estaFalido() {
+        return faliu;
     }
 }
 

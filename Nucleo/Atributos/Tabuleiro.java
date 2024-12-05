@@ -191,7 +191,7 @@ public class Tabuleiro {
 
         switch (casaAtual.obtemTipo()) {
             case Config.tipoInicial:
-                mensagemJogador.atualizaMensagem(null, null, Eventos.casaInicial);
+                mensagemJogador.atualizaMensagem(mensagemJogador.obtemCartaSorteada(), null, Eventos.casaInicial);
                 break;
             
             case Config.tipoImovel:            
@@ -206,7 +206,7 @@ public class Tabuleiro {
                 break;
 
             case Config.tipoPrisao:
-                mensagemJogador.atualizaMensagem(null, null, Eventos.casaPrisao);
+                mensagemJogador.atualizaMensagem(mensagemJogador.obtemCartaSorteada(), null, Eventos.casaPrisao);
                 break;
 
             case Config.tipoCarta:
@@ -215,11 +215,11 @@ public class Tabuleiro {
                 break;
 
             case Config.tipoCAAD:
-                mensagemJogador.atualizaMensagem(null, null, Eventos.casaCAAD);
+                mensagemJogador.atualizaMensagem(mensagemJogador.obtemCartaSorteada(), null, Eventos.casaCAAD);
                 break;
 
             case Config.tipoRecepcao:
-                mensagemJogador.atualizaMensagem(null, null, Eventos.casaRecepcao);
+                mensagemJogador.atualizaMensagem(mensagemJogador.obtemCartaSorteada(), null, Eventos.casaRecepcao);
                 break;
 
             case Config.tipoVazia:

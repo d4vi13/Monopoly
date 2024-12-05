@@ -74,7 +74,8 @@ public class Controle {
         tabuleiro.removeDono(jogadorAtual.obtemPropriedadesJogador());
         jogadorAtual.desapropriaPropriedade(jogadorAtual.obtemPropriedadesJogador());
         jogadorAtual.declaraFalencia();
-        // Metodo remover da lista ligada
+        jogadores.tiraLista(jogadorAtual);
+        numeroJogadores--;
     }
 
     // Codigos:
@@ -146,8 +147,7 @@ public class Controle {
             banco.debitar(jogadorAtual.obtemId(), valorPropriedade);
             jogadorAtual.apropriaPropriedade(idPropriedade);
             tabuleiro.defineDono(idPropriedade, jogadorAtual.obtemId());
-        }
-        else{ 
+        } else { 
             if (jogadorAtual.ehDono(idPropriedade)){
                 banco.debitar(jogadorAtual.obtemId(), valorPropriedade*50/100);
                 tabuleiro.deshipotecar(idPropriedade); 
@@ -178,13 +178,9 @@ public class Controle {
     public MensagemJogador decifraCasa(int casaDestino) {
         MensagemJogador mensagemJogador;
         Jogador jogadorAtual = jogadores.getIteradorElem();
+        int deslocamento, casaInicial, casaFinal, imposto, evento;
         Propriedade propriedadeAtual;
         Carta cartaSorteada;
-        int deslocamento;
-        int casaInicial;
-        int casaFinal;
-        int imposto;
-        int evento;
 
         // Se o jogador não está preso e não está de férias, pode se mover
         if (!(jogadorAtual.jogadorPreso()) && !(jogadorAtual.jogadorDeFerias())) {
@@ -323,7 +319,7 @@ public class Controle {
 
                     case 5:
                         casaFinal = tabuleiro.buscaPorCasa(Config.tipoInicial);
-                        deslocamento = casaFinal - casaInicial;
+                        deslocamento = 32 - casaInicial;
                         mensagemJogador.defineEventoMovimento(true);
                         mensagemJogador.defineDeslocamento(deslocamento);
                         mensagemJogador.defineNovoEvento(Eventos.casaInicial);
@@ -381,6 +377,9 @@ public class Controle {
             mensagemJogador.defineNovoEvento(Eventos.tirouCartaDeMovimento);
         }
 
+        mensagemJogador.defineNovoEvento(Eventos.jogadorFaliu);
+        jogadorDeclaraFalencia(jogadorAtual);
+
         return mensagemJogador;
     }
 
@@ -437,10 +436,6 @@ public class Controle {
 
     public int obterCasaAtualJogador() {
         return jogadores.getIteradorElem().obtemPosicao();
-    }
-
-    public boolean atualStatusFalido() {
-        return jogadores.getIteradorElem().estaFalido();
     }
 
     public void proximoJogador() {
