@@ -2,73 +2,46 @@ package Nucleo.Controle;
 import java.awt.Image;
 import javax.swing.ImageIcon;
 import java.util.ArrayList;
+import java.util.Stack;
 import Nucleo.Atributos.Banco;
 import Nucleo.Atributos.Cartas.Carta;
 import Nucleo.Atributos.Casa.Config;
 import Nucleo.Atributos.Jogador;
 import Nucleo.Atributos.Propriedade;
 import Nucleo.Atributos.Tabuleiro;
-import Nucleo.Aux.ListaCircular;
-import Nucleo.Aux.MensagemJogador;
 import Nucleo.Grafico.JogadorG;
-import Nucleo.Aux.Serializador;
-import Nucleo.Aux.MensagemJogador.Eventos;
 import Nucleo.Atributos.D6;
+import Nucleo.Aux.MensagemJogador.Eventos;
+import Nucleo.Aux.*;
 
 public class Controle {
+    // Jogadores
+    private int numeroJogadoresInicial, numeroJogadores;
     private ListaCircular<Jogador> jogadores;
     private JogadorG[] jogadoresG;
+    // Pilha com posicao da casa e nivel da casa
+    private Stack<Dupla<Integer, Integer>> propriedades;
+    // Tabuleiro
     private Tabuleiro tabuleiro;
+    // Banco
     private Banco banco;
-    private int numeroJogadores;
-    
-    private Serializador serializador;
-    
-    private D6 d6;
+    // Dado
     private int[] numerosD6;
+    private D6 d6;
+    // Backup
+    private Serializador serializador;
 
     public Controle() {
         jogadores = new ListaCircular<Jogador>();
         jogadoresG = new JogadorG[6];
-        banco = new Banco(numeroJogadores);
+        banco = new Banco(numeroJogadoresInicial);
         tabuleiro = new Tabuleiro(banco);
         d6 = new D6();
         numerosD6 = new int[2];
         serializador = new Serializador();
+        propriedades = new Stack<Dupla<Integer, Integer>>();
     }
 
-    // Define os eventos monetários relacionados ao jogador dependendo do valor cobrado
-    private int defineEventosMonetarios(Jogador jogadorAtual, int valorCobrado) {
-        int divida;
-        int patrimonioTotal;
-        int saldoJogador = banco.obterSaldo(jogadorAtual.obtemId());
-
-        // É possível pagar
-        if (saldoJogador >= valorCobrado) {
-            return Eventos.podePagar;
-        }
-
-        patrimonioTotal = tabuleiro.patrimonioTotalJogador(jogadorAtual);
-        divida = valorCobrado - saldoJogador;
-        
-        // Precisa vender
-        if (patrimonioTotal >= divida) {
-            return Eventos.vendaOuHipoteca;
-        }
-
-        return Eventos.jogadorFaliu;
-    }
-
-    // Reseta as propriedades do jogador e define que ele faliu
-    private void jogadorDeclaraFalencia(Jogador jogadorAtual) {
-        tabuleiro.removeDono(jogadorAtual.obtemPropriedadesJogador());
-        jogadorAtual.desapropriaPropriedade(jogadorAtual.obtemPropriedadesJogador());
-        jogadorAtual.declaraFalencia();
-        jogadores.tiraLista(jogadorAtual);
-        numeroJogadores--;
-    }
-
-    // Codigos:
     // 0 -> Precisa vender mais, mesmo hipotecando todas as outras propriedades nao vai bastar
     // 1 -> Ja vendeu suficiente, mas ainda precisa hipotecar para ter dinheiro suficiente
     // 2 -> Ja vendeu suficiente, nao precisa mais hipotecar
@@ -145,11 +118,26 @@ public class Controle {
         }
     }
 
+    public void acaoBotaoEvoluir() {
+
+    }
+
+    public void acaoBotaoCarregarBackup(String nomeArquivo) {
+
+    }
+
+    public void acaoBotaoSalvarBackup(String nomeArquivo) {
+        serializador.iniciarBackup(nomeArquivo);
+        serializador.salvar(jogadores);        
+    }
+
+    public void acaoBotaoNovaPartida() {
+        tabuleiro.gerarVetorCasas();
+    }
+
     public void acaoBotaoJogarDados() {
         d6.jogaDado();
     }
-
-    public void acaoBotaoEvoluir() {}
 
     public int[] obterNumerosD6() {
         numerosD6[0] = d6.obterValorDado(0);
@@ -159,9 +147,54 @@ public class Controle {
 
     public void carregarSaldos(int[] vet) {
         int[] saldos = banco.obterSaldos();
-        for(int i = 0; i < numeroJogadores; i++){
+        for (int i = 0; i < numeroJogadoresInicial; i++){
             vet[i] = saldos[i];
         } 
+    }
+
+    // Ao iniciar um backup, pilha deve conter todas as propriedades
+    // Caso seja novo jogo, pilha deve estar vazia
+    public Stack<Dupla<Integer, Integer>> obtemAtualizacoesPropriedades() {
+        return propriedades;
+    }
+
+    // 0 -> Nada muda
+    // 1 -> Remover propriedades (vender/hipotecar)
+    // 2 -> Atualizar propriedade (evoluir)
+    // 3 -> Adicionar propriedade (comprar)
+    public int statusAtualizacoesPropriedades() {
+        return 0;
+    }
+
+    // Define os eventos monetários relacionados ao jogador dependendo do valor cobrado
+    private int defineEventosMonetarios(Jogador jogadorAtual, int valorCobrado) {
+        int divida;
+        int patrimonioTotal;
+        int saldoJogador = banco.obterSaldo(jogadorAtual.obtemId());
+
+        // É possível pagar
+        if (saldoJogador >= valorCobrado) {
+            return Eventos.podePagar;
+        }
+
+        patrimonioTotal = tabuleiro.patrimonioTotalJogador(jogadorAtual);
+        divida = valorCobrado - saldoJogador;
+        
+        // Precisa vender
+        if (patrimonioTotal >= divida) {
+            return Eventos.vendaOuHipoteca;
+        }
+
+        return Eventos.jogadorFaliu;
+    }
+
+    // Reseta as propriedades do jogador e define que ele faliu
+    private void jogadorDeclaraFalencia(Jogador jogadorAtual) {
+        tabuleiro.removeDono(jogadorAtual.obtemPropriedadesJogador());
+        jogadorAtual.desapropriaPropriedade(jogadorAtual.obtemPropriedadesJogador());
+        jogadorAtual.declaraFalencia();
+        jogadores.tiraLista(jogadorAtual);
+        numeroJogadores--;
     }
 
     // Apartir da casa destino do jogador, define os eventos e atualiza o estado do jogador
@@ -367,30 +400,16 @@ public class Controle {
             mensagemJogador.defineNovoEvento(Eventos.tirouCartaDeMovimento);
         }
 
-        mensagemJogador.defineNovoEvento(Eventos.jogadorFaliu);
-        jogadorDeclaraFalencia(jogadorAtual);
+        // TESTE FALENCIA
+        // mensagemJogador.defineNovoEvento(Eventos.jogadorFaliu);
+        // jogadorDeclaraFalencia(jogadorAtual);
 
         return mensagemJogador;
     }
 
-    // de Fernando para Davi
-    public void acaoBotaoCarregarBackup(String nomeArquivo) {
-
-    }
-
-    // de Fernando para Davi
-    public void acaoBotaoSalvarBackup(String nomeArquivo) {
-        serializador.iniciarBackup(nomeArquivo);
-        serializador.salvar(jogadores);        
-    }
-
-    public void acaoBotaoNovaPartida() {
-        tabuleiro.gerarVetorCasas();
-    }
-
     public void cadastrarJogadores(String[] vetNomes, int qtdJogadores) {
         Image iAux;
-        numeroJogadores = qtdJogadores;
+        numeroJogadoresInicial = numeroJogadores = qtdJogadores;
 
         iAux = new ImageIcon("./Dados/Imagens/Jogador1.png").getImage();
         jogadoresG[0] = new JogadorG(iAux, 0, vetNomes[0]);

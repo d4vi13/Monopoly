@@ -1,5 +1,4 @@
 package Nucleo.Atributos;
-import Nucleo.Aux.Cor;
 import java.util.ArrayList;
 import java.io.*;
 

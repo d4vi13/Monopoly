@@ -1,18 +1,18 @@
 package Nucleo.Grafico;
 import static Nucleo.Aux.EstadosJogo.*;
 
-import Nucleo.Atributos.Jogador;
-import Nucleo.Aux.EstadosJogo;
 import Nucleo.Grafico.Componente;
 import Nucleo.Controle.Controle;
 import Nucleo.Aux.MensagemJogador;
 import Nucleo.Aux.MensagemJogador.Eventos;
+import Nucleo.Aux.Dupla;
 
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Stack;
 
 public class Partida {  
     private Janela janela;
@@ -27,12 +27,16 @@ public class Partida {
     private float opacidade;
     // Botoes
     private Font fonteBotoes;
+    private Botao[] marcadores;
+    private boolean[] statusMarcador;
     private Botao botaoDados, botaoVender, botaoComprar, botaoHipotecar, botaoUpgrade;
     private boolean dadosLigado, venderLigado, comprarLigado, hipotecarLigado, upgradeLigado;
     // Jogadores
+    private PropriedadesG propriedades;
     private int numeroJogadores;
     private JogadorG[] jogadores;
-    private int[] saldos;
+    private String[] saldos;
+    private int[] saldosInt;
     private int altIcone, compIcone;
     private int idJogadorAtual;
     private String[] informaJogador;
@@ -95,7 +99,7 @@ public class Partida {
         botaoPause = new Botao("Pause", fonteBotoes, 20, cores1);
         botaoDados = new Botao(new ImageIcon("./Dados/Imagens/dados.png").getImage(), 20, cores1);
         botaoComprar = new Botao("Comprar", fonteBotoes, 20, cores1);
-        botaoUpgrade = new Botao("Pause", fonteBotoes, 20, cores1);
+        botaoUpgrade = new Botao("Evoluir", fonteBotoes, 20, cores1);
         botaoVender = new Botao("Comprar", fonteInforma, 20, cores1);
         botaoHipotecar = new Botao("Hipotecar", fonteInforma, 20, cores1);
     }
@@ -103,11 +107,19 @@ public class Partida {
     private void carregarJogadores() {
         numeroJogadores = janela.obterControle().obterNumeroJogadores();
         jogadores = janela.obterControle().obterJogadoresG();
-        saldos = new int[numeroJogadores];
+        saldos = new String[numeroJogadores];
+        saldosInt = new int[numeroJogadores];
         stringDados = new StringBuilder[2];
         stringDados[0] = new StringBuilder(2);
         stringDados[1] = new StringBuilder(2);
         informaJogador = new String[numeroJogadores];
+        propriedades = new PropriedadesG();
+
+        // Saldos Iniciais
+        carregarSaldos();
+        // Propriedades Iniciais
+        atualizarPropriedades();
+    
         for (int i = 0; i < numeroJogadores; i++) {
             informaJogador[i] = jogadores[i].obterNome() + " joga";
         }
@@ -137,7 +149,7 @@ public class Partida {
                 if (casaAtual == -1) casaAtual = 31; 
             }
 
-            jogadores[idJogadorAtual].atualizarPosicao(casaAtual, tabuleiroPosx, tabuleiroPosy, tabuleiroComp);
+            jogadores[idJogadorAtual].atualizarPosicaoJogador(casaAtual);
 
             if (casaAtual == casaDestino) {
                 ((Timer) e.getSource()).stop();
@@ -158,8 +170,9 @@ public class Partida {
         definirPosicaoTabuleiro();
         definirTamanhoComponentes();
         definirPosicaoComponentes();
+        propriedades.atualizarPosicoesUpgrades(tabuleiroPosx, tabuleiroPosy, tabuleiroComp);
         for (int i = 0; i < numeroJogadores; i++) {
-            jogadores[i].atualizarPosicao(0, tabuleiroPosx, tabuleiroPosy, tabuleiroComp);
+            jogadores[i].atualizarPosicoes(0, tabuleiroPosx, tabuleiroPosy, tabuleiroComp);
         }
         altIcone = compIcone = (int)(35 * tabuleiroComp / 1156.f);
     }
@@ -172,7 +185,7 @@ public class Partida {
         botaoPause.pintar(g);
         pintarTabuleiro(g);
         pintarIcones(g);
-        // pintarSaldoJogadores(g);
+        pintarSaldoJogadores(g);
         pintarInformaJogador(g);
 
         // if (venderLigado || hipotecarLigado) {
@@ -185,11 +198,33 @@ public class Partida {
         if (falirLigado) pintarJogadorFaliu(g);
         if (cartaLigado) pintarCarta(g2d);
         // if (comprarLigado) botaoComprar.pintar(g);
+        // if (upgradeLigado) botaoUpgrade.pintar(g);
         if (pauseAtivado) pause.pintar(g);
     }
 
     private void pintarSaldoJogadores(Graphics g) {
+        int comp, alt;
 
+        alt = 15;
+
+        for (int i = 0; i < numeroJogadores; i++) {
+            if (jogadores[i].estaFalido()) continue;
+
+            g.setFont(fonteNumeros);
+            alt += g.getFontMetrics().getAscent();
+            comp = g.getFontMetrics().stringWidth(saldos[i]);
+            g.drawString(saldos[i], frameComprimento - comp - 10, alt);
+            
+            g.setFont(fonteCarta2);
+            comp += g.getFontMetrics().stringWidth("$ ");
+            g.drawString("$ ", frameComprimento - comp - 10, alt);
+            
+            comp += compIcone + 5;
+            alt -= altIcone;
+            g.drawImage(jogadores[i].obterIcone(), frameComprimento - comp - 10, alt, compIcone, altIcone, null);
+            alt += altIcone;
+            alt += 10;
+        }
     }
 
     private void pintarSeleciona(Graphics g) {
@@ -239,12 +274,20 @@ public class Partida {
     }
 
     private void pintarTabuleiro(Graphics g) {
+        Posicao p;
+        int tam;
+
         g.drawImage(tabuleiro, tabuleiroPosx, tabuleiroPosy, tabuleiroComp, tabuleiroAlt, null);
+
+        // tam = propriedades.obtemNumUpgrades();
+        // for (int i = 0; i < tam; i++) {
+        //     p = propriedades.obterPosicaoIconeUp(i);
+        //     g.drawImage(propriedades.obterImagemIconeUp(i), p.posX, p.posY, compIcone, altIcone, null);
+        // }
     }
 
     private void pintarIcones(Graphics g) {
         JogadorG j;
-        int tam;
         Posicao p;
 
         for (int i = 0; i < numeroJogadores; i++) {
@@ -253,11 +296,6 @@ public class Partida {
 
             p = j.obterPosicaoJogador();
             g.drawImage(j.obterIcone(), p.posX, p.posY, compIcone, altIcone, null);
-            tam = j.obtemNumUpgrades();
-            for (int k = 0; k < tam; k++) {
-                p = j.obterPosicaoIconeUp(i);
-                g.drawImage(j.obterImagemIconeUp(i), p.posX, p.posY, 30, 30, null);
-            }
         }
     }
 
@@ -313,6 +351,8 @@ public class Partida {
     }
 
     public void mouseAtualiza(MouseEvent e) {
+        int acao;
+
         if (pauseAtivado == true) {
             if (e.getID() == MouseEvent.MOUSE_MOVED) {
                 botaoPause.mouseMoveu(e);
@@ -325,15 +365,36 @@ public class Partida {
             case MouseEvent.MOUSE_MOVED:
                 botaoPause.mouseMoveu(e);
                 if (dadosLigado) botaoDados.mouseMoveu(e);
+                if (comprarLigado) botaoComprar.mouseMoveu(e);
                 break;
             case MouseEvent.MOUSE_PRESSED:
                 botaoPause.mousePressionado(e);
                 if (dadosLigado) botaoDados.mousePressionado(e);
+                if (comprarLigado) botaoComprar.mousePressionado(e);
                 break;
             case MouseEvent.MOUSE_RELEASED:
                 if (botaoPause.mouseSolto(e)) ativarPause();
-                if (dadosLigado) 
-                    if (botaoDados.mouseSolto(e)) dadosJogados();
+                if (dadosLigado) {if (botaoDados.mouseSolto(e)) dadosJogados();}
+                if (comprarLigado) {
+                    if (botaoComprar.mouseSolto(e)) {
+                        janela.obterControle().acaoBotaoComprar();
+                        carregarSaldos();
+                        atualizarJogador();
+                    }
+                }
+                if (upgradeLigado) {
+                    if (botaoUpgrade.mouseSolto(e)) {
+                        janela.obterControle().acaoBotaoEvoluir();
+                        carregarSaldos();
+                        atualizarJogador();
+                    }
+                }
+                if (venderLigado) {
+                    acao = janela.obterControle().acaoBotaoVender(null);
+                }
+                if (hipotecarLigado) {
+
+                }
                 break;
             default:
                 break;
@@ -361,7 +422,7 @@ public class Partida {
         botaoDados.definirLocalizacao(20, tabuleiroPosy + botaoPause.obterAlt() + 50);
     }
 
-    void ativarPause() {
+    private void ativarPause() {
         pause.setDimensoes(frameComprimento, frameAltura);
         opacidade = 0.5f;
         pauseAtivado = true;
@@ -377,7 +438,7 @@ public class Partida {
     }
 
     private void fimTemporizadorGenerico() {
-        int tipoEvento = msg.obtemTipoEvento();
+        int evento = msg.obtemTipoEvento();
         switch (estadoAtual) {
             // Jogador na prisao
             case ATUALIZA_DADOS:
@@ -385,16 +446,21 @@ public class Partida {
                 break;
             // Jogador faliu
             case JOGADOR_NA_CASA:
-                if (tipoEvento == Eventos.tirouCartaDeMovimento) {
+                if (evento == Eventos.tirouCartaDeMovimento) {
                     casaDestino = (casaDestino + msg.obtemDeslocamentoDoJogador()) & 0x1f;
                     System.out.println(msg.obtemDeslocamentoDoJogador());
                     temporizadorPulos.start();
                 } else {
-                    if (tipoEvento == Eventos.jogadorFaliu) {
+                    if (evento == Eventos.jogadorFaliu) {
                         jogadores[idJogadorAtual].defineFalido();
                     }
                     atualizarJogador();
                 }
+
+                if (evento == Eventos.tirouCartaDeMovimento || evento == Eventos.tirouCarta) {
+                    carregarSaldos();
+                }
+
                 break;
             default:
                 break;
@@ -414,14 +480,50 @@ public class Partida {
         }
     }
 
+    private void intVetParaStringVet(String[] vet1, int[] vet2, int tam) {
+        for (int i = 0; i < tam; i++) {
+            vet1[i] = Integer.toString(vet2[i]);
+        }
+    }
+
+    private void carregarSaldos() {
+        janela.obterControle().carregarSaldos(saldosInt);
+        intVetParaStringVet(saldos, saldosInt, numeroJogadores);
+    }
+
+    private void atualizarPropriedades() {
+        Stack<Dupla<Integer, Integer>> pilha;
+        int casa, nivelCasa, acao;
+
+        acao = janela.obterControle().statusAtualizacoesPropriedades();
+        if (acao != 0) {
+            pilha = janela.obterControle().obtemAtualizacoesPropriedades();
+            while (!pilha.empty()) {
+                switch (acao) {
+                    case 1:
+                        
+                        break;
+                    case 2:
+                        
+                        break;
+                    case 3:
+                        
+                        break;
+                    default:
+                        break;
+                }
+            }  
+        }
+    }
+
     /* Estados do jogo */
     public void ativarBotaoDados() {
         estadoAtual = ATIVA_DADOS;
         idJogadorAtual = janela.obterControle().obterIdJogadorAtual();
-        janela.obterControle().carregarSaldos(saldos);
         dadosLigado = true;
         valoresLigado = false;
         comprarLigado = false;
+        upgradeLigado = false;
         venderLigado = false;
         hipotecarLigado = false;
         falirLigado = false;
@@ -456,11 +558,15 @@ public class Partida {
         estadoAtual = JOGADOR_NA_CASA;
         switch (msg.obtemTipoEvento()) {
             case Eventos.jogadorFaliu:
+                carregarSaldos();
                 falirLigado = true;
                 temporizadorGenerico.start();
                 break;
             case Eventos.semDonoPodeComprar:
                 comprarLigado = true;
+                break;
+            case Eventos.ehDonoPodeEvoluir:
+                upgradeLigado = true;
                 break;
             case Eventos.tirouCarta:
                 cartaLigado = true;
@@ -483,138 +589,84 @@ public class Partida {
         estadoAtual = ATUALIZA_JOGADOR;
         if (msg.obtemTipoEvento() != Eventos.jogadorFaliu) {
             janela.obterControle().proximoJogador();
+        } else if (janela.obterControle().obterNumeroJogadores() == 1) {
+            System.exit(0);
+            // janela.atualizarEstado(FINAL);
         }
         ativarBotaoDados();
     }
 }
 
-class MenuPause {
-    private enum Estado{
-        NAO_SALVAR,
-        SALVAR;
+class PropriedadesG {
+    private ArrayList<Dupla<Integer, Posicao>> posicoesUpgrades;
+    private ArrayList<Integer> iconesUpgrades;
+    private Image icone, up1, up2, up3, up4;
+    private int id, tabDim, tabX, tabY;
+    private double escala;
+
+    public PropriedadesG() {
+        posicoesUpgrades = new ArrayList<>();
+        iconesUpgrades = new ArrayList<>();
     }
 
-    private Partida jogatina;
-    private int frameComprimento, frameAltura;
-    private Botao botaoSalvar, botaoSair;
-    private int compComponentes, altComponentes;
-    private CaixaTexto caixaBackup;
-    private Estado estado;
-
-    public MenuPause(Partida j) {
-        Color[] coresBotoes = {Color.BLACK, Color.LIGHT_GRAY, Color.GRAY, Color.WHITE};
-        Color[] coresCaixa = {Color.BLACK, Color.WHITE, Color.LIGHT_GRAY};
-        int raio = 40;
-        Font fonteBotoes, fonteCaixa;
-        File f;
-
-        jogatina = j;
-        estado = Estado.NAO_SALVAR;
-        fonteBotoes = fonteCaixa = null;
-        try {
-            f = new File("./Dados/Fontes/HighMount_PersonalUse.otf");
-            fonteBotoes = Font.createFont(Font.TRUETYPE_FONT, f).deriveFont(28f);
-            f = new File("./Dados/Fontes/times_new_roman.ttf");
-            fonteCaixa = Font.createFont(Font.TRUETYPE_FONT, f).deriveFont(28f);
-        } catch(FontFormatException | IOException e) {
-            System.out.println("Erro ao carregar fonte");
-            System.exit(1);
+    public void atualizarPosicoesUpgrades(int tabPosx, int tabPosy, int tabDim) {
+        Dupla<Integer, Posicao> d;
+        
+        this.tabDim = tabDim;
+        tabX = tabPosx;
+        tabY = tabPosy;
+        escala = tabDim / 1156.0;
+        for (int i = 0; i < posicoesUpgrades.size(); i++) {
+            d = posicoesUpgrades.get(i);
+            atualizarPosicaoUpgrade(d.primeiro, d.segundo);
         }
-
-        botaoSalvar = new Botao("Salvar Partida", fonteBotoes, raio, coresBotoes);
-        botaoSair = new Botao("Sair", fonteBotoes, raio, coresBotoes);
-        caixaBackup = new CaixaTexto(fonteCaixa, raio, coresCaixa);
     }
 
-    public void setDimensoes(int comprimento, int altura) {
-        this.frameComprimento = comprimento;
-        this.frameAltura = altura;
-        definirTamanhoComponentes();
-        definirPosicaoComponentes();
+    private void atualizarPosicaoUpgrade(int casa, Posicao p) {
+        p.posX = (int)(escala * Posicoes.posUpgrades[casa].posX) + tabX;
+        p.posY = (int)(escala * Posicoes.posUpgrades[casa].posY) + tabY;
     }
 
-    public void pintar(Graphics g) {
-        Graphics2D g2d = (Graphics2D)g;
+    public void adicionarUpgrade(int casa) {
+        Posicao p;
 
-        g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1.0f));
-        if (estado == Estado.SALVAR) {
-            caixaBackup.pintar(g);
-        } else {
-            botaoSalvar.pintar(g);
+        for (int i = 0; i < posicoesUpgrades.size(); i++) {
+            if (posicoesUpgrades.get(i).primeiro == casa) {
+                iconesUpgrades.add(i, iconesUpgrades.get(i) + 1);
+                return;
+            }
         }
-
-        botaoSair.pintar(g);
+        
+        posicoesUpgrades.add(new Dupla<Integer, Posicao>(casa, p = new Posicao()));
+        atualizarPosicaoUpgrade(casa, p);
+        iconesUpgrades.add(0);
     }
 
-    public void tecladoAtualiza(KeyEvent e) {
-        if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
-            jogatina.desativarPause();
-            return;
-        }
-
-        if (estado == Estado.SALVAR) {
-            switch (e.getID()) {
-                case KeyEvent.KEY_TYPED:
-                    caixaBackup.teclaDigitada(e);
-                    break;
-                case KeyEvent.KEY_RELEASED:
-                    if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-                        jogatina.obterJanela().obterControle().acaoBotaoSalvarBackup(caixaBackup.obterString());
-                    } else {     
-                        caixaBackup.teclaSolta(e);
-                    }
-                    break;
-                default:
-                    break;
+    public void removerUpgrade(int casa) {
+        for (int i = 0; i < posicoesUpgrades.size(); i++) {
+            if (posicoesUpgrades.get(i).primeiro == casa) {
+                posicoesUpgrades.remove(i);
+                iconesUpgrades.remove(i);
+                return;
             }
         }
     }
 
-    public void mouseAtualiza(MouseEvent e) {
-        switch (e.getID()) {
-            case MouseEvent.MOUSE_MOVED:
-                botaoSalvar.mouseMoveu(e);
-                botaoSair.mouseMoveu(e);
-                caixaBackup.mouseMoveu(e);
-                break;
-            case MouseEvent.MOUSE_PRESSED:
-                botaoSalvar.mousePressionado(e);
-                botaoSair.mousePressionado(e);             
-                break;
-            case MouseEvent.MOUSE_RELEASED:
-                if (estado == Estado.SALVAR) {
-                    caixaBackup.mouseSolto(e);
-                } else if (botaoSalvar.mouseSolto(e)) {
-                    estado = Estado.SALVAR;
-                }
-
-                if (botaoSair.mouseSolto(e)) {
-                    System.exit(0);
-                }
-                break;
-            default:
-                break;
-        }
-    }
-
-    private void definirTamanhoComponentes() {
-        altComponentes = 96;
-        compComponentes = 320;
-
-        botaoSair.definirDimensoes(compComponentes, altComponentes);
-        botaoSalvar.definirDimensoes(compComponentes, altComponentes);
-        caixaBackup.definirDimensoes(compComponentes, altComponentes);
+    public int obtemNumUpgrades() {
+        return iconesUpgrades.size();
     }
     
-    private void definirPosicaoComponentes() {
-        int posy, posx;
-        int alturaTotal = 2 * altComponentes + (int)(frameAltura / 40);
-
-        posx = (frameComprimento - compComponentes) / 2;
-        posy = (frameAltura - alturaTotal) / 2;
-        botaoSalvar.definirLocalizacao(posx, posy);
-        caixaBackup.definirLocalizacao(posx, posy);
-        posy += altComponentes + (int)(frameAltura / 40);
-        botaoSair.definirLocalizacao(posx, posy);
+    public Image obterImagemIconeUp(int i) {
+        switch (iconesUpgrades.get(i)) {
+            case 0: return up1;
+            case 1: return up2;
+            case 2: return up3;
+            case 3: return up4;
+            default:return null;
+        }
+    }
+    
+    public Posicao obterPosicaoIconeUp(int i) {
+        return posicoesUpgrades.get(i).segundo;
     }
 }

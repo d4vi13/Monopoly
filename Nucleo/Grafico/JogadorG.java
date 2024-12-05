@@ -4,26 +4,18 @@ import java.util.ArrayList;
 
 class Posicao {
     public int posX, posY;
-}
 
-class Dupla<A, B> {
-    public A primeiro;
-    public B segundo;
-
-    public Dupla(A primeiro, B segundo) {
-        this.primeiro = primeiro;
-        this.segundo = segundo;
-    }
+    Posicao() {}
+    Posicao(int x, int y) {posX = x; posY = y;}
 }
 
 public class JogadorG {
     private Posicao posicaoAtual;
-    private ArrayList<Dupla<Integer, Posicao>> posicoesUpgrades;
-    private ArrayList<Integer> iconesUpgrades;
-    private Image icone, up1, up2, up3, up4;
     private String nome;
-    private int id;
+    private int id, tabX, tabY;
+    private double escala;
     private boolean faliu;
+    private Image icone;
 
     public JogadorG(Image i, int id, String nome) {
         icone = i;
@@ -31,43 +23,18 @@ public class JogadorG {
         this.id = id;
         posicaoAtual = new Posicao();
         faliu = false;
-
-        posicoesUpgrades = new ArrayList<>();
-        iconesUpgrades = new ArrayList<>();
     }
 
-    public void atualizarPosicao(int casa, int tabPosx, int tabPosy, int tabDim) {
-        double escala = tabDim / 1156.0;
-        posicaoAtual.posX = (int)(escala * Posicoes.x[casa][id]) + tabPosx;
-        posicaoAtual.posY = (int)(escala * Posicoes.y[casa][id]) + tabPosy;
-        // Atualizar posicoes upgrades
+    public void atualizarPosicoes(int casa, int tabPosx, int tabPosy, int tabDim) {
+        tabX = tabPosx;
+        tabY = tabPosy;
+        escala = tabDim / 1156.0;
+        atualizarPosicaoJogador(casa);
     }
 
-    public void adicionarUpgrade(int casa) {
-
-    }
-
-    public void atualizarUpgrade(int casa, boolean remover) {
-
-    }
-
-    public int obtemNumUpgrades() {
-        return iconesUpgrades.size();
-    }
-
-    
-    public Image obterImagemIconeUp(int i) {
-        switch (iconesUpgrades.get(i)) {
-            case 0: return up1;
-            case 1: return up2;
-            case 2: return up3;
-            case 3: return up4;
-            default:return null;
-        }
-    }
-    
-    public Posicao obterPosicaoIconeUp(int i) {
-        return posicoesUpgrades.get(i).segundo;
+    public void atualizarPosicaoJogador(int casa) {
+        posicaoAtual.posX = (int)(escala * Posicoes.x[casa][id]) + tabX;
+        posicaoAtual.posY = (int)(escala * Posicoes.y[casa][id]) + tabY;
     }
 
     public Posicao obterPosicaoJogador() {
@@ -92,6 +59,40 @@ public class JogadorG {
 }
 
 class Posicoes {
+    public static Posicao[] posUpgrades = 
+    {null,
+     new Posicao(90, 984),
+     null,
+     new Posicao(),
+     new Posicao(),
+     null,
+     new Posicao(),
+     new Posicao(),
+     new Posicao(),
+     new Posicao(),
+     new Posicao(),
+     new Posicao(),
+     new Posicao(),
+     new Posicao(),
+     new Posicao(),
+     new Posicao(),
+     new Posicao(),
+     new Posicao(),
+     new Posicao(),
+     new Posicao(),
+     new Posicao(),
+     new Posicao(),
+     new Posicao(),
+     new Posicao(),
+     new Posicao(),
+     new Posicao(),
+     new Posicao(),
+     new Posicao(),
+     new Posicao(),
+     new Posicao(),
+     new Posicao(),
+     new Posicao()};
+
     public static int[][] x = 
     {{3, 40,  77, 3, 40, 77},
      {12, 49, 86, 12, 49, 86},
