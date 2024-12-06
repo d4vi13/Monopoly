@@ -44,7 +44,7 @@ public class Partida {
     private String[] informaJogador;
     private int casaDestino, casaAtual;
     private boolean falirLigado, cartaLigado;
-    private Font fonteHighMount_31, fonteHighMount_34;
+    private Font fonteHighMount_25, fonteHighMount_31, fonteHighMount_34;
     private Font fonteTimesNRoman_45, fonteTimesNRoman_80, fonteTimesNRoman_25;
     // Timers
     private Timer temporizadorPulos, temporizadorGenerico;
@@ -74,6 +74,7 @@ public class Partida {
         try {
             fonteHighMount_45 = Font.createFont(Font.TRUETYPE_FONT, f1).deriveFont(40f);
             fonteHighMount_34 = Font.createFont(Font.TRUETYPE_FONT, f1).deriveFont(34f);
+            fonteHighMount_25 = Font.createFont(Font.TRUETYPE_FONT, f1).deriveFont(25f);
             fonteNumberInGothic_45 = Font.createFont(Font.TRUETYPE_FONT, f2).deriveFont(45f);
             fonteNumberInGothic_25 = Font.createFont(Font.TRUETYPE_FONT, f2).deriveFont(25f);
             fonteTimesNRoman_80 = Font.createFont(Font.TRUETYPE_FONT, f3).deriveFont(80f);
@@ -105,8 +106,8 @@ public class Partida {
         botaoDados = new Botao(new ImageIcon("./Dados/Imagens/dados.png").getImage(), 20, cores1);
         botaoComprar = new Botao("Comprar", fonteHighMount_45, 20, cores1);
         botaoUpgrade = new Botao("Evoluir", fonteHighMount_45, 20, cores1);
-        botaoVender = new Botao("Comprar", fonteHighMount_34, 20, cores1);
-        botaoHipotecar = new Botao("Hipotecar", fonteHighMount_34, 20, cores1);
+        botaoVender = new Botao("Comprar", fonteHighMount_25, 20, cores1);
+        botaoHipotecar = new Botao("Hipotecar", fonteHighMount_25, 20, cores1);
         stringDados = new StringBuilder[2];
         stringDados[0] = new StringBuilder(2);
         stringDados[1] = new StringBuilder(2);
@@ -177,6 +178,9 @@ public class Partida {
     }
 
     public void setDimensoes(int comprimento, int altura) {
+        Controle controle = janela.obterControle();
+        int idAtual, idIni, idCasa;
+
         this.frameComprimento = comprimento;
         this.frameAltura = altura;
         definirTamanhoTabuleiro();
@@ -184,11 +188,14 @@ public class Partida {
         definirTamanhoComponentes();
         definirPosicaoComponentes();
         propriedades.atualizarPosicoesUpgrades(tabuleiroPosx, tabuleiroPosy, tabuleiroComp);
-        for (int i = 0; i < numeroJogadores; i++) {
-            
-            jogadores[i].atualizarPosicoes(0, tabuleiroPosx, tabuleiroPosy, tabuleiroComp);
+        idIni = idAtual = controle.obterIdJogadorAtual();
+        do {
+            idCasa = controle.obterCasaAtualJogador();
+            jogadores[idAtual].atualizarPosicoes(idCasa, tabuleiroPosx, tabuleiroPosy, tabuleiroComp);
+            controle.proximoJogador();
+            idAtual = controle.obterIdJogadorAtual();
+        } while (idIni != idAtual);
 
-        }
         altIcone = compIcone = (int)(35 * tabuleiroComp / 1156.f);
     }
 
@@ -210,7 +217,7 @@ public class Partida {
             if (venderLigado) {
                 botaoVender.definirLocalizacao(posX, posY);
                 botaoVender.pintar(g);
-                posX += botaoVender.obterComp();
+                posX += botaoVender.obterComp() + 10;
             } 
             if (hipotecarLigado) {
                 botaoHipotecar.definirLocalizacao(posX, posY);
@@ -227,19 +234,23 @@ public class Partida {
     }
 
     private void pintarUpgrade(Graphics g) {
+        int posY = botaoComprar.obterY() + botaoComprar.obterAlt();
+        int valor = msg.obtemPropriedadeAtual().obtemValorPropriedade();
+
         botaoUpgrade.pintar(g);
-        pintarValorPropriedade(g, 20, botaoComprar.obterY() + botaoComprar.obterAlt());
+        pintarValorPropriedade(g, 20, posY, Integer.toString(valor));
     }
 
     private void pintarComprar(Graphics g) {
+        int posY = botaoComprar.obterY() + botaoComprar.obterAlt();
+        int valor = msg.obtemPropriedadeAtual().obtemValorPropriedade();
+
         botaoComprar.pintar(g);
-        pintarValorPropriedade(g, 20, botaoComprar.obterY() + botaoComprar.obterAlt());
+        pintarValorPropriedade(g, 20, posY, Integer.toString(valor));
     }
 
-    private void pintarValorPropriedade(Graphics g, int posX, int posY) {
+    private void pintarValorPropriedade(Graphics g, int posX, int posY, String valorStr) {
         int comp, alt;
-        int valor = msg.obtemPropriedadeAtual().obtemValorPropriedade();
-        String valorStr = Integer.toString(valor);
 
         g.setFont(fonteTimesNRoman_25);
         alt = g.getFontMetrics().getAscent();
@@ -278,7 +289,7 @@ public class Partida {
     }
 
     private int pintarSeleciona(Graphics g) {
-        int posX, posY, alt, comp;
+        int posX, posY;
 
         posY = botaoDados.obterY();
         posX = botaoComprar.obterX() + botaoComprar.obterComp() + 20;
@@ -287,7 +298,7 @@ public class Partida {
             marcadores[i].definirLocalizacao(posX, posY);
             marcadores[i].pintar(g);
             posY += marcadores[i].obterAlt() + 2;
-            pintarValorPropriedade(g, posX, posY);
+            pintarValorPropriedade(g, posX, posY, valoresImoveis.get(i));
             posY += 10;
         }
 
@@ -462,13 +473,13 @@ public class Partida {
                         atualizarJogador();
                     }
                 }
-                if (venderLigado) {
-                    acao = janela.obterControle().acaoBotaoVender(null);
+                // if (venderLigado) {
+                //     acao = janela.obterControle().acaoBotaoVender(null);
                     
-                }
-                if (hipotecarLigado) {
-                    acao = janela.obterControle().acaoBotaoHipotecar(null);
-                }
+                // }
+                // if (hipotecarLigado) {
+                //     acao = janela.obterControle().acaoBotaoHipotecar(null);
+                // }
                 break;
             default:
                 break;
@@ -488,6 +499,8 @@ public class Partida {
 
     private void definirTamanhoComponentes() {
         botaoPause.definirDimensoes(160, 48);
+        botaoVender.definirDimensoes(115, 33);
+        botaoHipotecar.definirDimensoes(115, 33);
         botaoDados.definirDimensoes((int)(0.0417 * frameComprimento), (int)(0.0417 * frameComprimento));
         botaoComprar.definirDimensoes(2 * botaoDados.obterComp() + 10, botaoDados.obterAlt());
         botaoUpgrade.definirDimensoes(2 * botaoDados.obterComp() + 10, botaoDados.obterAlt());
