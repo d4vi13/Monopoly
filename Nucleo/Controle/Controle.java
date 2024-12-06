@@ -27,6 +27,8 @@ public class Controle {
     private D6 d6;
     private int[] numerosD6;
 
+    private String caminhoBackup = "./Dados/Backups/";
+
     public Controle() {
         jogadores = new ListaCircular<Jogador>();
         jogadoresG = new JogadorG[6];
@@ -384,51 +386,48 @@ public class Controle {
         return mensagemJogador;
     }
 
-    // de Fernando para Davi
     public void acaoBotaoCarregarBackup(String nomeArquivo) {
-
+        serializador.restaurarBackup(caminhoBackup + nomeArquivo);
+        serializador.carregar(numeroJogadores);
+        serializador.carregar(jogadores);        
+        serializador.carregar(banco);
     }
 
-    // de Fernando para Davi
     public void acaoBotaoSalvarBackup(String nomeArquivo) {
-        serializador.iniciarBackup(nomeArquivo);
+        serializador.iniciarBackup(caminhoBackup + nomeArquivo);
+        serializador.salvar(numeroJogadores);
         serializador.salvar(jogadores);        
+        serializador.salvar(banco);
     }
 
     public void acaoBotaoNovaPartida() {
         tabuleiro.gerarVetorCasas();
     }
 
-    public void cadastrarJogadores(String[] vetNomes, int qtdJogadores) {
+    private void criarJogadoresG(String vetNomes[]){
         Image iAux;
-        numeroJogadores = qtdJogadores;
+        String caminhoImagem = "./Dados/Imagens/Jogador%d.png";
+        for (int i = 0; i < numeroJogadores || i < 2; i++){
+            iAux = new ImageIcon(String.format(caminhoImagem,i+1)).getImage();
+            jogadoresG[i] = new JogadorG(iAux, i, vetNomes[i]);
+        }
+    }
 
-        iAux = new ImageIcon("./Dados/Imagens/Jogador1.png").getImage();
-        jogadoresG[0] = new JogadorG(iAux, 0, vetNomes[0]);
-        iAux = new ImageIcon("./Dados/Imagens/Jogador2.png").getImage();
-        jogadoresG[1] = new JogadorG(iAux, 1, vetNomes[1]);
-        if (numeroJogadores > 2) {
-            iAux = new ImageIcon("./Dados/Imagens/Jogador3.png").getImage();
-            jogadoresG[2] = new JogadorG(iAux, 2, vetNomes[2]);
-        }
-        if (numeroJogadores > 3) {
-            iAux = new ImageIcon("./Dados/Imagens/Jogador4.png").getImage();
-            jogadoresG[3] = new JogadorG(iAux, 3, vetNomes[3]);
-        }
-        if (numeroJogadores > 4) {
-            iAux = new ImageIcon("./Dados/Imagens/Jogador5.png").getImage();
-            jogadoresG[4] = new JogadorG(iAux, 4, vetNomes[4]);
-        }
-        if (numeroJogadores > 5) {
-            iAux = new ImageIcon("./Dados/Imagens/Jogador6.png").getImage();
-            jogadoresG[5] = new JogadorG(iAux, 5, vetNomes[5]);
-        }
-
+    private void criarJogadores(){
         for (int i = 0; i < numeroJogadores; i++) {
             jogadores.addLista(new Jogador(i));
         }
         
         jogadores.setIterador();
+    }
+
+    public void cadastrarJogadores(String[] vetNomes, int qtdJogadores) {
+        Image iAux;
+        numeroJogadores = qtdJogadores;
+
+        criarJogadoresG(vetNomes);    
+
+        criarJogadores(); 
     }
 
     public int obterIdJogadorAtual() {
