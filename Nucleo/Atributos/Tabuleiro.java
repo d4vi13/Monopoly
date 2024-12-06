@@ -184,8 +184,8 @@ public class Tabuleiro {
         Casa casaDoTabuleiro;
         infoTabuleiro casaAtual;
         int indexLista;
-        CarregaTabuleiro tabuleiroAtual = new CarregaTabuleiro();
         String salvarArquivo;
+        CarregaTabuleiro tabuleiroAtual = new CarregaTabuleiro();
         String tipos[] = {"Inicial", "Imovel", "Empresa", "Prisao", "Carta", "CAAD", "Recepcao", "CasaVazia"};
 
         salvarArquivo = path.concat(backup);

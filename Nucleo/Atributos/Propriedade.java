@@ -98,6 +98,7 @@ final class Imovel extends Propriedade {
 
     public void defineNivel(int nivel) {
         this.nivel = nivel;
+        evoluirImovel(nivel);
     }
 
     public void evoluirImovel() {
