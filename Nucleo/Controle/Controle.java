@@ -388,7 +388,6 @@ public class Controle {
         serializador.carregar(numeroJogadores);
         serializador.carregar(jogadores);        
         serializador.carregar(banco);
-
     }
 
     public void acaoBotaoSalvarBackup(String nomeArquivo) {
@@ -411,20 +410,21 @@ public class Controle {
         }
     }
 
+    private void criarJogadores(){
+        for (int i = 0; i < numeroJogadores; i++) {
+            jogadores.addLista(new Jogador(i));
+        }
+        
+        jogadores.setIterador();
+    }
+
     public void cadastrarJogadores(String[] vetNomes, int qtdJogadores) {
         Image iAux;
         numeroJogadores = qtdJogadores;
 
         criarJogadoresG(vetNomes);    
 
-
-        
-     
-        for (int i = 0; i < numeroJogadores; i++) {
-            jogadores.addLista(new Jogador(i));
-        }
-        
-        jogadores.setIterador();
+        criarJogadores(); 
     }
 
     public int obterIdJogadorAtual() {
