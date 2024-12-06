@@ -7,7 +7,7 @@ import java.io.*;
 public class Serializador{
     private ObjectOutputStream oos;
     private ObjectInputStream ois; 
-    private Integer numeroDeJogadores;
+    private int numeroDeJogadores;
 
     public void iniciarBackup(String backup){
         try{
@@ -48,9 +48,9 @@ public class Serializador{
         }
     }
 
-    public void salvar(Integer numeroDeJogadores){
+    public void salvar(int numeroDeJogadores){
         try{
-            oos.writeObject(numeroDeJogadores);
+            oos.writeInt(numeroDeJogadores);
         }catch(IOException exception){
             exception.printStackTrace();
         }
@@ -69,9 +69,10 @@ public class Serializador{
 
     public void carregar(ListaCircular<Jogador> jogadores){
         for(int i = 0; i < numeroDeJogadores; i++){
+            System.out.println("aqui");
             jogadores.addLista(carregarJogador());
         }
-
+        jogadores.setIterador();
         // Ajusta o iterador, pois o iterador foi o primeiro salvo
         for(int i = 0; i < numeroDeJogadores - 1; i++)
             jogadores.iteradorProx();
@@ -85,11 +86,11 @@ public class Serializador{
         }
     }
 
-    public void carregar(Integer numeroDeJogadores){
+    public void carregar(int numeroDeJogadores){
         try{
-            this.numeroDeJogadores = (Integer) ois.readObject();
+            this.numeroDeJogadores = ois.readInt();
             numeroDeJogadores = this.numeroDeJogadores;
-        }catch(IOException | ClassNotFoundException exception){
+        }catch(IOException exception){
             exception.printStackTrace();
         }
     }
