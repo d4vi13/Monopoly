@@ -44,6 +44,7 @@ public class MensagemJogador {
         public final static int temDonoEPodePagar = 2;
         public final static int vendaOuHipoteca = 3;
         public final static int semDonoPodeComprar = 4;
+        public final static int ehDonoPodeEvoluir = 14;
         public final static int semDonoNaoPodeComprar = 5;
         public final static int jogadorTaPreso = 6;
         public final static int jogadorEstaVisitandoPrisao = 7;
