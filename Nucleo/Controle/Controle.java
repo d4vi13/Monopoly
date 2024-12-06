@@ -125,19 +125,6 @@ public class Controle {
 
     }
 
-    public void acaoBotaoCarregarBackup(String nomeArquivo) {
-
-    }
-
-    public void acaoBotaoSalvarBackup(String nomeArquivo) {
-        serializador.iniciarBackup(nomeArquivo);
-        serializador.salvar(jogadores);        
-    }
-
-    public void acaoBotaoNovaPartida() {
-        tabuleiro.gerarVetorCasas();
-    }
-
     public void acaoBotaoJogarDados() {
         d6.jogaDado();
     }
@@ -244,7 +231,12 @@ public class Controle {
                 propriedadeAtual = mensagemJogador.obtemPropriedadeAtual();
 
                 if (propriedadeAtual.obtemIdDono() == jogadorAtual.obtemId()) {
-                    // Jogador é o dono da propriedade
+                    if (propriedadeAtual.obtemTipo() == Config.tipoImovel) {
+                        int valorEvolucao = mensagemJogador.obtemValorEvolucao();
+                        if (banco.temSaldoSuficiente(jogadorAtual.obtemId(), valorEvolucao)) {
+                            mensagemJogador.defineNovoEvento(Eventos.ehDonoPodeEvoluir);
+                        }
+                    }
                 } else {
                     // Não é o dono e precisa pagar aluguel
                     evento = defineEventosMonetarios(jogadorAtual, propriedadeAtual.obtemAluguel());
@@ -457,8 +449,7 @@ public class Controle {
     }
 
     public void cadastrarJogadores(String[] vetNomes, int qtdJogadores) {
-        Image iAux;
-        numeroJogadores = qtdJogadores;
+        numeroJogadores = numeroJogadoresInicial = qtdJogadores;
 
         criarJogadoresG(vetNomes);    
 

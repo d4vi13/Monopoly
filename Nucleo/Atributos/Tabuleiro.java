@@ -328,7 +328,15 @@ public class Tabuleiro {
                 mensagemJogador.atualizaMensagem(mensagemJogador.obtemCartaSorteada(), null, Eventos.casaInicial);
                 break;
             
-            case Config.tipoImovel:            
+            case Config.tipoImovel:        
+                propriedadeAtual = (Propriedade)casaAtual;
+                if (propriedadeAtual.temDono()) {
+                    mensagemJogador.atualizaMensagem(null, propriedadeAtual, Eventos.propriedadeComDono);
+                    mensagemJogador.defineValorEvolucao(((Imovel) propriedadeAtual).obtemPrecoEvolucao());
+                } else {
+                    mensagemJogador.atualizaMensagem(null, propriedadeAtual, Eventos.propriedadeSemDono);
+                }
+                break;
             case Config.tipoEmpresa:
 
                 propriedadeAtual = (Propriedade)casaAtual;
