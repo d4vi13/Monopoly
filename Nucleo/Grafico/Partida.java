@@ -287,12 +287,21 @@ public class Partida {
         int tam;
 
         g.drawImage(tabuleiro, tabuleiroPosx, tabuleiroPosy, tabuleiroComp, tabuleiroAlt, null);
+        Image img = new ImageIcon("./Dados/Imagens/servidorN1.png").getImage();
+        double escala = tabuleiroComp / 1156.0;
+        int comp = (int)(45 * escala);
+        int alt = (int)(13 * escala);
 
-        tam = propriedades.obtemNumUpgrades();
-        for (int i = 0; i < tam; i++) {
-            p = propriedades.obterPosicaoIconeUp(i);
-            g.drawImage(propriedades.obterImagemIconeUp(i), p.posX, p.posY, compIcone, altIcone, null);
+        for (int i = 0; i < 32; i++) {
+            if (Posicoes.posUpgrades[i] == null) continue;
+            g.drawImage(img, tabuleiroPosx + Posicoes.posUpgrades[i].posX, tabuleiroPosy + Posicoes.posUpgrades[i].posY + (int)(escala * (51 - 13)), comp, alt, null);
         }
+
+        // tam = propriedades.obtemNumUpgrades();
+        // for (int i = 0; i < tam; i++) {
+        //     p = propriedades.obterPosicaoIconeUp(i);
+        //     g.drawImage(propriedades.obterImagemIconeUp(i), p.posX, p.posY, compIcone, altIcone, null);
+        // }
     }
 
     private void pintarIcones(Graphics g) {
@@ -524,26 +533,26 @@ public class Partida {
         int casa, nivelCasa, acao;
 
         acao = janela.obterControle().statusAtualizacoesPropriedades();
-        if (acao != 0) {
-            pilha = janela.obterControle().obtemAtualizacoesPropriedades();
-            while (!pilha.empty()) {
-                d = pilha.pop();
-                casa = d.primeiro;
-                nivelCasa = d.segundo;
-                switch (acao) {
-                    case 1:
-                        propriedades.removerUpgrade(casa);
-                        break;
-                    case 2:
-                        propriedades.atualizarUpgrade(casa, nivelCasa);
-                        break;
-                    case 3:
-                        propriedades.adicionarUpgrade(casa, nivelCasa);
-                        break;
-                    default:
-                        break;
-                }
-            }  
+        if (acao == 0) return;
+        
+        pilha = janela.obterControle().obtemAtualizacoesPropriedades();
+        while (!pilha.empty()) {
+            d = pilha.pop();
+            casa = d.primeiro;
+            nivelCasa = d.segundo;
+            switch (acao) {
+                case 1:
+                    propriedades.removerUpgrade(casa);
+                    break;
+                case 2:
+                    propriedades.atualizarUpgrade(casa, nivelCasa);
+                    break;
+                case 3:
+                    propriedades.adicionarUpgrade(casa, nivelCasa);
+                    break;
+                default:
+                    break;
+            }
         }
     }
 
@@ -618,6 +627,7 @@ public class Partida {
 
     public void atualizarJogador() {
         estadoAtual = ATUALIZA_JOGADOR;
+        janela.atualizarEstado(FINAL);
         if (msg.obtemTipoEvento() != Eventos.jogadorFaliu) {
             janela.obterControle().proximoJogador();
         } else if (janela.obterControle().obterNumeroJogadores() == 1) {
@@ -625,81 +635,5 @@ public class Partida {
             // janela.atualizarEstado(FINAL);
         }
         ativarBotaoDados();
-    }
-}
-
-class PropriedadesG {
-    private ArrayList<Dupla<Integer, Posicao>> posicoesUpgrades;
-    private ArrayList<Integer> iconesUpgrades;
-    private Image icone, up1, up2, up3, up4;
-    private int id, tabDim, tabX, tabY;
-    private double escala;
-
-    public PropriedadesG() {
-        posicoesUpgrades = new ArrayList<>();
-        iconesUpgrades = new ArrayList<>();
-    }
-
-    public void atualizarPosicoesUpgrades(int tabPosx, int tabPosy, int tabDim) {
-        Dupla<Integer, Posicao> d;
-        
-        this.tabDim = tabDim;
-        tabX = tabPosx;
-        tabY = tabPosy;
-        escala = tabDim / 1156.0;
-        for (int i = 0; i < posicoesUpgrades.size(); i++) {
-            d = posicoesUpgrades.get(i);
-            atualizarPosicaoUpgrade(d.primeiro, d.segundo);
-        }
-    }
-
-    private void atualizarPosicaoUpgrade(int casa, Posicao p) {
-        p.posX = (int)(escala * Posicoes.posUpgrades[casa].posX) + tabX;
-        p.posY = (int)(escala * Posicoes.posUpgrades[casa].posY) + tabY;
-    }
-
-    public void adicionarUpgrade(int casa, int nivel) {
-        Posicao p;
-
-        posicoesUpgrades.add(new Dupla<Integer, Posicao>(casa, p = new Posicao()));
-        atualizarPosicaoUpgrade(casa, p);
-        iconesUpgrades.add(nivel);
-    }
-
-    public void atualizarUpgrade(int casa, int nivel) {
-        for (int i = 0; i < posicoesUpgrades.size(); i++) {
-            if (posicoesUpgrades.get(i).primeiro == casa) {
-                iconesUpgrades.add(i, nivel);
-                break;
-            }
-        }
-    }
-
-    public void removerUpgrade(int casa) {
-        for (int i = 0; i < posicoesUpgrades.size(); i++) {
-            if (posicoesUpgrades.get(i).primeiro == casa) {
-                posicoesUpgrades.remove(i);
-                iconesUpgrades.remove(i);
-                return;
-            }
-        }
-    }
-
-    public int obtemNumUpgrades() {
-        return iconesUpgrades.size();
-    }
-    
-    public Image obterImagemIconeUp(int i) {
-        switch (iconesUpgrades.get(i)) {
-            case 0: return up1;
-            case 1: return up2;
-            case 2: return up3;
-            case 3: return up4;
-            default:return null;
-        }
-    }
-    
-    public Posicao obterPosicaoIconeUp(int i) {
-        return posicoesUpgrades.get(i).segundo;
     }
 }

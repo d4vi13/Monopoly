@@ -104,6 +104,7 @@ public class Janela extends JPanel {
                 instanciaPartida.setDimensoes(frame.getWidth(), frame.getHeight());
                 break;
             case FINAL:
+                instanciaFinal.setDimensoes(frame.getWidth(), frame.getHeight());
                 break;
             default:
                 break;
