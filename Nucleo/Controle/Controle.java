@@ -417,6 +417,7 @@ public class Controle {
     }
 
     public void acaoBotaoCarregarBackup(String nomeArquivo) {
+        tabuleiro.gerarVetorCasas(nomeArquivo);
         serializador.restaurarBackup(caminhoBackup + nomeArquivo);
         serializador.carregar(numeroJogadores);
         serializador.carregar(jogadores);        
@@ -425,6 +426,9 @@ public class Controle {
     }
 
     public void acaoBotaoSalvarBackup(String nomeArquivo) {
+        serializador.iniciarBackup(nomeArquivo);
+        serializador.salvar(jogadores);
+        tabuleiro.salvaTabuleiro(nomeArquivo);
         serializador.iniciarBackup(caminhoBackup + nomeArquivo);
         serializador.salvar(numeroJogadores);
         serializador.salvar(jogadores);        
@@ -433,7 +437,7 @@ public class Controle {
     }
 
     public void acaoBotaoNovaPartida() {
-        tabuleiro.gerarVetorCasas();
+        tabuleiro.gerarVetorCasas(null);
     }
 
     private void criarJogadoresG(String vetNomes[]){
