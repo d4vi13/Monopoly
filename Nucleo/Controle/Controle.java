@@ -90,7 +90,7 @@ public class Controle {
 
         valorTotalVenda = tabuleiro.patrimonioDoJogador(propriedades);
         patrimonioTotal = tabuleiro.patrimonioTotalJogador(jogador); 
-        patrimonioRestante = valorTotalVenda - patrimonioTotal;
+        patrimonioRestante =  patrimonioTotal - valorTotalVenda; 
     
         divida += valorTotalVenda; 
 
@@ -119,7 +119,8 @@ public class Controle {
 
         valorTotalVenda = tabuleiro.patrimonioDoJogador(propriedades);
         patrimonioTotal = tabuleiro.patrimonioTotalJogador(jogador); 
-        patrimonioRestante = valorTotalVenda - patrimonioTotal;
+        patrimonioRestante =  patrimonioTotal - valorTotalVenda; 
+    
     
         divida += valorTotalVenda; 
         
