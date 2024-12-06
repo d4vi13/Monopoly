@@ -458,8 +458,6 @@ public class Controle {
         }
         
         jogadores.setIterador();
-        jogadores.getIteradorElem().apropriaPropriedade(1);
-        jogadores.getIteradorElem().apropriaPropriedade(2);
     }
 
     public void cadastrarJogadores(String[] vetNomes, int qtdJogadores) {

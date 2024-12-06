@@ -13,6 +13,7 @@ import javax.swing.*;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Stack;
+import java.util.Arrays;
 
 public class Partida {  
     private Janela janela;
@@ -105,7 +106,7 @@ public class Partida {
         botaoDados = new Botao(new ImageIcon("./Dados/Imagens/dados.png").getImage(), 20, cores1);
         botaoComprar = new Botao("Comprar", fonteHighMount_45, 20, cores1);
         botaoUpgrade = new Botao("Evoluir", fonteHighMount_45, 20, cores1);
-        botaoVender = new Botao("Comprar", fonteHighMount_25, 20, cores1);
+        botaoVender = new Botao("Vender", fonteHighMount_25, 20, cores1);
         botaoHipotecar = new Botao("Hipotecar", fonteHighMount_25, 20, cores1);
         stringDados = new StringBuilder[2];
         stringDados[0] = new StringBuilder(2);
@@ -446,7 +447,7 @@ public class Partida {
     }
 
     public void mouseAtualiza(MouseEvent e) {
-        int acao;
+        int acao, aux;
 
         if (pauseAtivado == true) {
             if (e.getID() == MouseEvent.MOUSE_MOVED) {
@@ -511,8 +512,24 @@ public class Partida {
                             if (estadosMarcadores[i]) selecoes.add(imoveisIDs.get(i));
                         }
                         acao = janela.obterControle().acaoBotaoVender(selecoes);
-                        carregarSaldos();
-                        atualizarPropriedades();
+                        if (acao != 0) {
+                            carregarSaldos();
+                            atualizarPropriedades();
+                        }
+
+                        if (acao == 1) {
+                            venderLigado = false;
+                            Arrays.fill(estadosMarcadores, false);
+                            selecoes.clear();
+                            for (int i = 0; i < selecoes.size(); i++) {
+                                aux = imoveisIDs.indexOf(selecoes.get(i));
+                                imoveisIDs.remove(aux);
+                                nomesImoveis.remove(aux);
+                                valoresImoveis.remove(aux);
+                            }
+                        }
+
+                        if (acao == 2) {venderLigado = false; hipotecarLigado = false;}
                     }
                 }
                 if (hipotecarLigado) {
@@ -521,8 +538,24 @@ public class Partida {
                             if (estadosMarcadores[i]) selecoes.add(imoveisIDs.get(i));
                         }
                         acao = janela.obterControle().acaoBotaoHipotecar(selecoes);
-                        carregarSaldos();
-                        atualizarPropriedades();
+                        if (acao != 0) {
+                            carregarSaldos();
+                            atualizarPropriedades();
+                        }
+
+                        if (acao == 1) {
+                            venderLigado = false;
+                            Arrays.fill(estadosMarcadores, false);
+                            selecoes.clear();
+                            for (int i = 0; i < selecoes.size(); i++) {
+                                aux = imoveisIDs.indexOf(selecoes.get(i));
+                                imoveisIDs.remove(aux);
+                                nomesImoveis.remove(aux);
+                                valoresImoveis.remove(aux);
+                            }
+                        }
+                         
+                        if (acao == 2) {venderLigado = false; hipotecarLigado = false;}
                     }
                 }
 
@@ -703,7 +736,7 @@ public class Partida {
 
     public void jogadorNaCasa() {
         estadoAtual = JOGADOR_NA_CASA;
-        switch (Eventos.vendaOuHipoteca) {
+        switch (msg.obtemTipoEvento()) {
             case Eventos.jogadorFaliu:
                 carregarSaldos();
                 falirLigado = true;
@@ -739,8 +772,7 @@ public class Partida {
         if (msg.obtemTipoEvento() != Eventos.jogadorFaliu) {
             janela.obterControle().proximoJogador();
         } else if (janela.obterControle().obterNumeroJogadores() == 1) {
-            System.exit(0);
-            // janela.atualizarEstado(FINAL);
+            janela.atualizarEstado(FINAL);
         }
         ativarBotaoDados();
     }
