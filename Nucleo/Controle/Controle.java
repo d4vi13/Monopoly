@@ -37,7 +37,7 @@ public class Controle {
         jogadores = new ListaCircular<Jogador>();
         jogadoresG = new JogadorG[6];
         banco = new Banco(numeroJogadoresInicial);
-        tabuleiro = new Tabuleiro(banco);
+        tabuleiro = new Tabuleiro(propriedades);
         d6 = new D6();
         numerosD6 = new int[2];
         serializador = new Serializador();
@@ -122,7 +122,10 @@ public class Controle {
     }
 
     public void acaoBotaoEvoluir() {
+        Jogador jogadorAtual = jogadores.getIteradorElem();
 
+        tabuleiro.evoluirImovel(jogadorAtual.obtemPosicao());
+        tabuleiro.inserePropriedadeNaPilha(jogadorAtual.obtemPosicao());
     }
 
     public void acaoBotaoJogarDados() {
