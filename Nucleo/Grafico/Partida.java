@@ -181,7 +181,9 @@ public class Partida {
         definirPosicaoComponentes();
         propriedades.atualizarPosicoesUpgrades(tabuleiroPosx, tabuleiroPosy, tabuleiroComp);
         for (int i = 0; i < numeroJogadores; i++) {
+            
             jogadores[i].atualizarPosicoes(0, tabuleiroPosx, tabuleiroPosy, tabuleiroComp);
+
         }
         altIcone = compIcone = (int)(35 * tabuleiroComp / 1156.f);
     }
@@ -294,7 +296,7 @@ public class Partida {
 
         for (int i = 0; i < 32; i++) {
             if (Posicoes.posUpgrades[i] == null) continue;
-            g.drawImage(img, tabuleiroPosx + Posicoes.posUpgrades[i].posX, tabuleiroPosy + Posicoes.posUpgrades[i].posY + (int)(escala * (51 - 13)), comp, alt, null);
+            g.drawImage(img, tabuleiroPosx + (int)(Posicoes.posUpgrades[i].posX * escala), tabuleiroPosy + (int)(Posicoes.posUpgrades[i].posY * escala) + (int)(escala * (51 - 13)), comp, alt, null);
         }
 
         // tam = propriedades.obtemNumUpgrades();

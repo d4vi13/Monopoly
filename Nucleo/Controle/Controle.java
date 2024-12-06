@@ -125,19 +125,6 @@ public class Controle {
 
     }
 
-    public void acaoBotaoCarregarBackup(String nomeArquivo) {
-
-    }
-
-    public void acaoBotaoSalvarBackup(String nomeArquivo) {
-        serializador.iniciarBackup(nomeArquivo);
-        serializador.salvar(jogadores);        
-    }
-
-    public void acaoBotaoNovaPartida() {
-        tabuleiro.gerarVetorCasas();
-    }
-
     public void acaoBotaoJogarDados() {
         d6.jogaDado();
     }
@@ -453,11 +440,9 @@ public class Controle {
     }
 
     public void cadastrarJogadores(String[] vetNomes, int qtdJogadores) {
-        Image iAux;
         numeroJogadores = qtdJogadores;
 
-        criarJogadoresG(vetNomes);    
-
+        criarJogadoresG(vetNomes);
         criarJogadores(); 
     }
 
