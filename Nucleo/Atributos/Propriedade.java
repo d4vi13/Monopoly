@@ -13,6 +13,10 @@ public class Propriedade extends Casa {
         return this.temDono;
     }
 
+    public void defineDono(boolean temDono) {
+        this.temDono = temDono;
+    }
+
     public void setDono(int idDono) {
         this.temDono = true;
         this.dono = idDono;
@@ -31,7 +35,6 @@ public class Propriedade extends Casa {
     public void deshipotecar(){
         hipotecada = false;
     }
-
 
     public boolean estaHipotecada(){
         return hipotecada;
@@ -91,6 +94,11 @@ final class Imovel extends Propriedade {
                 resetarValores();
                 break;
         }
+    }
+
+    public void defineNivel(int nivel) {
+        this.nivel = nivel;
+        evoluirImovel(nivel);
     }
 
     public void evoluirImovel() {
