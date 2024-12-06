@@ -383,15 +383,19 @@ public class Controle {
         return mensagemJogador;
     }
 
-    // de Fernando para Davi
     public void acaoBotaoCarregarBackup(String nomeArquivo) {
+        serializador.restaurarBackup(nomeArquivo);
+        serializador.carregar(numeroJogadores);
+        serializador.carregar(jogadores);        
+        serializador.carregar(banco);
 
     }
 
-    // de Fernando para Davi
     public void acaoBotaoSalvarBackup(String nomeArquivo) {
         serializador.iniciarBackup(nomeArquivo);
+        serializador.salvar(numeroJogadores);
         serializador.salvar(jogadores);        
+        serializador.salvar(banco);
     }
 
     public void acaoBotaoNovaPartida() {
