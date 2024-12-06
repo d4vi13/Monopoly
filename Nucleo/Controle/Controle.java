@@ -27,6 +27,8 @@ public class Controle {
     private D6 d6;
     private int[] numerosD6;
 
+    private String caminhoBackup = "./Dados/Backups/";
+
     public Controle() {
         jogadores = new ListaCircular<Jogador>();
         jogadoresG = new JogadorG[6];
@@ -384,14 +386,14 @@ public class Controle {
     }
 
     public void acaoBotaoCarregarBackup(String nomeArquivo) {
-        serializador.restaurarBackup(nomeArquivo);
+        serializador.restaurarBackup(caminhoBackup + nomeArquivo);
         serializador.carregar(numeroJogadores);
         serializador.carregar(jogadores);        
         serializador.carregar(banco);
     }
 
     public void acaoBotaoSalvarBackup(String nomeArquivo) {
-        serializador.iniciarBackup(nomeArquivo);
+        serializador.iniciarBackup(caminhoBackup + nomeArquivo);
         serializador.salvar(numeroJogadores);
         serializador.salvar(jogadores);        
         serializador.salvar(banco);
