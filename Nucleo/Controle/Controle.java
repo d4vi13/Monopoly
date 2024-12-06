@@ -385,17 +385,18 @@ public class Controle {
 
     // de Fernando para Davi
     public void acaoBotaoCarregarBackup(String nomeArquivo) {
-
+        tabuleiro.gerarVetorCasas(nomeArquivo);
     }
 
     // de Fernando para Davi
     public void acaoBotaoSalvarBackup(String nomeArquivo) {
         serializador.iniciarBackup(nomeArquivo);
-        serializador.salvar(jogadores);        
+        serializador.salvar(jogadores);
+        tabuleiro.salvaTabuleiro(nomeArquivo);
     }
 
     public void acaoBotaoNovaPartida() {
-        tabuleiro.gerarVetorCasas();
+        tabuleiro.gerarVetorCasas(null);
     }
 
     public void cadastrarJogadores(String[] vetNomes, int qtdJogadores) {
