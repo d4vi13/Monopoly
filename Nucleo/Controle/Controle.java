@@ -408,6 +408,7 @@ public class Controle {
         serializador.carregar(numeroJogadores);
         serializador.carregar(jogadores);        
         serializador.carregar(banco);
+        criarJogadoresG(new String[]{"a","b","c", "d"});
     }
 
     public void acaoBotaoSalvarBackup(String nomeArquivo) {
@@ -415,6 +416,7 @@ public class Controle {
         serializador.salvar(numeroJogadores);
         serializador.salvar(jogadores);        
         serializador.salvar(banco);
+
     }
 
     public void acaoBotaoNovaPartida() {
