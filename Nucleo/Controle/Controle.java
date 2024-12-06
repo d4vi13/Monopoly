@@ -142,6 +142,19 @@ public class Controle {
         } 
     }
 
+    // Passa os valores e nomes das propriedades do jogador atual
+    public void carregarPropriedades(ArrayList<String> nomes, ArrayList<String> valores) {
+        Jogador j = jogadores.getIteradorElem();
+        ArrayList<Integer> propriedadeIDs = j.obtemPropriedadesJogador();
+
+        nomes.clear();
+        valores.clear();
+        for (int i = 0; i < propriedadeIDs.size(); i++) {
+            nomes.add(tabuleiro.obtemNomeCasa(propriedadeIDs.get(i)));
+            valores.add(tabuleiro.obtemValorPropriedade(propriedadeIDs.get(i)));
+        }
+    }
+
     // Ao iniciar um backup, pilha deve conter todas as propriedades
     // Caso seja novo jogo, pilha deve estar vazia
     public Stack<Dupla<Integer, Integer>> obtemAtualizacoesPropriedades() {

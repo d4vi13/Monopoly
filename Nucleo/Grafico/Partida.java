@@ -26,11 +26,11 @@ public class Partida {
     private Botao botaoPause;
     private float opacidade;
     // Botoes
-    private Font fonteBotoes;
+    private Font fonteHighMount_45;
     private Botao[] marcadores;
     private boolean[] estadosMarcadores;
     private ArrayList<Integer> selecoes;
-    private ArrayList<Integer> imoveisJogador;
+    private ArrayList<String> nomesImoveis, valoresImoveis;
     private Botao botaoDados, botaoVender, botaoComprar, botaoHipotecar, botaoUpgrade;
     private boolean dadosLigado, venderLigado, comprarLigado, hipotecarLigado, upgradeLigado;
     // Jogadores
@@ -44,14 +44,15 @@ public class Partida {
     private String[] informaJogador;
     private int casaDestino, casaAtual;
     private boolean falirLigado, cartaLigado;
-    private Font fonteCarta1, fonteCarta2, fonteFalir, fonteInforma;
+    private Font fonteHighMount_31, fonteHighMount_34;
+    private Font fonteTimesNRoman_45, fonteTimesNRoman_80, fonteTimesNRoman_25;
     // Timers
     private Timer temporizadorPulos, temporizadorGenerico;
     // Dados
     private int[] valoresDados;
     private StringBuilder[] stringDados;
     private boolean valoresLigado;
-    private Font fonteNumeros;
+    private Font fonteNumberInGothic_45, fonteNumberInGothic_25;
     private MensagemJogador msg;
     // Estados
     private final int ATIVA_DADOS = 0;
@@ -65,18 +66,20 @@ public class Partida {
 
         janela = j;
         opacidade = 1.0f;
-        fonteBotoes = null;
+        fonteHighMount_45 = null;
         pauseAtivado = false;
         f1 = new File("./Dados/Fontes/HighMount_PersonalUse.otf");
         f2 = new File("./Dados/Fontes/Crashnumberinggothic.ttf");
         f3 = new File("./Dados/Fontes/times_new_roman.ttf");
         try {
-            fonteBotoes = Font.createFont(Font.TRUETYPE_FONT, f1).deriveFont(40f);
-            fonteInforma = Font.createFont(Font.TRUETYPE_FONT, f1).deriveFont(34f);
-            fonteNumeros = Font.createFont(Font.TRUETYPE_FONT, f2).deriveFont(45f);
-            fonteFalir = Font.createFont(Font.TRUETYPE_FONT, f3).deriveFont(80f);
-            fonteCarta1 = Font.createFont(Font.TRUETYPE_FONT, f1).deriveFont(31f);
-            fonteCarta2 = Font.createFont(Font.TRUETYPE_FONT, f3).deriveFont(45f);
+            fonteHighMount_45 = Font.createFont(Font.TRUETYPE_FONT, f1).deriveFont(40f);
+            fonteHighMount_34 = Font.createFont(Font.TRUETYPE_FONT, f1).deriveFont(34f);
+            fonteNumberInGothic_45 = Font.createFont(Font.TRUETYPE_FONT, f2).deriveFont(45f);
+            fonteNumberInGothic_25 = Font.createFont(Font.TRUETYPE_FONT, f2).deriveFont(25f);
+            fonteTimesNRoman_80 = Font.createFont(Font.TRUETYPE_FONT, f3).deriveFont(80f);
+            fonteHighMount_31 = Font.createFont(Font.TRUETYPE_FONT, f1).deriveFont(31f);
+            fonteTimesNRoman_45 = Font.createFont(Font.TRUETYPE_FONT, f3).deriveFont(45f);
+            fonteTimesNRoman_25 = Font.createFont(Font.TRUETYPE_FONT, f3).deriveFont(25f);
         } catch(FontFormatException | IOException e) {
             System.out.println("Erro ao carregar fonte");
             System.exit(1);
@@ -98,17 +101,17 @@ public class Partida {
     private void carregarBotoes() {
         Color[] cores1 = new Color[]{Color.BLACK, Color.LIGHT_GRAY, Color.GRAY, Color.WHITE};
 
-        botaoPause = new Botao("Pause", fonteBotoes, 20, cores1);
+        botaoPause = new Botao("Pause", fonteHighMount_45, 20, cores1);
         botaoDados = new Botao(new ImageIcon("./Dados/Imagens/dados.png").getImage(), 20, cores1);
-        botaoComprar = new Botao("Comprar", fonteBotoes, 20, cores1);
-        botaoUpgrade = new Botao("Evoluir", fonteBotoes, 20, cores1);
-        botaoVender = new Botao("Comprar", fonteInforma, 20, cores1);
-        botaoHipotecar = new Botao("Hipotecar", fonteInforma, 20, cores1);
+        botaoComprar = new Botao("Comprar", fonteHighMount_45, 20, cores1);
+        botaoUpgrade = new Botao("Evoluir", fonteHighMount_45, 20, cores1);
+        botaoVender = new Botao("Comprar", fonteHighMount_34, 20, cores1);
+        botaoHipotecar = new Botao("Hipotecar", fonteHighMount_34, 20, cores1);
         stringDados = new StringBuilder[2];
         stringDados[0] = new StringBuilder(2);
         stringDados[1] = new StringBuilder(2);
         for (int i = 0; i < 32; i++) {
-            marcadores[i] = new Botao("", fonteBotoes, 10, cores1);
+            marcadores[i] = new Botao("", fonteHighMount_45, 10, cores1);
         }
     }
 
@@ -122,7 +125,8 @@ public class Partida {
         marcadores = new Botao[32];
         estadosMarcadores = new boolean[32];
         selecoes = new ArrayList<Integer>();
-        imoveisJogador = new ArrayList<Integer>();
+        nomesImoveis = new ArrayList<String>();
+        valoresImoveis = new ArrayList<String>();
 
         // Saldos Iniciais
         carregarSaldos();
@@ -190,6 +194,7 @@ public class Partida {
 
     public void pintar(Graphics g) {
         Graphics2D g2d = (Graphics2D)g;
+        int posX, posY;
         
         g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, opacidade));
         
@@ -199,18 +204,52 @@ public class Partida {
         pintarSaldoJogadores(g);
         pintarInformaJogador(g);
 
-        // if (venderLigado || hipotecarLigado) {
-        //     pintarSeleciona(g);
-        //     if (venderLigado) botaoVender.pintar(g);
-        //     if (hipotecarLigado) botaoHipotecar.pintar(g);
-        // }
+        if (venderLigado || hipotecarLigado) {
+            posX = botaoComprar.obterX() + botaoComprar.obterComp() + 20;
+            posY = pintarSeleciona(g);
+            if (venderLigado) {
+                botaoVender.definirLocalizacao(posX, posY);
+                botaoVender.pintar(g);
+                posX += botaoVender.obterComp();
+            } 
+            if (hipotecarLigado) {
+                botaoHipotecar.definirLocalizacao(posX, posY);
+                botaoHipotecar.pintar(g);
+            }
+        }
         if (dadosLigado) botaoDados.pintar(g);
         if (valoresLigado) pintarValoresDados(g2d);
         if (falirLigado) pintarJogadorFaliu(g);
         if (cartaLigado) pintarCarta(g2d);
-        if (comprarLigado) botaoComprar.pintar(g);
-        if (upgradeLigado) botaoUpgrade.pintar(g);
+        if (comprarLigado) pintarComprar(g);
+        if (upgradeLigado) pintarUpgrade(g);
         if (pauseAtivado) pause.pintar(g);
+    }
+
+    private void pintarUpgrade(Graphics g) {
+        botaoUpgrade.pintar(g);
+        pintarValorPropriedade(g, 20, botaoComprar.obterY() + botaoComprar.obterAlt());
+    }
+
+    private void pintarComprar(Graphics g) {
+        botaoComprar.pintar(g);
+        pintarValorPropriedade(g, 20, botaoComprar.obterY() + botaoComprar.obterAlt());
+    }
+
+    private void pintarValorPropriedade(Graphics g, int posX, int posY) {
+        int comp, alt;
+        int valor = msg.obtemPropriedadeAtual().obtemValorPropriedade();
+        String valorStr = Integer.toString(valor);
+
+        g.setFont(fonteTimesNRoman_25);
+        alt = g.getFontMetrics().getAscent();
+        posY += alt + 10;
+        comp = g.getFontMetrics().stringWidth("$ ");
+        g.setColor(Color.BLACK);
+        g.drawString("$ ", posX, posY);
+        posX += comp;
+        g.setFont(fonteNumberInGothic_25);
+        g.drawString(valorStr, posX, posY);
     }
 
     private void pintarSaldoJogadores(Graphics g) {
@@ -221,12 +260,12 @@ public class Partida {
         for (int i = 0; i < numeroJogadores; i++) {
             if (jogadores[i].estaFalido()) continue;
 
-            g.setFont(fonteNumeros);
+            g.setFont(fonteNumberInGothic_45);
             alt += g.getFontMetrics().getAscent();
             comp = g.getFontMetrics().stringWidth(saldos[i]);
             g.drawString(saldos[i], frameComprimento - comp - 10, alt);
             
-            g.setFont(fonteCarta2);
+            g.setFont(fonteTimesNRoman_45);
             comp += g.getFontMetrics().stringWidth("$ ");
             g.drawString("$ ", frameComprimento - comp - 10, alt);
             
@@ -238,8 +277,21 @@ public class Partida {
         }
     }
 
-    private void pintarSeleciona(Graphics g) {
+    private int pintarSeleciona(Graphics g) {
+        int posX, posY, alt, comp;
 
+        posY = botaoDados.obterY();
+        posX = botaoComprar.obterX() + botaoComprar.obterComp() + 20;
+
+        for (int i = 0; i < nomesImoveis.size(); i++) {
+            marcadores[i].definirLocalizacao(posX, posY);
+            marcadores[i].pintar(g);
+            posY += marcadores[i].obterAlt() + 2;
+            pintarValorPropriedade(g, posX, posY);
+            posY += 10;
+        }
+
+        return posY;
     }
 
     private void pintarCarta(Graphics2D g2D) {
@@ -256,12 +308,12 @@ public class Partida {
         g2D.setColor(Color.BLACK);
 
         vetStr = msg.obtemCartaSorteada().obtemDescricao();
-        g2D.setFont(fonteBotoes);
+        g2D.setFont(fonteHighMount_45);
         hF = g2D.getFontMetrics().getAscent() - g2D.getFontMetrics().getDescent();
         wF = g2D.getFontMetrics().stringWidth("Carta");
         g2D.drawString("Carta", x + (w - wF) / 2, y + hF + 20);
         hTmp = h;
-        g2D.setFont(fonteCarta1);
+        g2D.setFont(fonteHighMount_31);
         for (String s : vetStr) {
             wF = g2D.getFontMetrics().stringWidth(s);
             g2D.drawString(s, x + (w - wF) / 2, y + hTmp / 2);
@@ -273,13 +325,13 @@ public class Partida {
             else str = "-";
 
             numero = Integer.toString(msg.obtemCartaSorteada().obtemValor());
-            g2D.setFont(fonteNumeros);
+            g2D.setFont(fonteNumberInGothic_45);
             wF = g2D.getFontMetrics().stringWidth(numero);
-            g2D.setFont(fonteCarta2);
+            g2D.setFont(fonteTimesNRoman_45);
             wF += g2D.getFontMetrics().stringWidth(str);
             g2D.drawString(str, x + (w - wF) / 2, y + h - 50);
             wF -= 2 * g2D.getFontMetrics().stringWidth(str);
-            g2D.setFont(fonteNumeros);
+            g2D.setFont(fonteNumberInGothic_45);
             g2D.drawString(numero, x + (w - wF) / 2, y + h - 50);
         }
     }
@@ -289,21 +341,12 @@ public class Partida {
         int tam;
 
         g.drawImage(tabuleiro, tabuleiroPosx, tabuleiroPosy, tabuleiroComp, tabuleiroAlt, null);
-        Image img = new ImageIcon("./Dados/Imagens/servidorN1.png").getImage();
-        double escala = tabuleiroComp / 1156.0;
-        int comp = (int)(45 * escala);
-        int alt = (int)(13 * escala);
 
-        for (int i = 0; i < 32; i++) {
-            if (Posicoes.posUpgrades[i] == null) continue;
-            g.drawImage(img, tabuleiroPosx + (int)(Posicoes.posUpgrades[i].posX * escala), tabuleiroPosy + (int)(Posicoes.posUpgrades[i].posY * escala) + (int)(escala * (51 - 13)), comp, alt, null);
+        tam = propriedades.obtemNumUpgrades();
+        for (int i = 0; i < tam; i++) {
+            p = propriedades.obterPosicaoIconeUp(i);
+            g.drawImage(propriedades.obterImagemIconeUp(i), p.posX, p.posY, compIcone, altIcone, null);
         }
-
-        // tam = propriedades.obtemNumUpgrades();
-        // for (int i = 0; i < tam; i++) {
-        //     p = propriedades.obterPosicaoIconeUp(i);
-        //     g.drawImage(propriedades.obterImagemIconeUp(i), p.posX, p.posY, compIcone, altIcone, null);
-        // }
     }
 
     private void pintarIcones(Graphics g) {
@@ -325,7 +368,7 @@ public class Partida {
         String str = jogadores[idJogadorAtual].obterNome() + " acaba de falir :(";
 
         g.setColor(Color.BLACK);
-        g.setFont(fonteFalir);
+        g.setFont(fonteTimesNRoman_80);
         fm = g.getFontMetrics();
         comp = fm.stringWidth(str);
         alt = fm.getAscent();
@@ -333,7 +376,7 @@ public class Partida {
     }
 
     private void pintarInformaJogador(Graphics g) {
-        g.setFont(fonteInforma);
+        g.setFont(fonteHighMount_34);
         g.setColor(Color.BLACK);
         g.drawString(informaJogador[idJogadorAtual], 20, frameAltura  - g.getFontMetrics().getHeight() - 10);
     }
@@ -344,7 +387,7 @@ public class Partida {
         int x = bd.obterX(), y = bd.obterY(), w = bd.obterComp(), h = bd.obterAlt(), wF, hF;
         final int raio = 20;
 
-        g2D.setFont(fonteNumeros);
+        g2D.setFont(fonteNumberInGothic_45);
         fm = g2D.getFontMetrics();
         hF = fm.getAscent() - fm.getDescent();
         
@@ -598,7 +641,7 @@ public class Partida {
 
     public void jogadorNaCasa() {
         estadoAtual = JOGADOR_NA_CASA;
-        switch (msg.obtemTipoEvento()) {
+        switch (Eventos.vendaOuHipoteca) {
             case Eventos.jogadorFaliu:
                 carregarSaldos();
                 falirLigado = true;
@@ -619,7 +662,8 @@ public class Partida {
                 temporizadorGenerico.start();
                 break;
             case Eventos.vendaOuHipoteca:
-
+                janela.obterControle().carregarPropriedades(nomesImoveis, valoresImoveis);
+                venderLigado = hipotecarLigado = true;
                 break;
             default:
                 atualizarJogador();
@@ -629,7 +673,6 @@ public class Partida {
 
     public void atualizarJogador() {
         estadoAtual = ATUALIZA_JOGADOR;
-        janela.atualizarEstado(FINAL);
         if (msg.obtemTipoEvento() != Eventos.jogadorFaliu) {
             janela.obterControle().proximoJogador();
         } else if (janela.obterControle().obterNumeroJogadores() == 1) {

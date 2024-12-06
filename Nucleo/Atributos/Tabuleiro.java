@@ -432,4 +432,12 @@ public class Tabuleiro {
         Imovel imovelAtual = ((Imovel) casasTabuleiro[idPropriedade]);
         imovelAtual.evoluirImovel();
     }
+
+    public String obtemNomeCasa(int id) {
+        return casasTabuleiro[id].obtemNome();
+    }
+
+    public String obtemValorPropriedade(int id) {
+        return Integer.toString(((Propriedade)casasTabuleiro[id]).obtemValorPropriedade());
+    }
 }
