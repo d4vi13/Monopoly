@@ -446,7 +446,7 @@ public class Controle {
     }
 
     public void cadastrarJogadores(String[] vetNomes, int qtdJogadores) {
-        numeroJogadores = qtdJogadores;
+        numeroJogadores = numeroJogadoresInicial = qtdJogadores;
 
         criarJogadoresG(vetNomes);
         criarJogadores(); 
