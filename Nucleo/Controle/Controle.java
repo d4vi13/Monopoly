@@ -142,16 +142,18 @@ public class Controle {
         } 
     }
 
-    // Passa os valores e nomes das propriedades do jogador atual
-    public void carregarPropriedades(ArrayList<String> nomes, ArrayList<String> valores) {
+    // Passa os valores, nomes e IDs das propriedades do jogador atual
+    public void carregarPropriedades(ArrayList<String> nomes, ArrayList<String> valores, ArrayList<Integer> IDs) {
         Jogador j = jogadores.getIteradorElem();
         ArrayList<Integer> propriedadeIDs = j.obtemPropriedadesJogador();
-
+        
         nomes.clear();
         valores.clear();
+        IDs.clear();
         for (int i = 0; i < propriedadeIDs.size(); i++) {
             nomes.add(tabuleiro.obtemNomeCasa(propriedadeIDs.get(i)));
             valores.add(tabuleiro.obtemValorPropriedade(propriedadeIDs.get(i)));
+            IDs.add(propriedadeIDs.get(i));
         }
     }
 
@@ -456,6 +458,8 @@ public class Controle {
         }
         
         jogadores.setIterador();
+        jogadores.getIteradorElem().apropriaPropriedade(1);
+        jogadores.getIteradorElem().apropriaPropriedade(2);
     }
 
     public void cadastrarJogadores(String[] vetNomes, int qtdJogadores) {
