@@ -81,6 +81,10 @@ class Cliente implements Serializable {
         this.saldo += valor;
     }
 
+    public int obterId() {
+        return this.id;
+    }
+
     public int obterSaldo(){
         return saldo; 
     }

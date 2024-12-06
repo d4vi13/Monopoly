@@ -59,6 +59,16 @@ public class Controle {
         return Eventos.jogadorFaliu;
     }
 
+    private int calculaDeslocamento(int casaInicial, int casaFinal) {
+        int totalCasas = tabuleiro.obtemCasasTotais();
+
+        if (casaFinal != 0) {
+            return (casaFinal - casaInicial) % totalCasas;
+        }
+
+        return totalCasas - casaFinal;
+    }
+
     // Reseta as propriedades do jogador e define que ele faliu
     private void jogadorDeclaraFalencia(Jogador jogadorAtual) {
         tabuleiro.removeDono(jogadorAtual.obtemPropriedadesJogador());
@@ -149,7 +159,10 @@ public class Controle {
         d6.jogaDado();
     }
 
-    public void acaoBotaoEvoluir() {}
+    public void acaoBotaoEvoluir() {
+        Jogador jogadorAtual = jogadores.getIteradorElem();
+        tabuleiro.evoluirImovel(jogadorAtual.obtemPosicao());
+    }
 
     public int[] obterNumerosD6() {
         numerosD6[0] = d6.obterValorDado(0);
@@ -285,7 +298,7 @@ public class Controle {
                          */
                     case 2:
                         casaFinal = tabuleiro.buscaPorCasa(Config.tipoCAAD);
-                        deslocamento = casaFinal - casaInicial;
+                        deslocamento = calculaDeslocamento(casaInicial, casaFinal);
                         mensagemJogador.defineEventoMovimento(true);
                         mensagemJogador.defineDeslocamento(deslocamento);
                         mensagemJogador.defineNovoEvento(Eventos.casaCAAD);
@@ -293,7 +306,7 @@ public class Controle {
 
                     case 3:
                         casaFinal = tabuleiro.buscaPorCasa(Config.tipoRecepcao);
-                        deslocamento = casaFinal - casaInicial;
+                        deslocamento = calculaDeslocamento(casaInicial, casaFinal);
                         mensagemJogador.defineEventoMovimento(true);
                         mensagemJogador.defineDeslocamento(deslocamento);
                         mensagemJogador.defineNovoEvento(Eventos.casaRecepcao);
@@ -301,7 +314,7 @@ public class Controle {
                         
                     case 4:
                         casaFinal = tabuleiro.buscaPorCasa(Config.tipoPrisao);
-                        deslocamento = casaFinal - casaInicial;
+                        deslocamento = calculaDeslocamento(casaInicial, casaFinal);
                         mensagemJogador.defineEventoMovimento(true);
                         mensagemJogador.defineDeslocamento(deslocamento);
                         mensagemJogador.defineNovoEvento(Eventos.indoPreso);
@@ -309,7 +322,7 @@ public class Controle {
 
                     case 5:
                         casaFinal = tabuleiro.buscaPorCasa(Config.tipoInicial);
-                        deslocamento = 32 - casaInicial;
+                        deslocamento = calculaDeslocamento(casaInicial, casaFinal);
                         mensagemJogador.defineEventoMovimento(true);
                         mensagemJogador.defineDeslocamento(deslocamento);
                         mensagemJogador.defineNovoEvento(Eventos.casaInicial);
@@ -366,9 +379,6 @@ public class Controle {
             mensagemJogador.defineEventoMovimento(false);
             mensagemJogador.defineNovoEvento(Eventos.tirouCartaDeMovimento);
         }
-
-        mensagemJogador.defineNovoEvento(Eventos.jogadorFaliu);
-        jogadorDeclaraFalencia(jogadorAtual);
 
         return mensagemJogador;
     }
