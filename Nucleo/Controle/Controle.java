@@ -96,7 +96,7 @@ public class Controle {
         valorTotalVenda = (valorTotalVenda * 50)/100;
         banco.receber(jogador.obtemId(), valorTotalVenda);
         tabuleiro.hipotecaPropriedade(propriedades);
-		tabuleiro.inserePropriedadeNaPilha(jogador.obtemPosicao());
+	tabuleiro.inserePropriedadeNaPilha(jogador.obtemPosicao());
         operacaoPropriedades = 1;
 
         if (divida >= 0)
