@@ -64,6 +64,7 @@ public class Tabuleiro {
 
         if (backup != null) {
             selecionaBackup = path.concat(backup);
+            selecionaBackup = selecionaBackup.concat(".json");
         } else {
             selecionaBackup = backupTabuleiro;
         }
