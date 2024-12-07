@@ -71,19 +71,24 @@ public class Serializador{
         }
     }
 
-    public void carregar(ListaCircular<Jogador> jogadores){
+    public ListaCircular<Jogador> carregar(ListaCircular<Jogador> tipojogadores){
+        ListaCircular<Jogador> jogadores = new ListaCircular<Jogador>();
         for(int i = 0; i < numeroDeJogadores; i++){
             System.out.println("aqui");
             jogadores.addLista(carregarJogador());
         }
         jogadores.setIterador();
+        return jogadores;
     }
 
-    public void carregar(Banco banco){
+    public Banco carregar(Banco tipobanco){
+        Banco banco = new Banco(0);
         try{
             banco = (Banco) ois.readObject();
+            return banco;
         }catch(IOException | ClassNotFoundException exception){
             exception.printStackTrace();
+            return null;
         }
     }
 
