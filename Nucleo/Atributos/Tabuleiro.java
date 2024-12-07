@@ -452,8 +452,10 @@ public class Tabuleiro {
         int imovelNivel;
         Imovel imovelAtual = (Imovel)casasTabuleiro[id];
         imovelId = imovelAtual.obtemId();
-        imovelNivel = imovelAtual.obtemNivelImovel();
-        pilhaPropriedades.push(new Dupla<Integer,Integer>(imovelId, imovelNivel));
+        if(imovelAtual.obtemTipo() == Config.tipoImovel) {
+            imovelNivel = imovelAtual.obtemNivelImovel();
+            pilhaPropriedades.push(new Dupla<Integer,Integer>(imovelId, imovelNivel));
+        }
     }
   
     public String obtemNomeCasa(int id) {
