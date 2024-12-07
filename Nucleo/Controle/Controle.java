@@ -385,12 +385,25 @@ public class Controle {
         return mensagemJogador;
     }
 
+    private String[] obterVetorNomes(){
+        Jogador jogador = jogadores.getIteradorElem();
+        int id = jogador.obtemId();
+        String[] nomes = new String[numeroJogadores];
+
+        for(int i = 0 ; i < numeroJogadores ; i++){
+            nomes[i] =  jogador.obtemNome();
+            jogadores.iteradorProx();
+            jogador = jogadores.getIteradorElem();
+        }
+        return nomes;
+    }
+
     public void acaoBotaoCarregarBackup(String nomeArquivo) {
         serializador.restaurarBackup(caminhoBackup + nomeArquivo);
         numeroJogadores = serializador.carregar(numeroJogadores);
         jogadores = serializador.carregar(jogadores);        
         banco = serializador.carregar(banco);
-        criarJogadoresG(new String[]{"a","b","c", "d"});
+        criarJogadoresG(obterVetorNomes());
     }
 
     public void acaoBotaoSalvarBackup(String nomeArquivo) {
@@ -414,9 +427,9 @@ public class Controle {
         }
     }
 
-    private void criarJogadores(){
+    private void criarJogadores(String vetNomes[]){
         for (int i = 0; i < numeroJogadores; i++) {
-            jogadores.addLista(new Jogador(i));
+            jogadores.addLista(new Jogador(i, vetNomes[i]));
         }
         
         jogadores.setIterador();
@@ -428,7 +441,7 @@ public class Controle {
 
         criarJogadoresG(vetNomes);    
 
-        criarJogadores(); 
+        criarJogadores(vetNomes); 
     }
 
     public int obterIdJogadorAtual() {
