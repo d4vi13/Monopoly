@@ -36,13 +36,13 @@ public class Controle {
 
     public Controle() {
         jogadores = new ListaCircular<Jogador>();
+        propriedades = new Stack<Dupla<Integer, Integer>>();
         jogadoresG = new JogadorG[6];
         banco = new Banco(numeroJogadoresInicial);
         tabuleiro = new Tabuleiro(propriedades);
         d6 = new D6();
         numerosD6 = new int[2];
         serializador = new Serializador();
-        propriedades = new Stack<Dupla<Integer, Integer>>();
         operacaoPropriedades = 0;
     }
 
@@ -64,7 +64,6 @@ public class Controle {
         valorTotalVenda = (valorTotalVenda * 75)/100;
         banco.receber(jogador.obtemId(), valorTotalVenda);
         tabuleiro.removeDono(propriedades);
-        tabuleiro.inserePropriedadeNaPilha(jogador.obtemPosicao());
         jogador.desapropriaPropriedade(propriedades);
         operacaoPropriedades = 1;
 
@@ -96,7 +95,6 @@ public class Controle {
         valorTotalVenda = (valorTotalVenda * 50)/100;
         banco.receber(jogador.obtemId(), valorTotalVenda);
         tabuleiro.hipotecaPropriedade(propriedades);
-        tabuleiro.inserePropriedadeNaPilha(jogador.obtemPosicao());
         operacaoPropriedades = 1;
 
         if (divida >= 0)
@@ -114,7 +112,6 @@ public class Controle {
         Jogador jogadorAtual = jogadores.getIteradorElem();
         valorPropriedade = tabuleiro.obtemValorPropriedade(jogadorAtual);
         idPropriedade = tabuleiro.obtemIdCasaAtual(jogadorAtual);
-        tabuleiro.inserePropriedadeNaPilha(jogadorAtual.obtemPosicao());
         operacaoPropriedades = 3;
 
         if (!tabuleiro.estaHipotecada(idPropriedade)){
@@ -260,17 +257,33 @@ public class Controle {
             case Eventos.propriedadeComDono:
                 propriedadeAtual = mensagemJogador.obtemPropriedadeAtual();
 
-                if (propriedadeAtual.obtemIdDono() == jogadorAtual.obtemId()) {
-                    if (propriedadeAtual.obtemTipo() == Config.tipoImovel) {
-                        int valorEvolucao = mensagemJogador.obtemValorEvolucao();
-                        if (banco.temSaldoSuficiente(jogadorAtual.obtemId(), valorEvolucao)) {
-                            mensagemJogador.defineNovoEvento(Eventos.ehDonoPodeEvoluir);
+                if (jogadorAtual.ehDono(propriedadeAtual.obtemId())) {
+                    if (propriedadeAtual.estaHipotecada()) {
+                        int valorPropriedade = propriedadeAtual.obtemValorPropriedade();
+                        valorPropriedade = valorPropriedade / 2;
+                        if (banco.temSaldoSuficiente(jogadorAtual.obtemId(), valorPropriedade)) {
+                            mensagemJogador.defineNovoEvento(Eventos.semDonoPodeComprar);
+                        } else {
+                            mensagemJogador.defineNovoEvento(Eventos.casaVazia);
+                        }
+                    } else {
+                        if (propriedadeAtual.obtemTipo() == Config.tipoImovel) {
+                            int valorEvolucao = mensagemJogador.obtemValorEvolucao();
+                            if (banco.temSaldoSuficiente(jogadorAtual.obtemId(), valorEvolucao)) {
+                                mensagemJogador.defineNovoEvento(Eventos.ehDonoPodeEvoluir);
+                            } else {
+                                mensagemJogador.defineNovoEvento(Eventos.casaVazia);
+                            }
                         }
                     }
                 } else {
                     // Não é o dono e precisa pagar aluguel
                     evento = defineEventosMonetarios(jogadorAtual, propriedadeAtual.obtemAluguel());
-                    banco.transferir(jogadorAtual.obtemId(), propriedadeAtual.obtemIdDono(), propriedadeAtual.obtemAluguel());
+                    banco.debitar(jogadorAtual.obtemId(), propriedadeAtual.obtemAluguel());
+                    if (!propriedadeAtual.estaHipotecada()) {
+                        banco.receber(propriedadeAtual.obtemIdDono(), propriedadeAtual.obtemAluguel());
+                    }
+
                     if (evento == Eventos.podePagar) {
                         // Define evento que pode pagar
                         mensagemJogador.defineNovoEvento(Eventos.temDonoEPodePagar);
