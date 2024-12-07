@@ -335,15 +335,17 @@ public class Tabuleiro {
                 mensagemJogador.atualizaMensagem(mensagemJogador.obtemCartaSorteada(), null, Eventos.casaInicial);
                 break;
             
-            case Config.tipoImovel:        
+            case Config.tipoImovel:
                 propriedadeAtual = (Propriedade)casaAtual;
                 if (propriedadeAtual.temDono()) {
+                    System.out.println("Tem dono");
                     mensagemJogador.atualizaMensagem(null, propriedadeAtual, Eventos.propriedadeComDono);
                     mensagemJogador.defineValorEvolucao(((Imovel) propriedadeAtual).obtemPrecoEvolucao());
                 } else {
                     mensagemJogador.atualizaMensagem(null, propriedadeAtual, Eventos.propriedadeSemDono);
                 }
                 break;
+
             case Config.tipoEmpresa:
 
                 propriedadeAtual = (Propriedade)casaAtual;
@@ -384,23 +386,13 @@ public class Tabuleiro {
     }
 
     public int obtemValorPropriedade(Jogador jogador){
-        Propriedade propriedade;
-        MensagemJogador mensagemJogador;
-
-        mensagemJogador = consultaTabuleiro(jogador);
-        propriedade = mensagemJogador.obtemPropriedadeAtual();
+ 
+        if (casasTabuleiro[jogador.obtemPosicao()].obtemTipo() == Config.tipoImovel || casasTabuleiro[jogador.obtemPosicao()].obtemTipo() == Config.tipoEmpresa) {
+            Propriedade propriedadeAtual = ((Propriedade) casasTabuleiro[jogador.obtemPosicao()]);
+            return propriedadeAtual.obtemValorPropriedade();
+        }
         
-        return propriedade.obtemValorPropriedade();    
-    }
-
-    public int obtemIdCasaAtual(Jogador jogador){
-        Propriedade propriedade;
-        MensagemJogador mensagemJogador;
-
-        mensagemJogador = consultaTabuleiro(jogador);
-        propriedade = mensagemJogador.obtemPropriedadeAtual();
-        
-        return propriedade.obtemId();
+        return 0;
     }
 
     public boolean estaHipotecada(int idPropriedade){
@@ -417,9 +409,7 @@ public class Tabuleiro {
 
     // Função para atualizar o dono da propriedade 
     public void defineDono(int idPropriedade, int  idJogador){
-        Propriedade propriedade;
-        propriedade = ((Propriedade) casasTabuleiro[idPropriedade]);
-        propriedade.setDono(idJogador);
+        ((Propriedade) casasTabuleiro[idPropriedade]).setDono(idJogador);;
     }
 
     public void removeDono(int idPropriedade) {
