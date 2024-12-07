@@ -73,7 +73,6 @@ public class Serializador{
     public ListaCircular<Jogador> carregar(ListaCircular<Jogador> tipojogadores){
         ListaCircular<Jogador> jogadores = new ListaCircular<Jogador>();
         for(int i = 0; i < numeroDeJogadores; i++){
-            System.out.println("aqui");
             jogadores.addLista(carregarJogador());
         }
         jogadores.setIterador();
