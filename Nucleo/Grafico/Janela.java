@@ -17,6 +17,7 @@ public class Janela extends JPanel {
     private Menu instanciaMenu;
     private Cadastro instanciaCadastro;
     private Partida instanciaPartida;
+    private Final instanciaFinal;
     private Controle instanciaControle;
     private float opacidade;
 
@@ -50,6 +51,9 @@ public class Janela extends JPanel {
             case JOGATINA:
                 instanciaPartida.pintar(g);
                 break;
+            case FINAL:
+                instanciaFinal.pintar(g);
+                break;
             default:
                 break;
         }
@@ -68,6 +72,9 @@ public class Janela extends JPanel {
                 break;
             case JOGATINA:
                 instanciaPartida = new Partida(this);
+                break;
+            case FINAL:
+                instanciaFinal = new Final(this);
                 break;
             default:
                 break;
@@ -95,6 +102,9 @@ public class Janela extends JPanel {
                 break;
             case JOGATINA:
                 instanciaPartida.setDimensoes(frame.getWidth(), frame.getHeight());
+                break;
+            case FINAL:
+                instanciaFinal.setDimensoes(frame.getWidth(), frame.getHeight());
                 break;
             default:
                 break;

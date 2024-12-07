@@ -2,41 +2,188 @@ package Nucleo.Controle;
 import java.awt.Image;
 import javax.swing.ImageIcon;
 import java.util.ArrayList;
+import java.util.Stack;
 import Nucleo.Atributos.Banco;
 import Nucleo.Atributos.Cartas.Carta;
 import Nucleo.Atributos.Casa.Config;
 import Nucleo.Atributos.Jogador;
 import Nucleo.Atributos.Propriedade;
 import Nucleo.Atributos.Tabuleiro;
-import Nucleo.Aux.ListaCircular;
-import Nucleo.Aux.MensagemJogador;
 import Nucleo.Grafico.JogadorG;
-import Nucleo.Aux.Serializador;
-import Nucleo.Aux.MensagemJogador.Eventos;
 import Nucleo.Atributos.D6;
+import Nucleo.Aux.MensagemJogador.Eventos;
+import Nucleo.Aux.*;
 
 public class Controle {
+    // Jogadores
+    private int numeroJogadoresInicial, numeroJogadores;
     private ListaCircular<Jogador> jogadores;
     private JogadorG[] jogadoresG;
+    // Pilha com posicao da casa e nivel da casa
+    private Stack<Dupla<Integer, Integer>> propriedades;
+    private int operacaoPropriedades;
+    // Tabuleiro
     private Tabuleiro tabuleiro;
+    // Banco
     private Banco banco;
-    private int numeroJogadores;
-    
-    private Serializador serializador;
-    
-    private D6 d6;
+    // Dado
     private int[] numerosD6;
+    private D6 d6;
+    // Backup
+    private Serializador serializador;
 
     private String caminhoBackup = "./Dados/Backups/";
 
     public Controle() {
         jogadores = new ListaCircular<Jogador>();
+        propriedades = new Stack<Dupla<Integer, Integer>>();
         jogadoresG = new JogadorG[6];
-        banco = new Banco(numeroJogadores);
-        tabuleiro = new Tabuleiro(banco);
+        banco = new Banco(numeroJogadoresInicial);
+        tabuleiro = new Tabuleiro(propriedades);
         d6 = new D6();
         numerosD6 = new int[2];
         serializador = new Serializador();
+        operacaoPropriedades = 0;
+    }
+
+    // 0 -> Precisa vender mais, mesmo hipotecando todas as outras propriedades nao vai bastar
+    // 1 -> Ja vendeu suficiente, mas ainda precisa hipotecar para ter dinheiro suficiente
+    // 2 -> Ja vendeu suficiente, nao precisa mais hipotecar
+    public int acaoBotaoVender(ArrayList<Integer> propriedades) {
+        int divida, valorTotalVenda, patrimonioTotal, patrimonioRestante;
+        Jogador jogador = jogadores.getIteradorElem();
+
+        divida = banco.obterSaldo(jogador.obtemId());
+
+        valorTotalVenda = tabuleiro.patrimonioDoJogador(propriedades);
+        patrimonioTotal = tabuleiro.patrimonioTotalJogador(jogador); 
+        patrimonioRestante =  patrimonioTotal - valorTotalVenda; 
+    
+        divida += valorTotalVenda; 
+
+        valorTotalVenda = (valorTotalVenda * 75)/100;
+        banco.receber(jogador.obtemId(), valorTotalVenda);
+        tabuleiro.removeDono(propriedades);
+        jogador.desapropriaPropriedade(propriedades);
+        tabuleiro.inserePropriedadeNaPilha(jogador.obtemPosicao());
+		operacaoPropriedades = 1;
+
+        if (divida >= 0)
+            return 2;
+
+        if (divida + 0.5*patrimonioRestante < 0)
+            return 0;
+
+        return 1;
+    }
+
+    // 0 -> Precisa hipotecar menos, mesmo vendendo todas as outras propriedades nao vai bastar
+    // 1 -> Hipotecou suficiente. Ainda precisa vender mais um pouco
+    // 2 -> Ja hipotecou suficiente, nao eh necessario vender
+    public int acaoBotaoHipotecar(ArrayList<Integer> propriedades) {
+        int divida, valorTotalVenda, patrimonioTotal, patrimonioRestante;
+        Jogador jogador = jogadores.getIteradorElem();
+
+        divida = banco.obterSaldo(jogador.obtemId());
+
+        valorTotalVenda = tabuleiro.patrimonioDoJogador(propriedades);
+        patrimonioTotal = tabuleiro.patrimonioTotalJogador(jogador); 
+        patrimonioRestante =  patrimonioTotal - valorTotalVenda; 
+    
+    
+        divida += valorTotalVenda; 
+        
+        valorTotalVenda = (valorTotalVenda * 50)/100;
+        banco.receber(jogador.obtemId(), valorTotalVenda);
+        tabuleiro.hipotecaPropriedade(propriedades);
+	tabuleiro.inserePropriedadeNaPilha(jogador.obtemPosicao());
+        operacaoPropriedades = 1;
+
+        if (divida >= 0)
+            return 2;
+
+        if (divida + 0.75*patrimonioRestante < 0)
+            return 0;
+
+        return 1;
+    }
+
+    public void acaoBotaoComprar() {                                                                                                                                      
+        int valorPropriedade, idPropriedade; // valor a ser debitado
+
+        Jogador jogadorAtual = jogadores.getIteradorElem();
+        valorPropriedade = tabuleiro.obtemValorPropriedade(jogadorAtual);
+        idPropriedade = tabuleiro.obtemIdCasaAtual(jogadorAtual);
+    	tabuleiro.inserePropriedadeNaPilha(jogadorAtual.obtemPosicao());
+        operacaoPropriedades = 3;
+
+        if (!tabuleiro.estaHipotecada(idPropriedade)){
+            banco.debitar(jogadorAtual.obtemId(), valorPropriedade);
+            jogadorAtual.apropriaPropriedade(idPropriedade);
+            tabuleiro.defineDono(idPropriedade, jogadorAtual.obtemId());
+        } else { 
+            if (jogadorAtual.ehDono(idPropriedade)){
+                banco.debitar(jogadorAtual.obtemId(), valorPropriedade*50/100);
+                tabuleiro.deshipotecar(idPropriedade); 
+            }
+        }
+    }
+
+    public void acaoBotaoEvoluir() {
+        Jogador jogadorAtual = jogadores.getIteradorElem();
+
+        tabuleiro.evoluirImovel(jogadorAtual.obtemPosicao());
+        tabuleiro.inserePropriedadeNaPilha(jogadorAtual.obtemPosicao());
+
+        operacaoPropriedades = 2;
+    }
+
+    public void acaoBotaoJogarDados() {
+        d6.jogaDado();
+    }
+
+    public int[] obterNumerosD6() {
+        numerosD6[0] = d6.obterValorDado(0);
+        numerosD6[1] = d6.obterValorDado(1);
+        return numerosD6;
+    } 
+
+    public void carregarSaldos(int[] vet) {
+        int[] saldos = banco.obterSaldos();
+        for (int i = 0; i < numeroJogadoresInicial; i++){
+            vet[i] = saldos[i];
+        } 
+    }
+
+    // Passa os valores, nomes e IDs das propriedades do jogador atual
+    public void carregarPropriedades(ArrayList<String> nomes, ArrayList<String> valores, ArrayList<Integer> IDs) {
+        Jogador j = jogadores.getIteradorElem();
+        ArrayList<Integer> propriedadeIDs = j.obtemPropriedadesJogador();
+        
+        nomes.clear();
+        valores.clear();
+        IDs.clear();
+        for (int i = 0; i < propriedadeIDs.size(); i++) {
+            nomes.add(tabuleiro.obtemNomeCasa(propriedadeIDs.get(i)));
+            valores.add(tabuleiro.obtemValorPropriedade(propriedadeIDs.get(i)));
+            IDs.add(propriedadeIDs.get(i));
+        }
+    }
+
+    // Ao iniciar um backup, pilha deve conter todas as propriedades
+    // Caso seja novo jogo, pilha deve estar vazia
+    public Stack<Dupla<Integer, Integer>> obtemAtualizacoesPropriedades() {
+        return propriedades;
+    }
+
+    // 0 -> Nada muda
+    // 1 -> Remover propriedades (vender/hipotecar)
+    // 2 -> Atualizar propriedade (evoluir)
+    // 3 -> Adicionar propriedade (comprar)
+    public int statusAtualizacoesPropriedades() {
+        int op = operacaoPropriedades;
+        operacaoPropriedades = 0;
+        return op;
     }
 
     // Define os eventos monetários relacionados ao jogador dependendo do valor cobrado
@@ -80,105 +227,6 @@ public class Controle {
         numeroJogadores--;
     }
 
-    // Codigos:
-    // 0 -> Precisa vender mais, mesmo hipotecando todas as outras propriedades nao vai bastar
-    // 1 -> Ja vendeu suficiente, mas ainda precisa hipotecar para ter dinheiro suficiente
-    // 2 -> Ja vendeu suficiente, nao precisa mais hipotecar
-    public int acaoBotaoVender(ArrayList<Integer> propriedades) {
-        int divida, valorTotalVenda, patrimonioTotal, patrimonioRestante;
-        Jogador jogador = jogadores.getIteradorElem();
-
-        divida = banco.obterSaldo(jogador.obtemId());
-
-        valorTotalVenda = tabuleiro.patrimonioDoJogador(propriedades);
-        patrimonioTotal = tabuleiro.patrimonioTotalJogador(jogador); 
-        patrimonioRestante = valorTotalVenda - patrimonioTotal;
-    
-        divida += valorTotalVenda; 
-
-        valorTotalVenda = (valorTotalVenda * 75)/100;
-        banco.receber(jogador.obtemId(), valorTotalVenda);
-        tabuleiro.removeDono(propriedades);
-        jogador.desapropriaPropriedade(propriedades);
-
-        if (divida >= 0)
-            return 2;
-
-        if (divida + 0.5*patrimonioRestante < 0)
-            return 0;
-
-        return 1;
-    }
-
-    // 0 -> Precisa hipotecar menos, mesmo vendendo todas as outras propriedades nao vai bastar
-    // 1 -> Hipotecou suficiente. Ainda precisa vender mais um pouco
-    // 2 -> Ja hipotecou suficiente, nao eh necessario vender
-    public int acaoBotaoHipotecar(ArrayList<Integer> propriedades) {
-        int divida, valorTotalVenda, patrimonioTotal, patrimonioRestante;
-        Jogador jogador = jogadores.getIteradorElem();
-
-        divida = banco.obterSaldo(jogador.obtemId());
-
-        valorTotalVenda = tabuleiro.patrimonioDoJogador(propriedades);
-        patrimonioTotal = tabuleiro.patrimonioTotalJogador(jogador); 
-        patrimonioRestante = valorTotalVenda - patrimonioTotal;
-    
-        divida += valorTotalVenda; 
-        
-        valorTotalVenda = (valorTotalVenda * 50)/100;
-        banco.receber(jogador.obtemId(), valorTotalVenda);
-        tabuleiro.hipotecaPropriedade(propriedades);
-
-        if (divida >= 0)
-            return 2;
-
-        if (divida + 0.75*patrimonioRestante < 0)
-            return 0;
-
-        return 1;
-    }
-
-    public void acaoBotaoComprar() {                                                                                                                                      
-        int valorPropriedade, idPropriedade; // valor a ser debitado
-
-        Jogador jogadorAtual = jogadores.getIteradorElem();
-        valorPropriedade = tabuleiro.obtemValorPropriedade(jogadorAtual);
-        idPropriedade = tabuleiro.obtemIdCasaAtual(jogadorAtual);
-
-        if (!tabuleiro.estaHipotecada(idPropriedade)){
-            banco.debitar(jogadorAtual.obtemId(), valorPropriedade);
-            jogadorAtual.apropriaPropriedade(idPropriedade);
-            tabuleiro.defineDono(idPropriedade, jogadorAtual.obtemId());
-        } else { 
-            if (jogadorAtual.ehDono(idPropriedade)){
-                banco.debitar(jogadorAtual.obtemId(), valorPropriedade*50/100);
-                tabuleiro.deshipotecar(idPropriedade); 
-            }
-        }
-    }
-
-    public void acaoBotaoJogarDados() {
-        d6.jogaDado();
-    }
-
-    public void acaoBotaoEvoluir() {
-        Jogador jogadorAtual = jogadores.getIteradorElem();
-        tabuleiro.evoluirImovel(jogadorAtual.obtemPosicao());
-    }
-
-    public int[] obterNumerosD6() {
-        numerosD6[0] = d6.obterValorDado(0);
-        numerosD6[1] = d6.obterValorDado(1);
-        return numerosD6;
-    } 
-
-    public void carregarSaldos(int[] vet) {
-        int[] saldos = banco.obterSaldos();
-        for(int i = 0; i < numeroJogadores; i++){
-            vet[i] = saldos[i];
-        } 
-    }
-
     // Apartir da casa destino do jogador, define os eventos e atualiza o estado do jogador
     public MensagemJogador decifraCasa(int casaDestino) {
         MensagemJogador mensagemJogador;
@@ -212,12 +260,33 @@ public class Controle {
             case Eventos.propriedadeComDono:
                 propriedadeAtual = mensagemJogador.obtemPropriedadeAtual();
 
-                if (propriedadeAtual.obtemIdDono() == jogadorAtual.obtemId()) {
-                    // Jogador é o dono da propriedade
+                if (jogadorAtual.ehDono(propriedadeAtual.obtemId())) {
+                    if (propriedadeAtual.estaHipotecada()) {
+                        int valorPropriedade = propriedadeAtual.obtemValorPropriedade();
+                        valorPropriedade = valorPropriedade / 2;
+                        if (banco.temSaldoSuficiente(jogadorAtual.obtemId(), valorPropriedade)) {
+                            mensagemJogador.defineNovoEvento(Eventos.semDonoPodeComprar);
+                        } else {
+                            mensagemJogador.defineNovoEvento(Eventos.casaVazia);
+                        }
+                    } else {
+                        if (propriedadeAtual.obtemTipo() == Config.tipoImovel) {
+                            int valorEvolucao = mensagemJogador.obtemValorEvolucao();
+                            if (banco.temSaldoSuficiente(jogadorAtual.obtemId(), valorEvolucao)) {
+                                mensagemJogador.defineNovoEvento(Eventos.ehDonoPodeEvoluir);
+                            } else {
+                                mensagemJogador.defineNovoEvento(Eventos.casaVazia);
+                            }
+                        }
+                    }
                 } else {
                     // Não é o dono e precisa pagar aluguel
                     evento = defineEventosMonetarios(jogadorAtual, propriedadeAtual.obtemAluguel());
-                    banco.transferir(jogadorAtual.obtemId(), propriedadeAtual.obtemIdDono(), propriedadeAtual.obtemAluguel());
+                    banco.debitar(jogadorAtual.obtemId(), propriedadeAtual.obtemAluguel());
+                    if (!propriedadeAtual.estaHipotecada()) {
+                        banco.receber(propriedadeAtual.obtemIdDono(), propriedadeAtual.obtemAluguel());
+                    }
+
                     if (evento == Eventos.podePagar) {
                         // Define evento que pode pagar
                         mensagemJogador.defineNovoEvento(Eventos.temDonoEPodePagar);
@@ -399,6 +468,7 @@ public class Controle {
     }
 
     public void acaoBotaoCarregarBackup(String nomeArquivo) {
+        tabuleiro.gerarVetorCasas(nomeArquivo);
         serializador.restaurarBackup(caminhoBackup + nomeArquivo);
         numeroJogadores = serializador.carregar(numeroJogadores);
         jogadores = serializador.carregar(jogadores);        
@@ -407,6 +477,9 @@ public class Controle {
     }
 
     public void acaoBotaoSalvarBackup(String nomeArquivo) {
+        serializador.iniciarBackup(nomeArquivo);
+        serializador.salvar(jogadores);
+        tabuleiro.salvaTabuleiro(nomeArquivo);
         serializador.iniciarBackup(caminhoBackup + nomeArquivo);
         serializador.salvar(numeroJogadores);
         serializador.salvar(jogadores);        
@@ -415,7 +488,7 @@ public class Controle {
     }
 
     public void acaoBotaoNovaPartida() {
-        tabuleiro.gerarVetorCasas();
+        tabuleiro.gerarVetorCasas(null);
     }
 
     private void criarJogadoresG(String vetNomes[]){
@@ -424,6 +497,7 @@ public class Controle {
         for (int i = 0; i < numeroJogadores || i < 2; i++){
             iAux = new ImageIcon(String.format(caminhoImagem,i+1)).getImage();
             jogadoresG[i] = new JogadorG(iAux, i, vetNomes[i]);
+          
         }
     }
 
@@ -436,12 +510,11 @@ public class Controle {
     }
 
     public void cadastrarJogadores(String[] vetNomes, int qtdJogadores) {
-        Image iAux;
-        numeroJogadores = qtdJogadores;
 
-        criarJogadoresG(vetNomes);    
-
+        numeroJogadores = numeroJogadoresInicial = qtdJogadores;
+        criarJogadoresG(vetNomes);
         criarJogadores(vetNomes); 
+
     }
 
     public int obterIdJogadorAtual() {
