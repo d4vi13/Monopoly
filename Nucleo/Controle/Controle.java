@@ -514,6 +514,7 @@ public class Controle {
         numeroJogadores = numeroJogadoresInicial = qtdJogadores;
         criarJogadoresG(vetNomes);
         criarJogadores(vetNomes); 
+        banco.atualizaQtdClientes(qtdJogadores);
 
     }
 
