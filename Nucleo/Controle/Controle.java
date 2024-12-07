@@ -114,7 +114,7 @@ public class Controle {
         Jogador jogadorAtual = jogadores.getIteradorElem();
         valorPropriedade = tabuleiro.obtemValorPropriedade(jogadorAtual);
         idPropriedade = tabuleiro.obtemIdCasaAtual(jogadorAtual);
-		tabuleiro.inserePropriedadeNaPilha(jogadorAtual.obtemPosicao());
+    	tabuleiro.inserePropriedadeNaPilha(jogadorAtual.obtemPosicao());
         operacaoPropriedades = 3;
 
         if (!tabuleiro.estaHipotecada(idPropriedade)){
