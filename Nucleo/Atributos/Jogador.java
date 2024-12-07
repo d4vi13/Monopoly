@@ -3,6 +3,7 @@ import java.util.ArrayList;
 import java.io.*;
 
 final public class Jogador implements Serializable{
+    private String nome;
     private int posicao;
     private int id;
     private ArrayList<Integer> propriedades;
@@ -13,7 +14,7 @@ final public class Jogador implements Serializable{
 
     public Jogador(){}
 
-    public Jogador(int id){
+    public Jogador(int id, String nome){
         this.posicao = 0;
         this.id = id;
         this.falido = false;
@@ -21,6 +22,7 @@ final public class Jogador implements Serializable{
         this.ferias = false;
         this.rodadasPreso = 0;
         this.propriedades = new ArrayList<Integer>();
+        this.nome = nome;
     }
 
     public boolean estaFalido() {
@@ -29,6 +31,10 @@ final public class Jogador implements Serializable{
     
     public int obtemPosicao() {
         return this.posicao;
+    }
+
+    public String obtemNome(){
+        return nome;
     }
 
     public void defineNovaPosicao(int novaPosicao) {
