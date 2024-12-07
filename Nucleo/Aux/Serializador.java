@@ -37,7 +37,6 @@ public class Serializador{
         Jogador jogador = jogadores.getIteradorElem();
         int id = jogador.obtemId();
         do{
-            System.out.println("ta salvando");
             this.salvar(jogadores.getIteradorElem());
             jogadores.iteradorProx();
             jogador = jogadores.getIteradorElem();
