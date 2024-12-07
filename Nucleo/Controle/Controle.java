@@ -38,7 +38,7 @@ public class Controle {
         jogadores = new ListaCircular<Jogador>();
         jogadoresG = new JogadorG[6];
         banco = new Banco(numeroJogadoresInicial);
-        tabuleiro = new Tabuleiro(banco);
+        tabuleiro = new Tabuleiro(propriedades);
         d6 = new D6();
         numerosD6 = new int[2];
         serializador = new Serializador();
@@ -130,6 +130,10 @@ public class Controle {
     }
 
     public void acaoBotaoEvoluir() {
+        Jogador jogadorAtual = jogadores.getIteradorElem();
+
+        tabuleiro.evoluirImovel(jogadorAtual.obtemPosicao());
+        tabuleiro.inserePropriedadeNaPilha(jogadorAtual.obtemPosicao());
 
         operacaoPropriedades = 2;
     }
@@ -257,7 +261,12 @@ public class Controle {
                 propriedadeAtual = mensagemJogador.obtemPropriedadeAtual();
 
                 if (propriedadeAtual.obtemIdDono() == jogadorAtual.obtemId()) {
-                    // Jogador é o dono da propriedade
+                    if (propriedadeAtual.obtemTipo() == Config.tipoImovel) {
+                        int valorEvolucao = mensagemJogador.obtemValorEvolucao();
+                        if (banco.temSaldoSuficiente(jogadorAtual.obtemId(), valorEvolucao)) {
+                            mensagemJogador.defineNovoEvento(Eventos.ehDonoPodeEvoluir);
+                        }
+                    }
                 } else {
                     // Não é o dono e precisa pagar aluguel
                     evento = defineEventosMonetarios(jogadorAtual, propriedadeAtual.obtemAluguel());
@@ -473,7 +482,6 @@ public class Controle {
 
     public void cadastrarJogadores(String[] vetNomes, int qtdJogadores) {
         numeroJogadores = numeroJogadoresInicial = qtdJogadores;
-
         criarJogadoresG(vetNomes);
         criarJogadores(); 
     }
