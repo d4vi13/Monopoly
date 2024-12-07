@@ -387,7 +387,7 @@ public class Controle {
 
     public void acaoBotaoCarregarBackup(String nomeArquivo) {
         serializador.restaurarBackup(caminhoBackup + nomeArquivo);
-        serializador.carregar(numeroJogadores);
+        numeroJogadores = serializador.carregar(numeroJogadores);
         serializador.carregar(jogadores);        
         serializador.carregar(banco);
         criarJogadoresG(new String[]{"a","b","c", "d"});

@@ -73,9 +73,6 @@ public class Serializador{
             jogadores.addLista(carregarJogador());
         }
         jogadores.setIterador();
-        // Ajusta o iterador, pois o iterador foi o primeiro salvo
-        for(int i = 0; i < numeroDeJogadores - 1; i++)
-            jogadores.iteradorProx();
     }
 
     public void carregar(Banco banco){
@@ -86,12 +83,13 @@ public class Serializador{
         }
     }
 
-    public void carregar(int numeroDeJogadores){
+    public int carregar(int numeroDeJogadores){
         try{
             this.numeroDeJogadores = ois.readInt();
-            numeroDeJogadores = this.numeroDeJogadores;
+            return this.numeroDeJogadores;
         }catch(IOException exception){
             exception.printStackTrace();
+            return 0;
         }
     }
 }
