@@ -2,24 +2,30 @@ package Nucleo.Grafico;
 
 import Nucleo.Aux.Dupla;
 import java.util.ArrayList;
+
+import javax.swing.ImageIcon;
+
 import java.awt.*;
 
 public class PropriedadesG {
     private ArrayList<Dupla<Integer, Posicao>> posicoesUpgrades;
     private ArrayList<Integer> iconesUpgrades;
-    private Image icone, up1, up2, up3, up4;
-    private int id, tabDim, tabX, tabY;
+    private Image up1, up2, up3, up4;
+    private int tabX, tabY;
     private double escala;
 
     public PropriedadesG() {
         posicoesUpgrades = new ArrayList<>();
         iconesUpgrades = new ArrayList<>();
+        up1 = new ImageIcon("./Dados/Imagens/servidorN1").getImage();
+        up2 = new ImageIcon("./Dados/Imagens/servidorN2").getImage();
+        up3 = new ImageIcon("./Dados/Imagens/servidorN3").getImage();
+        up4 = new ImageIcon("./Dados/Imagens/servidorN4").getImage();
     }
 
     public void atualizarPosicoesUpgrades(int tabPosx, int tabPosy, int tabDim) {
         Dupla<Integer, Posicao> d;
         
-        this.tabDim = tabDim;
         tabX = tabPosx;
         tabY = tabPosy;
         escala = tabDim / 1156.0;
@@ -67,10 +73,10 @@ public class PropriedadesG {
     
     public Image obterImagemIconeUp(int i) {
         switch (iconesUpgrades.get(i)) {
-            case 0: return up1;
-            case 1: return up2;
-            case 2: return up3;
-            case 3: return up4;
+            case 1: return up1;
+            case 2: return up2;
+            case 3: return up3;
+            case 4: return up4;
             default:return null;
         }
     }

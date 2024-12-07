@@ -125,19 +125,6 @@ public class Controle {
 
     }
 
-    public void acaoBotaoCarregarBackup(String nomeArquivo) {
-
-    }
-
-    public void acaoBotaoSalvarBackup(String nomeArquivo) {
-        serializador.iniciarBackup(nomeArquivo);
-        serializador.salvar(jogadores);        
-    }
-
-    public void acaoBotaoNovaPartida() {
-        tabuleiro.gerarVetorCasas();
-    }
-
     public void acaoBotaoJogarDados() {
         d6.jogaDado();
     }
@@ -153,6 +140,21 @@ public class Controle {
         for (int i = 0; i < numeroJogadoresInicial; i++){
             vet[i] = saldos[i];
         } 
+    }
+
+    // Passa os valores, nomes e IDs das propriedades do jogador atual
+    public void carregarPropriedades(ArrayList<String> nomes, ArrayList<String> valores, ArrayList<Integer> IDs) {
+        Jogador j = jogadores.getIteradorElem();
+        ArrayList<Integer> propriedadeIDs = j.obtemPropriedadesJogador();
+        
+        nomes.clear();
+        valores.clear();
+        IDs.clear();
+        for (int i = 0; i < propriedadeIDs.size(); i++) {
+            nomes.add(tabuleiro.obtemNomeCasa(propriedadeIDs.get(i)));
+            valores.add(tabuleiro.obtemValorPropriedade(propriedadeIDs.get(i)));
+            IDs.add(propriedadeIDs.get(i));
+        }
     }
 
     // Ao iniciar um backup, pilha deve conter todas as propriedades
@@ -459,11 +461,9 @@ public class Controle {
     }
 
     public void cadastrarJogadores(String[] vetNomes, int qtdJogadores) {
-        Image iAux;
-        numeroJogadores = qtdJogadores;
+        numeroJogadores = numeroJogadoresInicial = qtdJogadores;
 
-        criarJogadoresG(vetNomes);    
-
+        criarJogadoresG(vetNomes);
         criarJogadores(); 
     }
 

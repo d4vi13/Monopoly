@@ -4,18 +4,18 @@ import Nucleo.Grafico.Componente;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
 import javax.swing.ImageIcon;
 import java.io.*;
 
 public class Final {
     private int frameComprimento, frameAltura;
-    private JogadorG[] jogadores;
     private Janela janela;
+    private String nome;
     private Timer temporizador;
     private Image fundo;
     private Font fonte;
-    private int id;
+    private int id, contador, it;
+    private Color cor;
 
     public Final(Janela j) {
         File f1;
@@ -30,8 +30,31 @@ public class Final {
 
         janela = j;
         fundo = new ImageIcon("./Dados/Imagens/festa.gif").getImage();
-        jogadores = janela.obterControle().obterJogadoresG();
         id = janela.obterControle().obterIdJogadorAtual();
+        nome = janela.obterControle().obterJogadoresG()[id].obterNome();
+        cor = Color.BLACK;
+        it = contador = 0;
+
+        temporizador = new Timer(200, e -> {
+            if (contador++ == 15) {
+                janela.atualizarEstado(MENU);
+                temporizador.stop();
+                return;
+            }
+
+            it++;
+            it %= 5;
+            switch (it) {
+                case 0: cor = Color.BLUE; break;
+                case 1: cor = Color.RED; break;
+                case 2: cor = Color.ORANGE; break;
+                case 3: cor = Color.GREEN; break;
+                case 4: cor = Color.YELLOW; break;
+                default: break;
+            }
+        });
+
+        temporizador.start();
     }
 
     public void setDimensoes(int comprimento, int altura) {
@@ -41,14 +64,14 @@ public class Final {
 
     public void pintar(Graphics g) {
         int altT, compT;
-        String tmp = jogadores[id].obterNome() + " Ganhou";
+        String tmp = nome + " Ganhou";
 
         g.drawImage(fundo, 0, 0, frameComprimento, frameAltura, null);
 
         g.setFont(fonte);
         altT = g.getFontMetrics().getAscent();
         compT = g.getFontMetrics().stringWidth(tmp);
-        g.setColor(Color.BLACK);
+        g.setColor(cor);
         g.drawString(tmp, (frameComprimento - compT) / 2, (frameAltura + altT) / 2);
     }
 }
