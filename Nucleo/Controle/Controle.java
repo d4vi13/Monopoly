@@ -65,7 +65,8 @@ public class Controle {
         banco.receber(jogador.obtemId(), valorTotalVenda);
         tabuleiro.removeDono(propriedades);
         jogador.desapropriaPropriedade(propriedades);
-        operacaoPropriedades = 1;
+        tabuleiro.inserePropriedadeNaPilha(jogador.obtemPosicao());
+		operacaoPropriedades = 1;
 
         if (divida >= 0)
             return 2;
@@ -95,6 +96,7 @@ public class Controle {
         valorTotalVenda = (valorTotalVenda * 50)/100;
         banco.receber(jogador.obtemId(), valorTotalVenda);
         tabuleiro.hipotecaPropriedade(propriedades);
+	tabuleiro.inserePropriedadeNaPilha(jogador.obtemPosicao());
         operacaoPropriedades = 1;
 
         if (divida >= 0)
@@ -112,6 +114,7 @@ public class Controle {
         Jogador jogadorAtual = jogadores.getIteradorElem();
         valorPropriedade = tabuleiro.obtemValorPropriedade(jogadorAtual);
         idPropriedade = tabuleiro.obtemIdCasaAtual(jogadorAtual);
+    	tabuleiro.inserePropriedadeNaPilha(jogadorAtual.obtemPosicao());
         operacaoPropriedades = 3;
 
         if (!tabuleiro.estaHipotecada(idPropriedade)){
