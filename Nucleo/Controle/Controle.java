@@ -471,17 +471,17 @@ public class Controle {
         tabuleiro.gerarVetorCasas(nomeArquivo);
         serializador.restaurarBackup(caminhoBackup + nomeArquivo);
         numeroJogadores = serializador.carregar(numeroJogadores);
+        numeroJogadoresInicial = serializador.carregar(numeroJogadores);
         jogadores = serializador.carregar(jogadores);        
         banco = serializador.carregar(banco);
         criarJogadoresG(obterVetorNomes());
     }
 
     public void acaoBotaoSalvarBackup(String nomeArquivo) {
-        serializador.iniciarBackup(nomeArquivo);
-        serializador.salvar(jogadores);
         tabuleiro.salvaTabuleiro(nomeArquivo);
         serializador.iniciarBackup(caminhoBackup + nomeArquivo);
         serializador.salvar(numeroJogadores);
+        serializador.salvar(numeroJogadoresInicial);
         serializador.salvar(jogadores);        
         serializador.salvar(banco);
 
