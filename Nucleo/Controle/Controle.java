@@ -470,6 +470,7 @@ public class Controle {
         operacaoPropriedades = 2;
         serializador.restaurarBackup(caminhoBackup + nomeArquivo);
         numeroJogadores = serializador.carregar(numeroJogadores);
+        numeroJogadoresInicial = serializador.carregar(numeroJogadores);
         jogadores = serializador.carregar(jogadores);        
         banco = serializador.carregar(banco);
         criarJogadoresG(obterVetorNomes());
@@ -479,6 +480,7 @@ public class Controle {
         tabuleiro.salvaTabuleiro(nomeArquivo);
         serializador.iniciarBackup(caminhoBackup + nomeArquivo);
         serializador.salvar(numeroJogadores);
+        serializador.salvar(numeroJogadoresInicial);
         serializador.salvar(jogadores);        
         serializador.salvar(banco);
 
@@ -511,6 +513,7 @@ public class Controle {
         numeroJogadores = numeroJogadoresInicial = qtdJogadores;
         criarJogadoresG(vetNomes);
         criarJogadores(vetNomes); 
+        banco.atualizaQtdClientes(qtdJogadores);
 
     }
 

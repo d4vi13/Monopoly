@@ -14,6 +14,11 @@ public class Banco implements Serializable {
         }
     }
 
+
+    void atualizaQtdClientes(int num){
+        numeroDeClientes = num;
+    }
+
     public void pagaSalario(int id) {
         clientes[id].receber(salarioClientes);
     }
