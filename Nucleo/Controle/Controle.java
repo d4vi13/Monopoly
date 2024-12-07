@@ -89,16 +89,15 @@ public class Controle {
         patrimonioTotal = tabuleiro.patrimonioTotalJogador(jogador); 
         patrimonioRestante =  patrimonioTotal - valorTotalVenda; 
     
-    
         divida += valorTotalVenda; 
-        
+
         if (divida + 0.75*patrimonioRestante < 0)
             return 0;
-
-        valorTotalVenda = (valorTotalVenda * 50)/100;
+      
+        valorTotalVenda = (valorTotalVenda)/2;
         banco.receber(jogador.obtemId(), valorTotalVenda);
         tabuleiro.hipotecaPropriedade(propriedades);
-        tabuleiro.inserePropriedadeNaPilha(jogador.obtemPosicao());
+	      tabuleiro.inserePropriedadeNaPilha(jogador.obtemPosicao());
         operacaoPropriedades = 1;
 
         if (divida >= 0)
@@ -132,7 +131,6 @@ public class Controle {
 
         tabuleiro.evoluirImovel(jogadorAtual.obtemPosicao());
         tabuleiro.inserePropriedadeNaPilha(jogadorAtual.obtemPosicao());
-
         operacaoPropriedades = 2;
     }
 
@@ -412,10 +410,12 @@ public class Controle {
                 // Jogador entra ou sai de férias 
                 if (jogadorAtual.jogadorDeFerias()) {
                     jogadorAtual.defineJogadorSaiuDeFerias();
+                    mensagemJogador.defineNovoEvento(Eventos.casaVazia);
                 } else {
                     jogadorAtual.defineJogadorEntrouDeFerias();
+                    mensagemJogador.defineNovoEvento(Eventos.jogadorNoCAAD);
                 }
-                mensagemJogador.defineNovoEvento(Eventos.jogadorNoCAAD);
+
                 break;
 
             case Eventos.casaRecepcao:
@@ -467,6 +467,7 @@ public class Controle {
 
     public void acaoBotaoCarregarBackup(String nomeArquivo) {
         tabuleiro.gerarVetorCasas(nomeArquivo);
+        operacaoPropriedades = 2;
         serializador.restaurarBackup(caminhoBackup + nomeArquivo);
         numeroJogadores = serializador.carregar(numeroJogadores);
         jogadores = serializador.carregar(jogadores);        
@@ -531,5 +532,10 @@ public class Controle {
 
     public int obterNumeroJogadores() {
         return numeroJogadores;
+    }
+
+    public void jogadorRecebeSalario() {
+        Jogador jogadorAtual = jogadores.getIteradorElem();
+        banco.pagaSalario(jogadorAtual.obtemId());
     }
 }
