@@ -15,7 +15,7 @@ public class Banco implements Serializable {
     }
 
 
-    void atualizaQtdClientes(int num){
+    public void atualizaQtdClientes(int num){
         numeroDeClientes = num;
     }
 
