@@ -34,10 +34,14 @@ public class Serializador{
     }
 
     public void salvar(ListaCircular<Jogador> jogadores){
+        Jogador jogador = jogadores.getIteradorElem();
+        int id = jogador.obtemId();
         do{
+            System.out.println("ta salvando");
             this.salvar(jogadores.getIteradorElem());
             jogadores.iteradorProx();
-        }while(!jogadores.iteradorEhInicio()); 
+            jogador = jogadores.getIteradorElem();
+        }while(id != jogador.obtemId()); 
     }
 
     public void salvar(Banco banco){
