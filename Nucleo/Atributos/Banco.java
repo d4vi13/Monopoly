@@ -10,7 +10,7 @@ public class Banco implements Serializable {
         this.numeroDeClientes = numeroDeClientes;
         clientes = new Cliente[6];
         for (int i = 0; i < 6; i++) {
-            clientes[i] = new Cliente(i, 1500000);
+            clientes[i] = new Cliente(i, 500000);
         }
     }
 
