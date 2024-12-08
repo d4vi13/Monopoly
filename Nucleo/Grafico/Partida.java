@@ -373,7 +373,7 @@ public class Partida {
         tam = propriedades.obtemNumUpgrades();
         for (int i = 0; i < tam; i++) {
             p = propriedades.obterPosicaoIconeUp(i);
-            g.drawImage(propriedades.obterImagemIconeUp(i), p.posX, p.posY, compIcone, altIcone, null);
+            g.drawImage(propriedades.obterImagemIconeUp(i), p.posX, p.posY, propriedades.obterComp(i), propriedades.obterAlt(i), null);
         }
     }
 
@@ -466,6 +466,7 @@ public class Partida {
                 botaoPause.mouseMoveu(e);
                 if (dadosLigado) botaoDados.mouseMoveu(e);
                 if (comprarLigado) botaoComprar.mouseMoveu(e);
+                if (upgradeLigado) botaoUpgrade.mouseMoveu(e);
                 if (venderLigado) botaoVender.mouseMoveu(e);
                 if (hipotecarLigado) botaoHipotecar.mouseMoveu(e);
                 if (venderLigado || hipotecarLigado) {
@@ -477,6 +478,7 @@ public class Partida {
                 botaoPause.mousePressionado(e);
                 if (dadosLigado) botaoDados.mousePressionado(e);
                 if (comprarLigado) botaoComprar.mousePressionado(e);
+                if (upgradeLigado) botaoUpgrade.mousePressionado(e);
                 if (venderLigado) botaoVender.mousePressionado(e);
                 if (hipotecarLigado) botaoHipotecar.mousePressionado(e);
                 if (venderLigado || hipotecarLigado) {
@@ -494,6 +496,7 @@ public class Partida {
                         atualizarJogador();
                     }
                 }
+
                 if (upgradeLigado) {
                     if (botaoUpgrade.mouseSolto(e)) {
                         janela.obterControle().acaoBotaoEvoluir();
@@ -518,7 +521,7 @@ public class Partida {
                         acao = janela.obterControle().acaoBotaoVender(selecoes);
                         if (acao != 0) {carregarSaldos(); atualizarPropriedades();}
                         if (acao == 1) {venderLigado = false; limparSelecoes();}
-                        if (acao == 2) {venderLigado = false; hipotecarLigado = false;}
+                        if (acao == 2) {venderLigado = false; hipotecarLigado = false; atualizarJogador();}
                     }
                 }
 
@@ -530,7 +533,7 @@ public class Partida {
                         acao = janela.obterControle().acaoBotaoHipotecar(selecoes);
                         if (acao != 0) {carregarSaldos(); atualizarPropriedades();}
                         if (acao == 1) {venderLigado = false; limparSelecoes();}
-                        if (acao == 2) {venderLigado = false; hipotecarLigado = false;}
+                        if (acao == 2) {venderLigado = false; hipotecarLigado = false; atualizarJogador();}
                     }
                 }
 
@@ -752,9 +755,9 @@ public class Partida {
                 venderLigado = hipotecarLigado = true;
                 break;
             case Eventos.temDonoEPodePagar:
+            case Eventos.jogadorNaRecepcao:
                 janela.obterControle().carregarSaldos(saldosInt);
                 intVetParaStringVet(saldos, saldosInt, numeroJogadores);
-                break;
             default:
                 atualizarJogador();
                 break;

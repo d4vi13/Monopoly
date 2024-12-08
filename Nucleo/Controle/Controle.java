@@ -57,7 +57,7 @@ public class Controle {
 
         valorTotalVenda = tabuleiro.patrimonioDoJogador(propriedades);
         patrimonioTotal = tabuleiro.patrimonioTotalJogador(jogador); 
-        patrimonioRestante =  patrimonioTotal - valorTotalVenda; 
+        patrimonioRestante = patrimonioTotal - valorTotalVenda; 
     
         divida += valorTotalVenda; 
 
@@ -97,7 +97,7 @@ public class Controle {
         valorTotalVenda = (valorTotalVenda)/2;
         banco.receber(jogador.obtemId(), valorTotalVenda);
         tabuleiro.hipotecaPropriedade(propriedades);
-	      tabuleiro.inserePropriedadeNaPilha(jogador.obtemPosicao());
+	    tabuleiro.inserePropriedadeNaPilha(jogador.obtemPosicao());
         operacaoPropriedades = 1;
 
         if (divida >= 0)
@@ -111,8 +111,6 @@ public class Controle {
         Jogador jogadorAtual = jogadores.getIteradorElem();
         valorPropriedade = tabuleiro.obtemValorPropriedade(jogadorAtual);
         idPropriedade = tabuleiro.obtemIdCasaAtual(jogadorAtual);
-    	tabuleiro.inserePropriedadeNaPilha(jogadorAtual.obtemPosicao());
-        operacaoPropriedades = 3;
 
         if (!tabuleiro.estaHipotecada(idPropriedade)){
             banco.debitar(jogadorAtual.obtemId(), valorPropriedade);
@@ -129,9 +127,14 @@ public class Controle {
     public void acaoBotaoEvoluir() {
         Jogador jogadorAtual = jogadores.getIteradorElem();
 
+        if (tabuleiro.obtemNivelPropriedade(jogadorAtual.obtemPosicao()) == 0) {
+            operacaoPropriedades = 3;
+        } else {
+            operacaoPropriedades = 2;
+        }
+
         tabuleiro.evoluirImovel(jogadorAtual.obtemPosicao());
         tabuleiro.inserePropriedadeNaPilha(jogadorAtual.obtemPosicao());
-        operacaoPropriedades = 2;
     }
 
     public void acaoBotaoJogarDados() {
@@ -240,16 +243,11 @@ public class Controle {
                 jogadorAtual.defineJogadorLivre();
                 jogadorAtual.defineNovaPosicao(casaDestino);
             }
-	    if (jogadorAtual.jogadorDeFerias()) {
-                jogadorAtual.defineJogadorSaiuDeFerias();
-                jogadorAtual.defineNovaPosicao(casaDestino);
-            }
         }
         
         mensagemJogador = tabuleiro.consultaTabuleiro(jogadorAtual);
         propriedadeAtual = mensagemJogador.obtemPropriedadeAtual();
         cartaSorteada = mensagemJogador.obtemCartaSorteada();
-
         switch (mensagemJogador.obtemTipoEvento()) {
             case Eventos.casaInicial:
                 // Jogador recebe salário do banco
@@ -413,7 +411,7 @@ public class Controle {
             case Eventos.casaCAAD:
                 if (!jogadorAtual.jogadorDeFerias()) {
                     jogadorAtual.defineJogadorEntrouDeFerias();
-                    mensagemJogador.defineNovoEvento(Eventos.jogadorNoCAAD);
+                    mensagemJogador.defineNovoEvento(Eventos.casaVazia);
                 } else {
                     if (jogadorAtual.retornaRodadasFerias() == 0) {
                         jogadorAtual.defineJogadorSaiuDeFerias();
@@ -461,7 +459,6 @@ public class Controle {
 
     private String[] obterVetorNomes(){
         Jogador jogador = jogadores.getIteradorElem();
-        int id = jogador.obtemId();
         String[] nomes = new String[numeroJogadores];
 
         for(int i = 0 ; i < numeroJogadores ; i++){
@@ -494,7 +491,13 @@ public class Controle {
     }
 
     public void acaoBotaoNovaPartida() {
+        while (!propriedades.empty()) {
+            System.out.println(propriedades.pop().primeiro);
+        }
         tabuleiro.gerarVetorCasas(null);
+        while (!propriedades.empty()) {
+            System.out.println(propriedades.pop().primeiro);
+        }
     }
 
     private void criarJogadoresG(String vetNomes[]){

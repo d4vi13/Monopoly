@@ -61,6 +61,7 @@ public class Tabuleiro {
         List<Integer> niveis;
         List<Boolean> donos;
         ObjectMapper objectMapper = new ObjectMapper();
+        boolean insereNaPilha = (backup != null);
 
         if (backup != null) {
             selecionaBackup = path.concat(backup);
@@ -102,7 +103,9 @@ public class Tabuleiro {
                                 casasTabuleiro[casaId] = new Imovel(nomeCasa, casaId, casaValor);
                                 ((Imovel) casasTabuleiro[casaId]).defineDono(donos.get(i));;
                                 ((Imovel) casasTabuleiro[casaId]).defineNivel(niveis.get(i));
-                                pilhaPropriedades.push(new Dupla<Integer,Integer>(casaId, niveis.get(i)));
+                                if (insereNaPilha) {
+                                    pilhaPropriedades.push(new Dupla<Integer,Integer>(casaId, niveis.get(i)));
+                                }
                             }
                         }
                         break;
@@ -434,7 +437,7 @@ public class Tabuleiro {
 
     public void removeDono(ArrayList<Integer> propriedades){
         for (int i = 0; i < propriedades.size(); i++){
-            removeDono(i);
+            removeDono(propriedades.get(i));
         }
     }
 
@@ -465,5 +468,16 @@ public class Tabuleiro {
 
     public String obtemValorPropriedade(int id) {
         return Integer.toString(((Propriedade)casasTabuleiro[id]).obtemValorPropriedade());
+    }
+
+    public int obtemNivelPropriedade(int id) {
+        int imovelNivel = 0;
+    
+        if (casasTabuleiro[id].obtemTipo() == Config.tipoImovel) {
+            Imovel imovelAtual = (Imovel)casasTabuleiro[id];
+            imovelNivel = imovelAtual.obtemNivelImovel();
+        }
+
+        return imovelNivel;
     }
 }

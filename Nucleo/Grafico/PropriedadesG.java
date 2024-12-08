@@ -10,7 +10,7 @@ import Nucleo.Aux.Posicoes.Posicao;
 
 public class PropriedadesG {
     private ArrayList<Dupla<Integer, Posicao>> posicoesUpgrades;
-    private ArrayList<Integer> iconesUpgrades;
+    public ArrayList<Integer> iconesUpgrades;
     private Image up1, up2, up3, up4;
     private int tabX, tabY;
     private double escala;
@@ -18,10 +18,10 @@ public class PropriedadesG {
     public PropriedadesG() {
         posicoesUpgrades = new ArrayList<>();
         iconesUpgrades = new ArrayList<>();
-        up1 = new ImageIcon("./Dados/Imagens/servidorN1").getImage();
-        up2 = new ImageIcon("./Dados/Imagens/servidorN2").getImage();
-        up3 = new ImageIcon("./Dados/Imagens/servidorN3").getImage();
-        up4 = new ImageIcon("./Dados/Imagens/servidorN4").getImage();
+        up1 = new ImageIcon("./Dados/Imagens/servidorN1.png").getImage();
+        up2 = new ImageIcon("./Dados/Imagens/servidorN2.png").getImage();
+        up3 = new ImageIcon("./Dados/Imagens/servidorN3.png").getImage();
+        up4 = new ImageIcon("./Dados/Imagens/servidorN4.png").getImage();
     }
 
     public void atualizarPosicoesUpgrades(int tabPosx, int tabPosy, int tabDim) {
@@ -84,10 +84,10 @@ public class PropriedadesG {
 
     public int obterAlt(int i) {
         switch (iconesUpgrades.get(i)) {
-            case 0: return (int)(escala * 13);
-            case 1: return (int)(escala * 26);
-            case 2: return (int)(escala * 39);
-            case 3: return (int)(escala * 51);
+            case 1: return (int)(escala * 13);
+            case 2: return (int)(escala * 26);
+            case 3: return (int)(escala * 39);
+            case 4: return (int)(escala * 51);
             default:return 0;
         }
     }

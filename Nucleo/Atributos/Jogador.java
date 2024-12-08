@@ -16,11 +16,11 @@ final public class Jogador implements Serializable{
     public Jogador(){}
 
     public Jogador(int id, String nome){
-        this.posicao = 0;
-        this.id = id;
         this.falido = false;
         this.preso = false;
         this.ferias = false;
+        this.posicao = 0;
+        this.id = id;
         this.rodadasPreso = 0;
         this.propriedades = new ArrayList<Integer>();
         this.nome = nome;
