@@ -313,14 +313,11 @@ public class Controle {
 
             case Eventos.casaPrisao:
                 if (jogadorAtual.jogadorPreso()) {
-                    // Jogador continua preso
+                    jogadorAtual.diminuiRodadasPreso();
                     if (jogadorAtual.retornaRodadasPreso() == 0) {
                         jogadorAtual.defineJogadorLivre();
-                        mensagemJogador.defineNovoEvento(Eventos.casaVazia);
-                    } else {
-                        jogadorAtual.diminuiRodadasPreso();
-                        mensagemJogador.defineNovoEvento(Eventos.jogadorTaPreso);
                     }
+                    mensagemJogador.defineNovoEvento(Eventos.jogadorTaPreso);
                 } else {
                     // Jogador está visitando a prisão
                     mensagemJogador.defineNovoEvento(Eventos.jogadorEstaVisitandoPrisao);
