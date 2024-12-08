@@ -25,20 +25,19 @@ public class MensagemJogador {
 
         // Eventos Definitivos
         public final static int casaVazia = 0;
-        public final static int jogadorNaCasaInicial = 1;
-        public final static int temDonoEPodePagar = 2;
-        public final static int vendaOuHipoteca = 3;
-        public final static int semDonoPodeComprar = 4;
-        public final static int ehDonoPodeEvoluir = 5;
-        public final static int semDonoNaoPodeComprar = 6;
-        public final static int jogadorTaPreso = 7;
-        public final static int jogadorEstaVisitandoPrisao = 8;
-        public final static int tirouCarta = 9;
-        public final static int tirouCartaEfoiPreso = 10;
-        public final static int tirouCartaDeMovimento = 11;
-        public final static int jogadorNoCAAD = 12;
-        public final static int jogadorNaRecepcao = 13;
-        public final static int jogadorFaliu = 14;
+        public final static int temDonoEPodePagar = 1;
+        public final static int vendaOuHipoteca = 2;
+        public final static int semDonoPodeComprar = 3;
+        public final static int ehDonoPodeEvoluir = 4;
+        public final static int semDonoNaoPodeComprar = 5;
+        public final static int jogadorTaPreso = 6;
+        public final static int jogadorEstaVisitandoPrisao = 7;
+        public final static int tirouCarta = 8;
+        public final static int tirouCartaEfoiPreso = 9;
+        public final static int tirouCartaDeMovimento = 10;
+        public final static int jogadorNoCAAD = 11;
+        public final static int jogadorNaRecepcao = 12;
+        public final static int jogadorFaliu = 13;
     }
 
     public MensagemJogador() {
