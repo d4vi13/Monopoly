@@ -254,7 +254,7 @@ public class Controle {
             case Eventos.casaInicial:
                 // Jogador recebe salário do banco
                 banco.pagaSalario(jogadorAtual.obtemId());
-                mensagemJogador.defineNovoEvento(Eventos.jogadorNaCasaInicial);
+                mensagemJogador.defineNovoEvento(Eventos.casaVazia);
                 break;
 
             case Eventos.propriedadeComDono:
