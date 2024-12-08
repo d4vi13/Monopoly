@@ -413,6 +413,15 @@ public class Controle {
             case Eventos.casaCAAD:
                 if (!jogadorAtual.jogadorDeFerias()) {
                     jogadorAtual.defineJogadorEntrouDeFerias();
+                    mensagemJogador.defineNovoEvento(Eventos.jogadorNoCAAD);
+                } else {
+                    if (jogadorAtual.retornaRodadasFerias() == 0) {
+                        jogadorAtual.defineJogadorSaiuDeFerias();
+                        mensagemJogador.defineNovoEvento(Eventos.casaVazia);
+                    } else {
+                        jogadorAtual.diminuiRodadasFerias();
+                        mensagemJogador.defineNovoEvento(Eventos.jogadorNoCAAD);
+                    }
                 }
                 break;
 
