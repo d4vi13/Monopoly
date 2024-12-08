@@ -52,7 +52,7 @@ public class PropriedadesG {
     public void atualizarUpgrade(int casa, int nivel) {
         for (int i = 0; i < posicoesUpgrades.size(); i++) {
             if (posicoesUpgrades.get(i).primeiro == casa) {
-                iconesUpgrades.add(i, nivel);
+                iconesUpgrades.set(i, nivel);
                 break;
             }
         }

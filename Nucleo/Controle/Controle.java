@@ -248,6 +248,7 @@ public class Controle {
         mensagemJogador = tabuleiro.consultaTabuleiro(jogadorAtual);
         propriedadeAtual = mensagemJogador.obtemPropriedadeAtual();
         cartaSorteada = mensagemJogador.obtemCartaSorteada();
+
         switch (mensagemJogador.obtemTipoEvento()) {
             case Eventos.casaInicial:
                 // Jogador recebe salário do banco
@@ -312,12 +313,11 @@ public class Controle {
 
             case Eventos.casaPrisao:
                 if (jogadorAtual.jogadorPreso()) {
+                    // Jogador continua preso
                     if (jogadorAtual.retornaRodadasPreso() == 0) {
-                        // Libera o jogador da prisão
                         jogadorAtual.defineJogadorLivre();
-                        mensagemJogador.defineNovoEvento(Eventos.jogadorEstaVisitandoPrisao);
+                        mensagemJogador.defineNovoEvento(Eventos.casaVazia);
                     } else {
-                        // Jogador continua preso
                         jogadorAtual.diminuiRodadasPreso();
                         mensagemJogador.defineNovoEvento(Eventos.jogadorTaPreso);
                     }
@@ -325,12 +325,6 @@ public class Controle {
                     // Jogador está visitando a prisão
                     mensagemJogador.defineNovoEvento(Eventos.jogadorEstaVisitandoPrisao);
                 }
-                break;
-
-            case Eventos.indoPreso:
-                // Jogador está indo para a cadeia
-                jogadorAtual.defineJogadorPreso();
-                mensagemJogador.defineNovoEvento(Eventos.jogadorTaPreso);
                 break;
 
             case Eventos.casaCarta:
@@ -383,11 +377,13 @@ public class Controle {
                         
                     case 4:
                         casaFinal = tabuleiro.buscaPorCasa(Config.tipoPrisao);
+                        jogadorAtual.defineJogadorPreso();
+                        jogadorAtual.defineNovaPosicao(casaFinal);
                         deslocamento = calculaDeslocamento(casaInicial, casaFinal);
-                        mensagemJogador.defineEventoMovimento(true);
                         mensagemJogador.defineDeslocamento(deslocamento);
-                        mensagemJogador.defineNovoEvento(Eventos.indoPreso);
-                        return decifraCasa(casaFinal);
+                        mensagemJogador.defineNovoEvento(Eventos.tirouCartaDeMovimento);
+                        
+                        break;
 
                     case 5:
                         casaFinal = tabuleiro.buscaPorCasa(Config.tipoInicial);
@@ -418,6 +414,7 @@ public class Controle {
                         mensagemJogador.defineNovoEvento(Eventos.casaVazia);
                     } else {
                         jogadorAtual.diminuiRodadasFerias();
+                        jogadorAtual.defineJogadorSaiuDeFerias();
                         mensagemJogador.defineNovoEvento(Eventos.jogadorNoCAAD);
                     }
                 }
@@ -491,13 +488,7 @@ public class Controle {
     }
 
     public void acaoBotaoNovaPartida() {
-        while (!propriedades.empty()) {
-            System.out.println(propriedades.pop().primeiro);
-        }
         tabuleiro.gerarVetorCasas(null);
-        while (!propriedades.empty()) {
-            System.out.println(propriedades.pop().primeiro);
-        }
     }
 
     private void criarJogadoresG(String vetNomes[]){

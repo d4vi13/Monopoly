@@ -13,7 +13,6 @@ public class MensagemJogador {
 
     public class Eventos {
         // Eventos Auxiliares
-        public final static int indoPreso = -9;
         public final static int podePagar = -8;
         public final static int casaRecepcao = -7;
         public final static int casaCAAD = -6;

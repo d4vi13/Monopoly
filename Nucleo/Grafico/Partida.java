@@ -157,7 +157,7 @@ public class Partida {
                 }
             }
             if (soma) {
-                if (++casaAtual == 32) {
+                if (++casaAtual == 32 && msg.obtemTipoEvento() != Eventos.tirouCartaDeMovimento) {
                     janela.obterControle().jogadorRecebeSalario();
                     janela.obterControle().carregarSaldos(saldosInt);
                     intVetParaStringVet(saldos, saldosInt, numeroJogadores);
@@ -616,7 +616,6 @@ public class Partida {
             case JOGADOR_NA_CASA:
                 if (evento == Eventos.tirouCartaDeMovimento) {
                     casaDestino = (casaDestino + msg.obtemDeslocamentoDoJogador()) & 0x1f;
-                    System.out.println(msg.obtemDeslocamentoDoJogador());
                     temporizadorPulos.start();
                 } else {
                     if (evento == Eventos.jogadorFaliu) {
@@ -751,6 +750,7 @@ public class Partida {
                 break;
             case Eventos.vendaOuHipoteca:
                 selecoes.clear();
+                Arrays.fill(estadosMarcadores, false);
                 janela.obterControle().carregarPropriedades(nomesImoveis, valoresImoveis, imoveisIDs);
                 venderLigado = hipotecarLigado = true;
                 break;

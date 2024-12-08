@@ -7,7 +7,7 @@ public class Propriedade extends Casa {
     protected int valorInicial;
     protected int valorDeVenda;
     protected int valorAluguel;
-    protected final static int taxaAluguel = 5;
+    protected final static int taxaAluguel = 1;
 
     public boolean temDono() {
         return this.temDono;

@@ -4,7 +4,7 @@ import java.io.*;
 public class Banco implements Serializable {
     private Cliente[] clientes; // cada cliente tem seu id identificador  
     private int numeroDeClientes;
-    private final static int salarioClientes = 200000;
+    private final static int salarioClientes = 100;
 
     public Banco(int numeroDeClientes){
         this.numeroDeClientes = numeroDeClientes;
