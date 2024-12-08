@@ -1,11 +1,12 @@
 package Nucleo.Grafico;
 
-import Nucleo.Aux.Dupla;
 import java.util.ArrayList;
-
 import javax.swing.ImageIcon;
-
 import java.awt.*;
+
+import Nucleo.Aux.Dupla;
+import Nucleo.Aux.Posicoes;
+import Nucleo.Aux.Posicoes.Posicao;
 
 public class PropriedadesG {
     private ArrayList<Dupla<Integer, Posicao>> posicoesUpgrades;

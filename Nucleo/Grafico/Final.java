@@ -1,6 +1,5 @@
 package Nucleo.Grafico;
 import static Nucleo.Aux.EstadosJogo.*;
-import Nucleo.Grafico.Componente;
 
 import javax.swing.*;
 import java.awt.*;
@@ -35,7 +34,7 @@ public class Final {
         cor = Color.BLACK;
         it = contador = 0;
 
-        temporizador = new Timer(200, e -> {
+        temporizador = new Timer(200, _ -> {
             if (contador++ == 15) {
                 janela.atualizarEstado(MENU);
                 temporizador.stop();

@@ -1,11 +1,11 @@
 package Nucleo.Grafico;
 import static Nucleo.Aux.EstadosJogo.*;
 
-import Nucleo.Grafico.Componente;
 import Nucleo.Controle.Controle;
 import Nucleo.Aux.MensagemJogador;
 import Nucleo.Aux.MensagemJogador.Eventos;
 import Nucleo.Aux.Dupla;
+import Nucleo.Aux.Posicoes.Posicao;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -141,7 +141,7 @@ public class Partida {
     }
 
     private void carregarTemporizadores() {
-        temporizadorPulos = new Timer(200, e -> {
+        temporizadorPulos = new Timer(200, _ -> {
             boolean soma;
             if (casaDestino < casaAtual) {
                 if (32 - casaAtual + casaDestino > casaAtual - casaDestino) {
@@ -157,7 +157,11 @@ public class Partida {
                 }
             }
             if (soma) {
-                casaAtual++;
+                if (++casaAtual == 32) {
+                    janela.obterControle().jogadorRecebeSalario();
+                    janela.obterControle().carregarSaldos(saldosInt);
+                    intVetParaStringVet(saldos, saldosInt, numeroJogadores);
+                }
                 casaAtual &= 0x1f;
             } else {
                 casaAtual--;
@@ -167,14 +171,14 @@ public class Partida {
             jogadores[idJogadorAtual].atualizarPosicaoJogador(casaAtual);
 
             if (casaAtual == casaDestino) {
-                ((Timer) e.getSource()).stop();
+                temporizadorPulos.stop();
                 fimTemporizadorPulos();
             }
         });
 
-        temporizadorGenerico = new Timer(2200, e -> {
+        temporizadorGenerico = new Timer(2200, _ -> {
             fimTemporizadorGenerico();
-            ((Timer) e.getSource()).stop();
+            temporizadorGenerico.stop();
         });
     }
 
@@ -447,7 +451,7 @@ public class Partida {
     }
 
     public void mouseAtualiza(MouseEvent e) {
-        int acao, aux;
+        int acao;
 
         if (pauseAtivado == true) {
             if (e.getID() == MouseEvent.MOUSE_MOVED) {
@@ -512,49 +516,20 @@ public class Partida {
                             if (estadosMarcadores[i]) selecoes.add(imoveisIDs.get(i));
                         }
                         acao = janela.obterControle().acaoBotaoVender(selecoes);
-                        if (acao != 0) {
-                            carregarSaldos();
-                            atualizarPropriedades();
-                        }
-
-                        if (acao == 1) {
-                            venderLigado = false;
-                            Arrays.fill(estadosMarcadores, false);
-                            selecoes.clear();
-                            for (int i = 0; i < selecoes.size(); i++) {
-                                aux = imoveisIDs.indexOf(selecoes.get(i));
-                                imoveisIDs.remove(aux);
-                                nomesImoveis.remove(aux);
-                                valoresImoveis.remove(aux);
-                            }
-                        }
-
+                        if (acao != 0) {carregarSaldos(); atualizarPropriedades();}
+                        if (acao == 1) {venderLigado = false; limparSelecoes();}
                         if (acao == 2) {venderLigado = false; hipotecarLigado = false;}
                     }
                 }
+
                 if (hipotecarLigado) {
                     if (botaoHipotecar.mouseSolto(e)) {
                         for (int i = 0; i < nomesImoveis.size(); i++) {
                             if (estadosMarcadores[i]) selecoes.add(imoveisIDs.get(i));
                         }
                         acao = janela.obterControle().acaoBotaoHipotecar(selecoes);
-                        if (acao != 0) {
-                            carregarSaldos();
-                            atualizarPropriedades();
-                        }
-
-                        if (acao == 1) {
-                            venderLigado = false;
-                            Arrays.fill(estadosMarcadores, false);
-                            selecoes.clear();
-                            for (int i = 0; i < selecoes.size(); i++) {
-                                aux = imoveisIDs.indexOf(selecoes.get(i));
-                                imoveisIDs.remove(aux);
-                                nomesImoveis.remove(aux);
-                                valoresImoveis.remove(aux);
-                            }
-                        }
-                         
+                        if (acao != 0) {carregarSaldos(); atualizarPropriedades();}
+                        if (acao == 1) {venderLigado = false; limparSelecoes();}
                         if (acao == 2) {venderLigado = false; hipotecarLigado = false;}
                     }
                 }
@@ -562,6 +537,20 @@ public class Partida {
                 break;
             default:
                 break;
+        }
+    }
+
+    private void limparSelecoes() {
+        int aux;
+
+        Arrays.fill(estadosMarcadores, false);
+        selecoes.clear();
+        aux = imoveisIDs.size();
+        for (int i = 0; i < aux; i++) {
+            if (estadosMarcadores[i] == false) continue;
+            imoveisIDs.remove(i);
+            nomesImoveis.remove(i);
+            valoresImoveis.remove(i);
         }
     }
 
@@ -727,7 +716,8 @@ public class Partida {
         casaDestino = (casaAtual + valoresDados[0] + valoresDados[1]) % 32;
 
         msg = controle.decifraCasa(casaDestino);
-        if (msg.obtemTipoEvento() == Eventos.jogadorTaPreso) {
+        if (msg.obtemTipoEvento() == Eventos.jogadorTaPreso ||
+            msg.obtemTipoEvento() == Eventos.jogadorNoCAAD) {
             temporizadorGenerico.start();
         } else {
             temporizadorPulos.start();
@@ -760,6 +750,10 @@ public class Partida {
                 selecoes.clear();
                 janela.obterControle().carregarPropriedades(nomesImoveis, valoresImoveis, imoveisIDs);
                 venderLigado = hipotecarLigado = true;
+                break;
+            case Eventos.temDonoEPodePagar:
+                janela.obterControle().carregarSaldos(saldosInt);
+                intVetParaStringVet(saldos, saldosInt, numeroJogadores);
                 break;
             default:
                 atualizarJogador();
