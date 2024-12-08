@@ -34,10 +34,13 @@ public class Serializador{
     }
 
     public void salvar(ListaCircular<Jogador> jogadores){
+        Jogador jogador = jogadores.getIteradorElem();
+        int id = jogador.obtemId();
         do{
             this.salvar(jogadores.getIteradorElem());
             jogadores.iteradorProx();
-        }while(!jogadores.iteradorEhInicio()); 
+            jogador = jogadores.getIteradorElem();
+        }while(id != jogador.obtemId()); 
     }
 
     public void salvar(Banco banco){
@@ -67,31 +70,33 @@ public class Serializador{
         }
     }
 
-    public void carregar(ListaCircular<Jogador> jogadores){
+    public ListaCircular<Jogador> carregar(ListaCircular<Jogador> tipojogadores){
+        ListaCircular<Jogador> jogadores = new ListaCircular<Jogador>();
         for(int i = 0; i < numeroDeJogadores; i++){
-            System.out.println("aqui");
             jogadores.addLista(carregarJogador());
         }
         jogadores.setIterador();
-        // Ajusta o iterador, pois o iterador foi o primeiro salvo
-        for(int i = 0; i < numeroDeJogadores - 1; i++)
-            jogadores.iteradorProx();
+        return jogadores;
     }
 
-    public void carregar(Banco banco){
+    public Banco carregar(Banco tipobanco){
+        Banco banco = new Banco(0);
         try{
             banco = (Banco) ois.readObject();
+            return banco;
         }catch(IOException | ClassNotFoundException exception){
             exception.printStackTrace();
+            return null;
         }
     }
 
-    public void carregar(int numeroDeJogadores){
+    public int carregar(int numeroDeJogadores){
         try{
             this.numeroDeJogadores = ois.readInt();
-            numeroDeJogadores = this.numeroDeJogadores;
+            return this.numeroDeJogadores;
         }catch(IOException exception){
             exception.printStackTrace();
+            return 0;
         }
     }
 }

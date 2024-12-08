@@ -6,9 +6,12 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Stack;
+
 import Nucleo.Atributos.Cartas.Carta;
 import Nucleo.Atributos.Casa.Config;
 import Nucleo.Aux.CarregaTabuleiro;
+import Nucleo.Aux.Dupla;
 import Nucleo.Aux.MensagemJogador;
 import Nucleo.Aux.infoTabuleiro;
 import Nucleo.Aux.MensagemJogador.Eventos;
@@ -21,11 +24,13 @@ public class Tabuleiro {
     private Cartas cartasDoTabuleiro;
     private Recepcao recepcaoDoDinf;
     private MensagemJogador mensagemJogador;
+    private Stack<Dupla<Integer, Integer>> pilhaPropriedades;
 
-    public Tabuleiro(Banco banco) {
+    public Tabuleiro(Stack<Dupla<Integer, Integer>> pilha) {
         this.mensagemJogador = new MensagemJogador();
         this.cartasDoTabuleiro = new Cartas();
         this.recepcaoDoDinf = new Recepcao();
+        this.pilhaPropriedades = pilha;
     }
 
     public int obtemCasasTotais () {
@@ -59,6 +64,7 @@ public class Tabuleiro {
 
         if (backup != null) {
             selecionaBackup = path.concat(backup);
+            selecionaBackup = selecionaBackup.concat(".json");
         } else {
             selecionaBackup = backupTabuleiro;
         }
@@ -96,6 +102,7 @@ public class Tabuleiro {
                                 casasTabuleiro[casaId] = new Imovel(nomeCasa, casaId, casaValor);
                                 ((Imovel) casasTabuleiro[casaId]).defineDono(donos.get(i));;
                                 ((Imovel) casasTabuleiro[casaId]).defineNivel(niveis.get(i));
+                                pilhaPropriedades.push(new Dupla<Integer,Integer>(casaId, niveis.get(i)));
                             }
                         }
                         break;
@@ -328,7 +335,15 @@ public class Tabuleiro {
                 mensagemJogador.atualizaMensagem(mensagemJogador.obtemCartaSorteada(), null, Eventos.casaInicial);
                 break;
             
-            case Config.tipoImovel:            
+            case Config.tipoImovel:        
+                propriedadeAtual = (Propriedade)casaAtual;
+                if (propriedadeAtual.temDono()) {
+                    mensagemJogador.atualizaMensagem(null, propriedadeAtual, Eventos.propriedadeComDono);
+                    mensagemJogador.defineValorEvolucao(((Imovel) propriedadeAtual).obtemPrecoEvolucao());
+                } else {
+                    mensagemJogador.atualizaMensagem(null, propriedadeAtual, Eventos.propriedadeSemDono);
+                }
+                break;
             case Config.tipoEmpresa:
 
                 propriedadeAtual = (Propriedade)casaAtual;
@@ -433,6 +448,17 @@ public class Tabuleiro {
         imovelAtual.evoluirImovel();
     }
 
+    public void inserePropriedadeNaPilha(int id) {
+        int imovelId;
+        int imovelNivel;
+        if (casasTabuleiro[id].obtemTipo() == Config.tipoImovel) {
+            Imovel imovelAtual = (Imovel)casasTabuleiro[id];
+            imovelId = imovelAtual.obtemId();
+            imovelNivel = imovelAtual.obtemNivelImovel();
+            pilhaPropriedades.push(new Dupla<Integer,Integer>(imovelId, imovelNivel));
+        }
+    }
+  
     public String obtemNomeCasa(int id) {
         return casasTabuleiro[id].obtemNome();
     }

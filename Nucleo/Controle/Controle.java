@@ -36,13 +36,13 @@ public class Controle {
 
     public Controle() {
         jogadores = new ListaCircular<Jogador>();
+        propriedades = new Stack<Dupla<Integer, Integer>>();
         jogadoresG = new JogadorG[6];
         banco = new Banco(numeroJogadoresInicial);
-        tabuleiro = new Tabuleiro(banco);
+        tabuleiro = new Tabuleiro(propriedades);
         d6 = new D6();
         numerosD6 = new int[2];
         serializador = new Serializador();
-        propriedades = new Stack<Dupla<Integer, Integer>>();
         operacaoPropriedades = 0;
     }
 
@@ -61,19 +61,18 @@ public class Controle {
     
         divida += valorTotalVenda; 
 
-        valorTotalVenda = (valorTotalVenda * 75)/100;
-        banco.receber(jogador.obtemId(), valorTotalVenda);
-        tabuleiro.removeDono(propriedades);
-        tabuleiro.inserePropriedadeNaPilha(jogador.obtemPosicao());
-        jogador.desapropriaPropriedade(propriedades);
-        operacaoPropriedades = 1;
-
-        if (divida >= 0)
-            return 2;
-
         if (divida + 0.5*patrimonioRestante < 0)
             return 0;
 
+        valorTotalVenda = (valorTotalVenda * 75)/100;
+        banco.receber(jogador.obtemId(), valorTotalVenda);
+        tabuleiro.removeDono(propriedades);
+        jogador.desapropriaPropriedade(propriedades);
+        tabuleiro.inserePropriedadeNaPilha(jogador.obtemPosicao());
+		operacaoPropriedades = 1;
+
+        if (divida >= 0)
+            return 2;
         return 1;
     }
 
@@ -90,21 +89,19 @@ public class Controle {
         patrimonioTotal = tabuleiro.patrimonioTotalJogador(jogador); 
         patrimonioRestante =  patrimonioTotal - valorTotalVenda; 
     
-    
         divida += valorTotalVenda; 
-        
-        valorTotalVenda = (valorTotalVenda * 50)/100;
+
+        if (divida + 0.75*patrimonioRestante < 0)
+            return 0;
+      
+        valorTotalVenda = (valorTotalVenda)/2;
         banco.receber(jogador.obtemId(), valorTotalVenda);
         tabuleiro.hipotecaPropriedade(propriedades);
-        tabuleiro.inserePropriedadeNaPilha(jogador.obtemPosicao());
+	      tabuleiro.inserePropriedadeNaPilha(jogador.obtemPosicao());
         operacaoPropriedades = 1;
 
         if (divida >= 0)
             return 2;
-
-        if (divida + 0.75*patrimonioRestante < 0)
-            return 0;
-
         return 1;
     }
 
@@ -114,7 +111,7 @@ public class Controle {
         Jogador jogadorAtual = jogadores.getIteradorElem();
         valorPropriedade = tabuleiro.obtemValorPropriedade(jogadorAtual);
         idPropriedade = tabuleiro.obtemIdCasaAtual(jogadorAtual);
-        tabuleiro.inserePropriedadeNaPilha(jogadorAtual.obtemPosicao());
+    	tabuleiro.inserePropriedadeNaPilha(jogadorAtual.obtemPosicao());
         operacaoPropriedades = 3;
 
         if (!tabuleiro.estaHipotecada(idPropriedade)){
@@ -130,7 +127,10 @@ public class Controle {
     }
 
     public void acaoBotaoEvoluir() {
+        Jogador jogadorAtual = jogadores.getIteradorElem();
 
+        tabuleiro.evoluirImovel(jogadorAtual.obtemPosicao());
+        tabuleiro.inserePropriedadeNaPilha(jogadorAtual.obtemPosicao());
         operacaoPropriedades = 2;
     }
 
@@ -256,12 +256,33 @@ public class Controle {
             case Eventos.propriedadeComDono:
                 propriedadeAtual = mensagemJogador.obtemPropriedadeAtual();
 
-                if (propriedadeAtual.obtemIdDono() == jogadorAtual.obtemId()) {
-                    // Jogador é o dono da propriedade
+                if (jogadorAtual.ehDono(propriedadeAtual.obtemId())) {
+                    if (propriedadeAtual.estaHipotecada()) {
+                        int valorPropriedade = propriedadeAtual.obtemValorPropriedade();
+                        valorPropriedade = valorPropriedade / 2;
+                        if (banco.temSaldoSuficiente(jogadorAtual.obtemId(), valorPropriedade)) {
+                            mensagemJogador.defineNovoEvento(Eventos.semDonoPodeComprar);
+                        } else {
+                            mensagemJogador.defineNovoEvento(Eventos.casaVazia);
+                        }
+                    } else {
+                        if (propriedadeAtual.obtemTipo() == Config.tipoImovel) {
+                            int valorEvolucao = mensagemJogador.obtemValorEvolucao();
+                            if (banco.temSaldoSuficiente(jogadorAtual.obtemId(), valorEvolucao)) {
+                                mensagemJogador.defineNovoEvento(Eventos.ehDonoPodeEvoluir);
+                            } else {
+                                mensagemJogador.defineNovoEvento(Eventos.casaVazia);
+                            }
+                        }
+                    }
                 } else {
                     // Não é o dono e precisa pagar aluguel
                     evento = defineEventosMonetarios(jogadorAtual, propriedadeAtual.obtemAluguel());
-                    banco.transferir(jogadorAtual.obtemId(), propriedadeAtual.obtemIdDono(), propriedadeAtual.obtemAluguel());
+                    banco.debitar(jogadorAtual.obtemId(), propriedadeAtual.obtemAluguel());
+                    if (!propriedadeAtual.estaHipotecada()) {
+                        banco.receber(propriedadeAtual.obtemIdDono(), propriedadeAtual.obtemAluguel());
+                    }
+
                     if (evento == Eventos.podePagar) {
                         // Define evento que pode pagar
                         mensagemJogador.defineNovoEvento(Eventos.temDonoEPodePagar);
@@ -389,10 +410,12 @@ public class Controle {
                 // Jogador entra ou sai de férias 
                 if (jogadorAtual.jogadorDeFerias()) {
                     jogadorAtual.defineJogadorSaiuDeFerias();
+                    mensagemJogador.defineNovoEvento(Eventos.casaVazia);
                 } else {
                     jogadorAtual.defineJogadorEntrouDeFerias();
+                    mensagemJogador.defineNovoEvento(Eventos.jogadorNoCAAD);
                 }
-                mensagemJogador.defineNovoEvento(Eventos.jogadorNoCAAD);
+
                 break;
 
             case Eventos.casaRecepcao:
@@ -429,21 +452,35 @@ public class Controle {
         return mensagemJogador;
     }
 
+    private String[] obterVetorNomes(){
+        Jogador jogador = jogadores.getIteradorElem();
+        int id = jogador.obtemId();
+        String[] nomes = new String[numeroJogadores];
+
+        for(int i = 0 ; i < numeroJogadores ; i++){
+            nomes[i] =  jogador.obtemNome();
+            jogadores.iteradorProx();
+            jogador = jogadores.getIteradorElem();
+        }
+        return nomes;
+    }
+
     public void acaoBotaoCarregarBackup(String nomeArquivo) {
         tabuleiro.gerarVetorCasas(nomeArquivo);
+        operacaoPropriedades = 2;
         serializador.restaurarBackup(caminhoBackup + nomeArquivo);
-        serializador.carregar(numeroJogadores);
-        serializador.carregar(jogadores);        
-        serializador.carregar(banco);
-        criarJogadoresG(new String[]{"a","b","c", "d"});
+        numeroJogadores = serializador.carregar(numeroJogadores);
+        numeroJogadoresInicial = serializador.carregar(numeroJogadores);
+        jogadores = serializador.carregar(jogadores);        
+        banco = serializador.carregar(banco);
+        criarJogadoresG(obterVetorNomes());
     }
 
     public void acaoBotaoSalvarBackup(String nomeArquivo) {
-        serializador.iniciarBackup(nomeArquivo);
-        serializador.salvar(jogadores);
         tabuleiro.salvaTabuleiro(nomeArquivo);
         serializador.iniciarBackup(caminhoBackup + nomeArquivo);
         serializador.salvar(numeroJogadores);
+        serializador.salvar(numeroJogadoresInicial);
         serializador.salvar(jogadores);        
         serializador.salvar(banco);
 
@@ -463,19 +500,21 @@ public class Controle {
         }
     }
 
-    private void criarJogadores(){
+    private void criarJogadores(String vetNomes[]){
         for (int i = 0; i < numeroJogadores; i++) {
-            jogadores.addLista(new Jogador(i));
+            jogadores.addLista(new Jogador(i, vetNomes[i]));
         }
         
         jogadores.setIterador();
     }
 
     public void cadastrarJogadores(String[] vetNomes, int qtdJogadores) {
-        numeroJogadores = numeroJogadoresInicial = qtdJogadores;
 
+        numeroJogadores = numeroJogadoresInicial = qtdJogadores;
         criarJogadoresG(vetNomes);
-        criarJogadores(); 
+        criarJogadores(vetNomes); 
+        banco.atualizaQtdClientes(qtdJogadores);
+
     }
 
     public int obterIdJogadorAtual() {
@@ -496,5 +535,10 @@ public class Controle {
 
     public int obterNumeroJogadores() {
         return numeroJogadores;
+    }
+
+    public void jogadorRecebeSalario() {
+        Jogador jogadorAtual = jogadores.getIteradorElem();
+        banco.pagaSalario(jogadorAtual.obtemId());
     }
 }
