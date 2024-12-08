@@ -11,6 +11,7 @@ final public class Jogador implements Serializable{
     private boolean preso;
     private boolean ferias;
     private int rodadasPreso;
+    private int rodadasFerias;
 
     public Jogador(){}
 
@@ -72,6 +73,7 @@ final public class Jogador implements Serializable{
 
     public void defineJogadorEntrouDeFerias() {
         this.ferias = true;
+        this.rodadasFerias = 1;
     }
 
     public void defineJogadorSaiuDeFerias() {
@@ -86,8 +88,16 @@ final public class Jogador implements Serializable{
         this.rodadasPreso -= 1;
     }
 
+    public void diminuiRodadasFerias() {
+        this.rodadasFerias -= 1;
+    }
+
     public int retornaRodadasPreso() {
         return this.rodadasPreso;
+    }
+
+    public int retornaRodadasFerias() {
+        return this.rodadasFerias;
     }
 
     public void declaraFalencia() {
