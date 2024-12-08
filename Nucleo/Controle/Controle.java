@@ -411,15 +411,9 @@ public class Controle {
                 break;
 
             case Eventos.casaCAAD:
-                // Jogador entra ou sai de férias 
-                if (jogadorAtual.jogadorDeFerias()) {
-                    jogadorAtual.defineJogadorSaiuDeFerias();
-                    mensagemJogador.defineNovoEvento(Eventos.casaVazia);
-                } else {
+                if (!jogadorAtual.jogadorDeFerias()) {
                     jogadorAtual.defineJogadorEntrouDeFerias();
-                    mensagemJogador.defineNovoEvento(Eventos.jogadorNoCAAD);
                 }
-
                 break;
 
             case Eventos.casaRecepcao:
