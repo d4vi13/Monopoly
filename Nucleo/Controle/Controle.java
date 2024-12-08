@@ -240,6 +240,10 @@ public class Controle {
                 jogadorAtual.defineJogadorLivre();
                 jogadorAtual.defineNovaPosicao(casaDestino);
             }
+	    if (jogadorAtual.jogadorDeFerias()) {
+                jogadorAtual.defineJogadorSaiuDeFerias();
+                jogadorAtual.defineNovaPosicao(casaDestino);
+            }
         }
         
         mensagemJogador = tabuleiro.consultaTabuleiro(jogadorAtual);
