@@ -35,11 +35,7 @@ public class Final {
         it = contador = 0;
 
         temporizador = new Timer(200, _ -> {
-            if (contador++ == 15) {
-                janela.atualizarEstado(MENU);
-                temporizador.stop();
-                return;
-            }
+            if (contador++ == 15) {System.exit(0);}
 
             it++;
             it %= 5;
