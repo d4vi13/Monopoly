@@ -519,9 +519,11 @@ public class Partida {
                             if (estadosMarcadores[i]) selecoes.add(imoveisIDs.get(i));
                         }
                         acao = janela.obterControle().acaoBotaoVender(selecoes);
-                        if (acao != 0) {carregarSaldos(); atualizarPropriedades();}
+                        System.out.println(acao);
+                        for (int i = 0; i < selecoes.size(); i++) System.out.println(selecoes.get(i));
+                        if (acao != 0) {atualizarPropriedades();} else {selecoes.clear();}
                         if (acao == 1) {venderLigado = false; limparSelecoes();}
-                        if (acao == 2) {venderLigado = false; hipotecarLigado = false; atualizarJogador();}
+                        if (acao == 2) {carregarSaldos(); venderLigado = hipotecarLigado = false; atualizarJogador();}
                     }
                 }
 
@@ -531,9 +533,11 @@ public class Partida {
                             if (estadosMarcadores[i]) selecoes.add(imoveisIDs.get(i));
                         }
                         acao = janela.obterControle().acaoBotaoHipotecar(selecoes);
-                        if (acao != 0) {carregarSaldos(); atualizarPropriedades();}
-                        if (acao == 1) {venderLigado = false; limparSelecoes();}
-                        if (acao == 2) {venderLigado = false; hipotecarLigado = false; atualizarJogador();}
+                        System.out.println(acao);
+                        for (int i = 0; i < selecoes.size(); i++) System.out.println(selecoes.get(i));
+                        if (acao != 0) {atualizarPropriedades();} else {selecoes.clear();}
+                        if (acao == 1) {hipotecarLigado = false; limparSelecoes();}
+                        if (acao == 2) {carregarSaldos(); venderLigado = hipotecarLigado = false; atualizarJogador();}
                     }
                 }
 
@@ -546,7 +550,6 @@ public class Partida {
     private void limparSelecoes() {
         int aux;
 
-        Arrays.fill(estadosMarcadores, false);
         selecoes.clear();
         aux = imoveisIDs.size();
         for (int i = 0; i < aux; i++) {
@@ -555,6 +558,7 @@ public class Partida {
             nomesImoveis.remove(i);
             valoresImoveis.remove(i);
         }
+        Arrays.fill(estadosMarcadores, false);
     }
 
     private void definirTamanhoTabuleiro() {
