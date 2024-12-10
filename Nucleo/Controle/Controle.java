@@ -110,7 +110,9 @@ public class Controle {
 
         Jogador jogadorAtual = jogadores.getIteradorElem();
         valorPropriedade = tabuleiro.obtemValorPropriedade(jogadorAtual);
-        idPropriedade = tabuleiro.obtemIdCasaAtual(jogadorAtual);
+        idPropriedade = jogadorAtual.obtemPosicao();
+    	  tabuleiro.inserePropriedadeNaPilha(jogadorAtual.obtemPosicao());
+        operacaoPropriedades = 3;
 
         if (!tabuleiro.estaHipotecada(idPropriedade)){
             banco.debitar(jogadorAtual.obtemId(), valorPropriedade);
@@ -258,7 +260,6 @@ public class Controle {
 
             case Eventos.propriedadeComDono:
                 propriedadeAtual = mensagemJogador.obtemPropriedadeAtual();
-
                 if (jogadorAtual.ehDono(propriedadeAtual.obtemId())) {
                     if (propriedadeAtual.estaHipotecada()) {
                         int valorPropriedade = propriedadeAtual.obtemValorPropriedade();
@@ -280,8 +281,11 @@ public class Controle {
                     }
                 } else {
                     // Não é o dono e precisa pagar aluguel
+                    System.out.println("Pague o aluguel");
                     evento = defineEventosMonetarios(jogadorAtual, propriedadeAtual.obtemAluguel());
+                    System.out.println("Saldo: "+ banco.obterSaldo(jogadorAtual.obtemId()));
                     banco.debitar(jogadorAtual.obtemId(), propriedadeAtual.obtemAluguel());
+                    System.out.println("Saldo: "+ banco.obterSaldo(jogadorAtual.obtemId()));
                     if (!propriedadeAtual.estaHipotecada()) {
                         banco.receber(propriedadeAtual.obtemIdDono(), propriedadeAtual.obtemAluguel());
                     }
@@ -448,6 +452,12 @@ public class Controle {
             mensagemJogador.defineNovoEvento(Eventos.tirouCartaDeMovimento);
         }
 
+        System.out.println("====================");
+        System.out.println("Nome: " + jogadorAtual.obtemNome() + " Casa: " + jogadorAtual.obtemPosicao());
+        if (propriedadeAtual != null) {
+            System.out.println("temDono: " + propriedadeAtual.temDono() + " Dono Id: " + propriedadeAtual.obtemIdDono() + " Aluguel: " + propriedadeAtual.obtemAluguel());
+        }
+        System.out.println("====================");
         return mensagemJogador;
     }
 
