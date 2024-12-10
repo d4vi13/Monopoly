@@ -307,7 +307,8 @@ public class Tabuleiro {
         Propriedade propriedadeAtual;
         for (int i = 0; i < propriedades.size(); ++i) {
             propriedadeAtual = (Propriedade)casasTabuleiro[propriedades.get(i)];
-            total += propriedadeAtual.obtemValorPropriedade();
+            if(!propriedadeAtual.estaHipotecada())
+                total += propriedadeAtual.obtemValorPropriedade();
         }
         return total;
     }

@@ -59,12 +59,12 @@ public class Controle {
         patrimonioTotal = tabuleiro.patrimonioTotalJogador(jogador); 
         patrimonioRestante =  patrimonioTotal - valorTotalVenda; 
     
+        valorTotalVenda = (valorTotalVenda * 75)/100;
         divida += valorTotalVenda; 
 
         if (divida + 0.5*patrimonioRestante < 0)
             return 0;
 
-        valorTotalVenda = (valorTotalVenda * 75)/100;
         banco.receber(jogador.obtemId(), valorTotalVenda);
         tabuleiro.removeDono(propriedades);
         jogador.desapropriaPropriedade(propriedades);
@@ -89,12 +89,12 @@ public class Controle {
         patrimonioTotal = tabuleiro.patrimonioTotalJogador(jogador); 
         patrimonioRestante =  patrimonioTotal - valorTotalVenda; 
     
+        valorTotalVenda = (valorTotalVenda)/2;
         divida += valorTotalVenda; 
 
         if (divida + 0.75*patrimonioRestante < 0)
             return 0;
       
-        valorTotalVenda = (valorTotalVenda)/2;
         banco.receber(jogador.obtemId(), valorTotalVenda);
         tabuleiro.hipotecaPropriedade(propriedades);
 	      tabuleiro.inserePropriedadeNaPilha(jogador.obtemPosicao());
