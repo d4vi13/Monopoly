@@ -98,7 +98,6 @@ public class Cartas {
     }
 
     public Carta retiraCarta() {
-        return cartasRaras[0];
-        // return sorteioDaCarta();
+        return sorteioDaCarta();
     }
 }

@@ -457,7 +457,7 @@ public class Partida {
     }
 
     public void mouseAtualiza(MouseEvent e) {
-        int acao;
+        int acao = 0;
 
         if (pauseAtivado == true) {
             if (e.getID() == MouseEvent.MOUSE_MOVED) {
@@ -506,7 +506,6 @@ public class Partida {
                 if (upgradeLigado) {
                     if (botaoUpgrade.mouseSolto(e)) {
                         janela.obterControle().acaoBotaoEvoluir();
-                        carregarSaldos();
                         atualizarPropriedades();
                         atualizarJogador();
                     }
@@ -516,37 +515,27 @@ public class Partida {
                     for (int i = 0; i < nomesImoveis.size(); i++) {
                         if (marcadores[i].mouseSolto(e)) 
                             estadosMarcadores[i] = estadosMarcadores[i] ^ true;
+                        if (estadosMarcadores[i]) 
+                            selecoes.add(imoveisIDs.get(i));
                     }
-                }
 
-                if (venderLigado) {
-                    if (botaoVender.mouseSolto(e)) {
-                        for (int i = 0; i < nomesImoveis.size(); i++) {
-                            if (estadosMarcadores[i]) selecoes.add(imoveisIDs.get(i));
-                        }
+                    if (botaoVender.mouseSolto(e))
                         acao = janela.obterControle().acaoBotaoVender(selecoes);
-                        // System.out.println("ACAO = " + acao);
-                        // for (int i = 0; i < selecoes.size(); i++) System.out.print(selecoes.get(i));
-                        // System.out.println("");
-                        if (acao != 0) {atualizarPropriedades();} else {selecoes.clear();}
-                        if (acao == 1) {venderLigado = false; limparSelecoes();}
-                        if (acao == 2) {carregarSaldos(); venderLigado = hipotecarLigado = false; atualizarJogador();}
-                    }
-                }
-
-                if (hipotecarLigado) {
-                    if (botaoHipotecar.mouseSolto(e)) {
-                        for (int i = 0; i < nomesImoveis.size(); i++) {
-                            if (estadosMarcadores[i]) selecoes.add(imoveisIDs.get(i));
-                        }
+                    else if (botaoHipotecar.mouseSolto(e))
                         acao = janela.obterControle().acaoBotaoHipotecar(selecoes);
-                        // System.out.println("ACAO = " + acao);
-                        // for (int i = 0; i < selecoes.size(); i++) System.out.print(selecoes.get(i));
-                        // System.out.println("");
-                        if (acao != 0) {atualizarPropriedades();} else {selecoes.clear();}
-                        if (acao == 1) {hipotecarLigado = false; limparSelecoes();}
-                        if (acao == 2) {carregarSaldos(); venderLigado = hipotecarLigado = false; atualizarJogador();}
+
+                    if (acao != 0) {
+                        atualizarPropriedades(); 
+                        limparSelecionados();
+                        carregarSaldos();
+
+                        if (acao == 2) {
+                            venderLigado = hipotecarLigado = false; 
+                            atualizarJogador();
+                        }
                     }
+                    
+                    selecoes.clear(); 
                 }
 
                 break;
@@ -555,10 +544,9 @@ public class Partida {
         }
     }
 
-    private void limparSelecoes() {
+    private void limparSelecionados() {
         int aux;
 
-        selecoes.clear();
         aux = imoveisIDs.size();
         for (int i = 0; i < aux; i++) {
             if (estadosMarcadores[i] == false) continue;
@@ -763,6 +751,7 @@ public class Partida {
             case Eventos.vendaOuHipoteca:
                 selecoes.clear();
                 Arrays.fill(estadosMarcadores, false);
+                carregarSaldos();
                 janela.obterControle().carregarPropriedades(nomesImoveis, valoresImoveis, imoveisIDs);
                 venderLigado = hipotecarLigado = true;
                 break;
