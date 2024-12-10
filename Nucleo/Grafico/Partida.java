@@ -519,9 +519,9 @@ public class Partida {
                             if (estadosMarcadores[i]) selecoes.add(imoveisIDs.get(i));
                         }
                         acao = janela.obterControle().acaoBotaoVender(selecoes);
-                        System.out.println("ACAO = " + acao);
-                        for (int i = 0; i < selecoes.size(); i++) System.out.print(selecoes.get(i));
-                        System.out.println("");
+                        // System.out.println("ACAO = " + acao);
+                        // for (int i = 0; i < selecoes.size(); i++) System.out.print(selecoes.get(i));
+                        // System.out.println("");
                         if (acao != 0) {atualizarPropriedades();} else {selecoes.clear();}
                         if (acao == 1) {venderLigado = false; limparSelecoes();}
                         if (acao == 2) {carregarSaldos(); venderLigado = hipotecarLigado = false; atualizarJogador();}
@@ -534,9 +534,9 @@ public class Partida {
                             if (estadosMarcadores[i]) selecoes.add(imoveisIDs.get(i));
                         }
                         acao = janela.obterControle().acaoBotaoHipotecar(selecoes);
-                        System.out.println("ACAO = " + acao);
-                        for (int i = 0; i < selecoes.size(); i++) System.out.print(selecoes.get(i));
-                        System.out.println("");
+                        // System.out.println("ACAO = " + acao);
+                        // for (int i = 0; i < selecoes.size(); i++) System.out.print(selecoes.get(i));
+                        // System.out.println("");
                         if (acao != 0) {atualizarPropriedades();} else {selecoes.clear();}
                         if (acao == 1) {hipotecarLigado = false; limparSelecoes();}
                         if (acao == 2) {carregarSaldos(); venderLigado = hipotecarLigado = false; atualizarJogador();}
