@@ -216,7 +216,7 @@ public class Controle {
             return (casaFinal - casaInicial) % totalCasas;
         }
 
-        return totalCasas - casaFinal;
+        return totalCasas - casaInicial;
     }
 
     // Reseta as propriedades do jogador e define que ele faliu
@@ -255,7 +255,6 @@ public class Controle {
             case Eventos.casaInicial:
                 // Jogador recebe salário do banco
                 banco.pagaSalario(jogadorAtual.obtemId());
-                mensagemJogador.defineNovoEvento(Eventos.casaVazia);
                 break;
 
             case Eventos.propriedadeComDono:
@@ -281,11 +280,8 @@ public class Controle {
                     }
                 } else {
                     // Não é o dono e precisa pagar aluguel
-                    System.out.println("Pague o aluguel");
                     evento = defineEventosMonetarios(jogadorAtual, propriedadeAtual.obtemAluguel());
-                    System.out.println("Saldo: "+ banco.obterSaldo(jogadorAtual.obtemId()));
                     banco.debitar(jogadorAtual.obtemId(), propriedadeAtual.obtemAluguel());
-                    System.out.println("Saldo: "+ banco.obterSaldo(jogadorAtual.obtemId()));
                     if (!propriedadeAtual.estaHipotecada()) {
                         banco.receber(propriedadeAtual.obtemIdDono(), propriedadeAtual.obtemAluguel());
                     }
@@ -452,12 +448,6 @@ public class Controle {
             mensagemJogador.defineNovoEvento(Eventos.tirouCartaDeMovimento);
         }
 
-        System.out.println("====================");
-        System.out.println("Nome: " + jogadorAtual.obtemNome() + " Casa: " + jogadorAtual.obtemPosicao());
-        if (propriedadeAtual != null) {
-            System.out.println("temDono: " + propriedadeAtual.temDono() + " Dono Id: " + propriedadeAtual.obtemIdDono() + " Aluguel: " + propriedadeAtual.obtemAluguel());
-        }
-        System.out.println("====================");
         return mensagemJogador;
     }
 
