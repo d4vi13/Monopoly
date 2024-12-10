@@ -1,6 +1,5 @@
 package Nucleo.Grafico;
 import static Nucleo.Aux.EstadosJogo.*;
-import Nucleo.Grafico.Componente;
 
 import java.awt.*;
 import java.awt.event.*;

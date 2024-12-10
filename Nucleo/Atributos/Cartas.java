@@ -100,5 +100,4 @@ public class Cartas {
     public Carta retiraCarta() {
         return sorteioDaCarta();
     }
-
 }

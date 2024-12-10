@@ -57,7 +57,7 @@ public class Controle {
 
         valorTotalVenda = tabuleiro.patrimonioDoJogador(propriedades);
         patrimonioTotal = tabuleiro.patrimonioTotalJogador(jogador); 
-        patrimonioRestante =  patrimonioTotal - valorTotalVenda; 
+        patrimonioRestante = patrimonioTotal - valorTotalVenda; 
     
         valorTotalVenda = (valorTotalVenda * 75)/100;
         divida += valorTotalVenda; 
@@ -97,7 +97,7 @@ public class Controle {
       
         banco.receber(jogador.obtemId(), valorTotalVenda);
         tabuleiro.hipotecaPropriedade(propriedades);
-	      tabuleiro.inserePropriedadeNaPilha(jogador.obtemPosicao());
+	    tabuleiro.inserePropriedadeNaPilha(jogador.obtemPosicao());
         operacaoPropriedades = 1;
 
         if (divida >= 0)
@@ -111,7 +111,7 @@ public class Controle {
         Jogador jogadorAtual = jogadores.getIteradorElem();
         valorPropriedade = tabuleiro.obtemValorPropriedade(jogadorAtual);
         idPropriedade = jogadorAtual.obtemPosicao();
-    	tabuleiro.inserePropriedadeNaPilha(jogadorAtual.obtemPosicao());
+    	  tabuleiro.inserePropriedadeNaPilha(jogadorAtual.obtemPosicao());
         operacaoPropriedades = 3;
 
         if (!tabuleiro.estaHipotecada(idPropriedade)){
@@ -129,9 +129,14 @@ public class Controle {
     public void acaoBotaoEvoluir() {
         Jogador jogadorAtual = jogadores.getIteradorElem();
 
+        if (tabuleiro.obtemNivelPropriedade(jogadorAtual.obtemPosicao()) == 0) {
+            operacaoPropriedades = 3;
+        } else {
+            operacaoPropriedades = 2;
+        }
+
         tabuleiro.evoluirImovel(jogadorAtual.obtemPosicao());
         tabuleiro.inserePropriedadeNaPilha(jogadorAtual.obtemPosicao());
-        operacaoPropriedades = 2;
     }
 
     public void acaoBotaoJogarDados() {
@@ -250,7 +255,7 @@ public class Controle {
             case Eventos.casaInicial:
                 // Jogador recebe salário do banco
                 banco.pagaSalario(jogadorAtual.obtemId());
-                mensagemJogador.defineNovoEvento(Eventos.jogadorNaCasaInicial);
+                mensagemJogador.defineNovoEvento(Eventos.casaVazia);
                 break;
 
             case Eventos.propriedadeComDono:
@@ -312,25 +317,15 @@ public class Controle {
 
             case Eventos.casaPrisao:
                 if (jogadorAtual.jogadorPreso()) {
+                    jogadorAtual.diminuiRodadasPreso();
                     if (jogadorAtual.retornaRodadasPreso() == 0) {
-                        // Libera o jogador da prisão
                         jogadorAtual.defineJogadorLivre();
-                        mensagemJogador.defineNovoEvento(Eventos.jogadorEstaVisitandoPrisao);
-                    } else {
-                        // Jogador continua preso
-                        jogadorAtual.diminuiRodadasPreso();
-                        mensagemJogador.defineNovoEvento(Eventos.jogadorTaPreso);
                     }
+                    mensagemJogador.defineNovoEvento(Eventos.jogadorTaPreso);
                 } else {
                     // Jogador está visitando a prisão
                     mensagemJogador.defineNovoEvento(Eventos.jogadorEstaVisitandoPrisao);
                 }
-                break;
-
-            case Eventos.indoPreso:
-                // Jogador está indo para a cadeia
-                jogadorAtual.defineJogadorPreso();
-                mensagemJogador.defineNovoEvento(Eventos.jogadorTaPreso);
                 break;
 
             case Eventos.casaCarta:
@@ -383,11 +378,13 @@ public class Controle {
                         
                     case 4:
                         casaFinal = tabuleiro.buscaPorCasa(Config.tipoPrisao);
+                        jogadorAtual.defineJogadorPreso();
+                        jogadorAtual.defineNovaPosicao(casaFinal);
                         deslocamento = calculaDeslocamento(casaInicial, casaFinal);
-                        mensagemJogador.defineEventoMovimento(true);
                         mensagemJogador.defineDeslocamento(deslocamento);
-                        mensagemJogador.defineNovoEvento(Eventos.indoPreso);
-                        return decifraCasa(casaFinal);
+                        mensagemJogador.defineNovoEvento(Eventos.tirouCartaDeMovimento);
+                        
+                        break;
 
                     case 5:
                         casaFinal = tabuleiro.buscaPorCasa(Config.tipoInicial);
@@ -409,15 +406,19 @@ public class Controle {
                 break;
 
             case Eventos.casaCAAD:
-                // Jogador entra ou sai de férias 
-                if (jogadorAtual.jogadorDeFerias()) {
-                    jogadorAtual.defineJogadorSaiuDeFerias();
+                if (!jogadorAtual.jogadorDeFerias()) {
+                    jogadorAtual.defineJogadorEntrouDeFerias();
                     mensagemJogador.defineNovoEvento(Eventos.casaVazia);
                 } else {
-                    jogadorAtual.defineJogadorEntrouDeFerias();
-                    mensagemJogador.defineNovoEvento(Eventos.jogadorNoCAAD);
+                    if (jogadorAtual.retornaRodadasFerias() == 0) {
+                        jogadorAtual.defineJogadorSaiuDeFerias();
+                        mensagemJogador.defineNovoEvento(Eventos.casaVazia);
+                    } else {
+                        jogadorAtual.diminuiRodadasFerias();
+                        jogadorAtual.defineJogadorSaiuDeFerias();
+                        mensagemJogador.defineNovoEvento(Eventos.jogadorNoCAAD);
+                    }
                 }
-
                 break;
 
             case Eventos.casaRecepcao:
@@ -462,7 +463,6 @@ public class Controle {
 
     private String[] obterVetorNomes(){
         Jogador jogador = jogadores.getIteradorElem();
-        int id = jogador.obtemId();
         String[] nomes = new String[numeroJogadores];
 
         for(int i = 0 ; i < numeroJogadores ; i++){
