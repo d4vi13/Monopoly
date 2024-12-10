@@ -342,7 +342,6 @@ public class Tabuleiro {
             case Config.tipoImovel:
                 propriedadeAtual = (Propriedade)casaAtual;
                 if (propriedadeAtual.temDono()) {
-                    System.out.println("Tem dono");
                     mensagemJogador.atualizaMensagem(null, propriedadeAtual, Eventos.propriedadeComDono);
                     mensagemJogador.defineValorEvolucao(((Imovel) propriedadeAtual).obtemPrecoEvolucao());
                 } else {
