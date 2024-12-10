@@ -8,7 +8,7 @@ import Nucleo.Aux.Posicoes.Posicao;
 public class JogadorG {
     private Posicao posicaoAtual;
     private String nome;
-    private int id, tabX, tabY;
+    private int id, tabX, tabY, casa;
     private double escala;
     private boolean faliu;
     private Image icone;
@@ -28,13 +28,12 @@ public class JogadorG {
     }
 
     public void atualizarPosicao(int casa) {
-        posicaoAtual.posX = Posicoes.x[casa][id];
-        posicaoAtual.posY = Posicoes.y[casa][id];
+        this.casa = casa;
     }
 
     public void atualizarPosicao() {
-        posicaoAtual.posX = (int)(escala * posicaoAtual.posX) + tabX;
-        posicaoAtual.posY = (int)(escala * posicaoAtual.posY) + tabY;
+        posicaoAtual.posX = (int)(escala * Posicoes.x[casa][id]) + tabX;
+        posicaoAtual.posY = (int)(escala * Posicoes.y[casa][id]) + tabY;
     }
 
     public Posicao obterPosicaoJogador() {

@@ -18,7 +18,6 @@ import java.util.Arrays;
 public class Partida {  
     private Janela janela;
     private int frameComprimento, frameAltura;
-    private boolean primeiraChamadaRedimensiona;
     // Tabuleiro
     private int tabuleiroComp, tabuleiroAlt, tabuleiroPosx, tabuleiroPosy;
     private Image tabuleiro;
@@ -71,7 +70,6 @@ public class Partida {
         opacidade = 1.0f;
         fonteHighMount_45 = null;
         pauseAtivado = false;
-        primeiraChamadaRedimensiona = true;
         f1 = new File("./Dados/Fontes/HighMount_PersonalUse.otf");
         f2 = new File("./Dados/Fontes/Crashnumberinggothic.ttf");
         f3 = new File("./Dados/Fontes/times_new_roman.ttf");
@@ -206,10 +204,9 @@ public class Partida {
         propriedades.atualizarPosicoesUpgrades(tabuleiroPosx, tabuleiroPosy, tabuleiroComp);
         for (int i = 0; i < numeroJogadores; i++) {
             jogadores[i].atualizarPosicao(tabuleiroPosx, tabuleiroPosy, tabuleiroAlt);
-            if (primeiraChamadaRedimensiona) jogadores[i].atualizarPosicao();
+            jogadores[i].atualizarPosicao();
         }
         
-        primeiraChamadaRedimensiona = false;
         altIcone = compIcone = (int)(35 * tabuleiroComp / 1156.f);
     }
 
