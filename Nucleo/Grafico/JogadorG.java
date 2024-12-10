@@ -21,16 +21,20 @@ public class JogadorG {
         faliu = false;
     }
 
-    public void atualizarPosicoes(int casa, int tabPosx, int tabPosy, int tabDim) {
+    public void atualizarPosicao(int tabPosx, int tabPosy, int tabDim) {
         tabX = tabPosx;
         tabY = tabPosy;
         escala = tabDim / 1156.0;
-        atualizarPosicaoJogador(casa);
     }
 
-    public void atualizarPosicaoJogador(int casa) {
-        posicaoAtual.posX = (int)(escala * Posicoes.x[casa][id]) + tabX;
-        posicaoAtual.posY = (int)(escala * Posicoes.y[casa][id]) + tabY;
+    public void atualizarPosicao(int casa) {
+        posicaoAtual.posX = Posicoes.x[casa][id];
+        posicaoAtual.posY = Posicoes.y[casa][id];
+    }
+
+    public void atualizarPosicao() {
+        posicaoAtual.posX = (int)(escala * posicaoAtual.posX) + tabX;
+        posicaoAtual.posY = (int)(escala * posicaoAtual.posY) + tabY;
     }
 
     public Posicao obterPosicaoJogador() {
