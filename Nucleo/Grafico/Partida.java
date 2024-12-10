@@ -1,11 +1,11 @@
 package Nucleo.Grafico;
 import static Nucleo.Aux.EstadosJogo.*;
 
-import Nucleo.Grafico.Componente;
 import Nucleo.Controle.Controle;
 import Nucleo.Aux.MensagemJogador;
 import Nucleo.Aux.MensagemJogador.Eventos;
 import Nucleo.Aux.Dupla;
+import Nucleo.Aux.Posicoes.Posicao;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -141,7 +141,7 @@ public class Partida {
     }
 
     private void carregarTemporizadores() {
-        temporizadorPulos = new Timer(200, e -> {
+        temporizadorPulos = new Timer(200, _ -> {
             boolean soma;
             if (casaDestino < casaAtual) {
                 if (32 - casaAtual + casaDestino > casaAtual - casaDestino) {
@@ -157,7 +157,11 @@ public class Partida {
                 }
             }
             if (soma) {
-                casaAtual++;
+                if (++casaAtual == 32 && msg.obtemTipoEvento() != Eventos.tirouCartaDeMovimento) {
+                    janela.obterControle().jogadorRecebeSalario();
+                    janela.obterControle().carregarSaldos(saldosInt);
+                    intVetParaStringVet(saldos, saldosInt, numeroJogadores);
+                }
                 casaAtual &= 0x1f;
             } else {
                 casaAtual--;
@@ -167,14 +171,14 @@ public class Partida {
             jogadores[idJogadorAtual].atualizarPosicaoJogador(casaAtual);
 
             if (casaAtual == casaDestino) {
-                ((Timer) e.getSource()).stop();
+                temporizadorPulos.stop();
                 fimTemporizadorPulos();
             }
         });
 
-        temporizadorGenerico = new Timer(2200, e -> {
+        temporizadorGenerico = new Timer(2200, _ -> {
             fimTemporizadorGenerico();
-            ((Timer) e.getSource()).stop();
+            temporizadorGenerico.stop();
         });
     }
 
@@ -369,7 +373,7 @@ public class Partida {
         tam = propriedades.obtemNumUpgrades();
         for (int i = 0; i < tam; i++) {
             p = propriedades.obterPosicaoIconeUp(i);
-            g.drawImage(propriedades.obterImagemIconeUp(i), p.posX, p.posY, compIcone, altIcone, null);
+            g.drawImage(propriedades.obterImagemIconeUp(i), p.posX, p.posY, propriedades.obterComp(i), propriedades.obterAlt(i), null);
         }
     }
 
@@ -447,7 +451,7 @@ public class Partida {
     }
 
     public void mouseAtualiza(MouseEvent e) {
-        int acao, aux;
+        int acao;
 
         if (pauseAtivado == true) {
             if (e.getID() == MouseEvent.MOUSE_MOVED) {
@@ -462,6 +466,7 @@ public class Partida {
                 botaoPause.mouseMoveu(e);
                 if (dadosLigado) botaoDados.mouseMoveu(e);
                 if (comprarLigado) botaoComprar.mouseMoveu(e);
+                if (upgradeLigado) botaoUpgrade.mouseMoveu(e);
                 if (venderLigado) botaoVender.mouseMoveu(e);
                 if (hipotecarLigado) botaoHipotecar.mouseMoveu(e);
                 if (venderLigado || hipotecarLigado) {
@@ -473,6 +478,7 @@ public class Partida {
                 botaoPause.mousePressionado(e);
                 if (dadosLigado) botaoDados.mousePressionado(e);
                 if (comprarLigado) botaoComprar.mousePressionado(e);
+                if (upgradeLigado) botaoUpgrade.mousePressionado(e);
                 if (venderLigado) botaoVender.mousePressionado(e);
                 if (hipotecarLigado) botaoHipotecar.mousePressionado(e);
                 if (venderLigado || hipotecarLigado) {
@@ -490,6 +496,7 @@ public class Partida {
                         atualizarJogador();
                     }
                 }
+
                 if (upgradeLigado) {
                     if (botaoUpgrade.mouseSolto(e)) {
                         janela.obterControle().acaoBotaoEvoluir();
@@ -512,50 +519,27 @@ public class Partida {
                             if (estadosMarcadores[i]) selecoes.add(imoveisIDs.get(i));
                         }
                         acao = janela.obterControle().acaoBotaoVender(selecoes);
-                        if (acao != 0) {
-                            carregarSaldos();
-                            atualizarPropriedades();
-                        }
-
-                        if (acao == 1) {
-                            venderLigado = false;
-                            Arrays.fill(estadosMarcadores, false);
-                            selecoes.clear();
-                            for (int i = 0; i < selecoes.size(); i++) {
-                                aux = imoveisIDs.indexOf(selecoes.get(i));
-                                imoveisIDs.remove(aux);
-                                nomesImoveis.remove(aux);
-                                valoresImoveis.remove(aux);
-                            }
-                        }
-
-                        if (acao == 2) {venderLigado = false; hipotecarLigado = false;}
+                        System.out.println("ACAO = " + acao);
+                        for (int i = 0; i < selecoes.size(); i++) System.out.print(selecoes.get(i));
+                        System.out.println("");
+                        if (acao != 0) {atualizarPropriedades();} else {selecoes.clear();}
+                        if (acao == 1) {venderLigado = false; limparSelecoes();}
+                        if (acao == 2) {carregarSaldos(); venderLigado = hipotecarLigado = false; atualizarJogador();}
                     }
                 }
+
                 if (hipotecarLigado) {
                     if (botaoHipotecar.mouseSolto(e)) {
                         for (int i = 0; i < nomesImoveis.size(); i++) {
                             if (estadosMarcadores[i]) selecoes.add(imoveisIDs.get(i));
                         }
                         acao = janela.obterControle().acaoBotaoHipotecar(selecoes);
-                        if (acao != 0) {
-                            carregarSaldos();
-                            atualizarPropriedades();
-                        }
-
-                        if (acao == 1) {
-                            venderLigado = false;
-                            Arrays.fill(estadosMarcadores, false);
-                            selecoes.clear();
-                            for (int i = 0; i < selecoes.size(); i++) {
-                                aux = imoveisIDs.indexOf(selecoes.get(i));
-                                imoveisIDs.remove(aux);
-                                nomesImoveis.remove(aux);
-                                valoresImoveis.remove(aux);
-                            }
-                        }
-                         
-                        if (acao == 2) {venderLigado = false; hipotecarLigado = false;}
+                        System.out.println("ACAO = " + acao);
+                        for (int i = 0; i < selecoes.size(); i++) System.out.print(selecoes.get(i));
+                        System.out.println("");
+                        if (acao != 0) {atualizarPropriedades();} else {selecoes.clear();}
+                        if (acao == 1) {hipotecarLigado = false; limparSelecoes();}
+                        if (acao == 2) {carregarSaldos(); venderLigado = hipotecarLigado = false; atualizarJogador();}
                     }
                 }
 
@@ -563,6 +547,20 @@ public class Partida {
             default:
                 break;
         }
+    }
+
+    private void limparSelecoes() {
+        int aux;
+
+        selecoes.clear();
+        aux = imoveisIDs.size();
+        for (int i = 0; i < aux; i++) {
+            if (estadosMarcadores[i] == false) continue;
+            imoveisIDs.remove(i);
+            nomesImoveis.remove(i);
+            valoresImoveis.remove(i);
+        }
+        Arrays.fill(estadosMarcadores, false);
     }
 
     private void definirTamanhoTabuleiro() {
@@ -624,7 +622,6 @@ public class Partida {
             case JOGADOR_NA_CASA:
                 if (evento == Eventos.tirouCartaDeMovimento) {
                     casaDestino = (casaDestino + msg.obtemDeslocamentoDoJogador()) & 0x1f;
-                    System.out.println(msg.obtemDeslocamentoDoJogador());
                     temporizadorPulos.start();
                 } else {
                     if (evento == Eventos.jogadorFaliu) {
@@ -727,7 +724,8 @@ public class Partida {
         casaDestino = (casaAtual + valoresDados[0] + valoresDados[1]) % 32;
 
         msg = controle.decifraCasa(casaDestino);
-        if (msg.obtemTipoEvento() == Eventos.jogadorTaPreso) {
+        if (msg.obtemTipoEvento() == Eventos.jogadorTaPreso ||
+            msg.obtemTipoEvento() == Eventos.jogadorNoCAAD) {
             temporizadorGenerico.start();
         } else {
             temporizadorPulos.start();
@@ -758,9 +756,14 @@ public class Partida {
                 break;
             case Eventos.vendaOuHipoteca:
                 selecoes.clear();
+                Arrays.fill(estadosMarcadores, false);
                 janela.obterControle().carregarPropriedades(nomesImoveis, valoresImoveis, imoveisIDs);
                 venderLigado = hipotecarLigado = true;
                 break;
+            case Eventos.temDonoEPodePagar:
+            case Eventos.jogadorNaRecepcao:
+                janela.obterControle().carregarSaldos(saldosInt);
+                intVetParaStringVet(saldos, saldosInt, numeroJogadores);
             default:
                 atualizarJogador();
                 break;

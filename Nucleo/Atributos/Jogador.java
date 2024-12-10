@@ -11,15 +11,16 @@ final public class Jogador implements Serializable{
     private boolean preso;
     private boolean ferias;
     private int rodadasPreso;
+    private int rodadasFerias;
 
     public Jogador(){}
 
     public Jogador(int id, String nome){
-        this.posicao = 0;
-        this.id = id;
         this.falido = false;
         this.preso = false;
         this.ferias = false;
+        this.posicao = 0;
+        this.id = id;
         this.rodadasPreso = 0;
         this.propriedades = new ArrayList<Integer>();
         this.nome = nome;
@@ -72,6 +73,7 @@ final public class Jogador implements Serializable{
 
     public void defineJogadorEntrouDeFerias() {
         this.ferias = true;
+        this.rodadasFerias = 1;
     }
 
     public void defineJogadorSaiuDeFerias() {
@@ -86,8 +88,16 @@ final public class Jogador implements Serializable{
         this.rodadasPreso -= 1;
     }
 
+    public void diminuiRodadasFerias() {
+        this.rodadasFerias -= 1;
+    }
+
     public int retornaRodadasPreso() {
         return this.rodadasPreso;
+    }
+
+    public int retornaRodadasFerias() {
+        return this.rodadasFerias;
     }
 
     public void declaraFalencia() {
