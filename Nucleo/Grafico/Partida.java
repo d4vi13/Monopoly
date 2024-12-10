@@ -141,7 +141,7 @@ public class Partida {
     }
 
     private void carregarTemporizadores() {
-        temporizadorPulos = new Timer(200, _ -> {
+        temporizadorPulos = new Timer(200, e -> {
             boolean soma;
             if (casaDestino < casaAtual) {
                 if (32 - casaAtual + casaDestino > casaAtual - casaDestino) {
@@ -176,7 +176,7 @@ public class Partida {
             }
         });
 
-        temporizadorGenerico = new Timer(2200, _ -> {
+        temporizadorGenerico = new Timer(2200, e -> {
             fimTemporizadorGenerico();
             temporizadorGenerico.stop();
         });

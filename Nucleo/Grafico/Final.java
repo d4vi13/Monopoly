@@ -34,7 +34,7 @@ public class Final {
         cor = Color.BLACK;
         it = contador = 0;
 
-        temporizador = new Timer(200, _ -> {
+        temporizador = new Timer(200, e -> {
             if (contador++ == 15) {System.exit(0);}
 
             it++;
