@@ -533,7 +533,7 @@ public class Partida {
                         // System.out.println("");
                         if (acao != 0) {atualizarPropriedades();} else {selecoes.clear();}
                         if (acao == 1) {venderLigado = false; limparSelecoes();}
-                        if (acao == 2) {carregarSaldos(); venderLigado = hipotecarLigado = false; atualizarJogador();}
+                        if (acao == 2) {venderLigado = hipotecarLigado = false; atualizarJogador();}
                     }
                 }
 
@@ -548,7 +548,7 @@ public class Partida {
                         // System.out.println("");
                         if (acao != 0) {atualizarPropriedades();} else {selecoes.clear();}
                         if (acao == 1) {hipotecarLigado = false; limparSelecoes();}
-                        if (acao == 2) {carregarSaldos(); venderLigado = hipotecarLigado = false; atualizarJogador();}
+                        if (acao == 2) {venderLigado = hipotecarLigado = false; atualizarJogador();}
                     }
                 }
 
@@ -765,6 +765,7 @@ public class Partida {
                 break;
             case Eventos.vendaOuHipoteca:
                 selecoes.clear();
+                carregarSaldos();
                 Arrays.fill(estadosMarcadores, false);
                 janela.obterControle().carregarPropriedades(nomesImoveis, valoresImoveis, imoveisIDs);
                 venderLigado = hipotecarLigado = true;
