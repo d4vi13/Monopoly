@@ -44,6 +44,10 @@ public class Propriedade extends Casa {
         return this.dono;
     }
 
+    public int obtemValorInicial() {
+        return this.valorInicial;
+    }
+
     public int obtemValorPropriedade(){
         return this.valorDeVenda;
     }
