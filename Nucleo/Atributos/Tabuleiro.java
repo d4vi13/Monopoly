@@ -233,7 +233,7 @@ public class Tabuleiro {
                     casaAtual = tabuleiroAtual.buscaPorCasa(indexLista);
                     temDono = ((Propriedade) casaDoTabuleiro).temDono();
                     donoId = ((Propriedade) casaDoTabuleiro).obtemIdDono();
-                    valor = ((Propriedade) casaDoTabuleiro).obtemValorPropriedade();
+                    valor = ((Propriedade) casaDoTabuleiro).obtemValorInicial();
                     nivel = ((Imovel) casaDoTabuleiro).obtemNivelImovel();
                     casaAtual.insereNome(nomeCasa);
                     casaAtual.inserePosicao(posicaoCasa);
@@ -248,7 +248,7 @@ public class Tabuleiro {
                     casaAtual = tabuleiroAtual.buscaPorCasa(indexLista);
                     temDono = ((Propriedade) casaDoTabuleiro).temDono();
                     donoId = ((Propriedade) casaDoTabuleiro).obtemIdDono();
-                    valor = ((Propriedade) casaDoTabuleiro).obtemValorPropriedade();
+                    valor = ((Propriedade) casaDoTabuleiro).obtemValorInicial();
                     casaAtual.insereNome(nomeCasa);
                     casaAtual.inserePosicao(posicaoCasa);
                     casaAtual.insereDono(temDono);

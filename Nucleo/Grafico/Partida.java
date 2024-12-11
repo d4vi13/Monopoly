@@ -527,14 +527,12 @@ public class Partida {
                     if (acao != 0) {
                         atualizarPropriedades(); 
                         limparSelecionados();
-                        carregarSaldos();
 
                         if (acao == 2) {
                             venderLigado = hipotecarLigado = false; 
                             atualizarJogador();
                         }
                     }
-                    
                     selecoes.clear(); 
                 }
 
@@ -542,6 +540,7 @@ public class Partida {
             default:
                 break;
         }
+        carregarSaldos();
     }
 
     private void limparSelecionados() {
