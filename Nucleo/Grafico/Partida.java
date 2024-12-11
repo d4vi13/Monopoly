@@ -750,6 +750,7 @@ public class Partida {
                 break;
             case Eventos.vendaOuHipoteca:
                 selecoes.clear();
+                carregarSaldos();
                 Arrays.fill(estadosMarcadores, false);
                 carregarSaldos();
                 janela.obterControle().carregarPropriedades(nomesImoveis, valoresImoveis, imoveisIDs);
