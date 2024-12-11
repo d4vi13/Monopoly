@@ -1,6 +1,5 @@
 package Nucleo.Aux;
 
-
 public class Posicoes {
     public static class Posicao {
         public int posX, posY;

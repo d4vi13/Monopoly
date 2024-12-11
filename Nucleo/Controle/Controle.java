@@ -160,14 +160,17 @@ public class Controle {
     public void carregarPropriedades(ArrayList<String> nomes, ArrayList<String> valores, ArrayList<Integer> IDs) {
         Jogador j = jogadores.getIteradorElem();
         ArrayList<Integer> propriedadeIDs = j.obtemPropriedadesJogador();
+        int p;
         
         nomes.clear();
         valores.clear();
         IDs.clear();
         for (int i = 0; i < propriedadeIDs.size(); i++) {
-            nomes.add(tabuleiro.obtemNomeCasa(propriedadeIDs.get(i)));
-            valores.add(tabuleiro.obtemValorPropriedade(propriedadeIDs.get(i)));
-            IDs.add(propriedadeIDs.get(i));
+            p = propriedadeIDs.get(i);
+            if (tabuleiro.estaHipotecada(p)) continue;
+            nomes.add(tabuleiro.obtemNomeCasa(p));
+            valores.add(tabuleiro.obtemValorPropriedade(p));
+            IDs.add(p);
         }
     }
 
