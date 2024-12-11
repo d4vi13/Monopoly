@@ -547,7 +547,7 @@ public class Partida {
         int aux;
 
         aux = imoveisIDs.size();
-        for (int i = 0; i < aux; i++) {
+        for (int i = aux - 1; i >= 0; i--) {
             if (estadosMarcadores[i] == false) continue;
             imoveisIDs.remove(i);
             nomesImoveis.remove(i);
