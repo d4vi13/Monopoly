@@ -7,7 +7,7 @@ import java.awt.event.*;
 import javax.swing.ImageIcon;
 import java.io.*;
 
-public class Cadastro {
+public class Cadastro extends Grafico {
     final private int NUMERO_CAIXAS = 6;
     private Janela janela;
     private int frameComprimento, frameAltura;
@@ -44,12 +44,14 @@ public class Cadastro {
         }
     }
 
+    @Override
     public void setDimensoes(int comprimento, int altura) {
         this.frameComprimento = comprimento;
         this.frameAltura = altura;
         setDimensoesCaixas();
     }
 
+    @Override
     public void pintar(Graphics g) {
         FontMetrics fm;
         int compTitulo;
@@ -72,6 +74,7 @@ public class Cadastro {
         }
     }
 
+    @Override
     public void tecladoAtualiza(KeyEvent e) {
         String[] vetNomes;
 
@@ -104,6 +107,7 @@ public class Cadastro {
         }
     }
 
+    @Override
     public void mouseAtualiza(MouseEvent e) {
         int anterior = (numeroJogadores == 0) ? numeroJogadores : numeroJogadores - 1;
         int atual = (numeroJogadores == 6) ? numeroJogadores - 1 : numeroJogadores;

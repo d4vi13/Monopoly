@@ -6,7 +6,7 @@ import java.awt.event.*;
 import javax.swing.ImageIcon;
 import java.io.*;
 
-class Menu {
+class Menu extends Grafico {
     private enum Estado{
         NAO_BACKUP,
         BACKUP;
@@ -53,6 +53,7 @@ class Menu {
         caixaBackup = new CaixaTexto(fonteCaixa, raio, coresCaixa);
     }
 
+    @Override
     public void setDimensoes(int comprimento, int altura) {
         this.frameComprimento = comprimento;
         this.frameAltura = altura;
@@ -62,6 +63,7 @@ class Menu {
         definirPosicaoComponentes();
     }
 
+    @Override
     public void pintar(Graphics g) {
         g.drawImage(monopoly_logo, logoPosx, logoPosy, logoComp, logoAlt, null);
         if (estado == Estado.NAO_BACKUP) {
@@ -74,6 +76,7 @@ class Menu {
         botaoSair.pintar(g);
     }
 
+    @Override
     public void tecladoAtualiza(KeyEvent e) {
         if (estado == Estado.BACKUP) {
             switch (e.getID()) {
@@ -94,6 +97,7 @@ class Menu {
         }
     }
 
+    @Override
     public void mouseAtualiza(MouseEvent e) {
         switch (e.getID()) {
             case MouseEvent.MOUSE_MOVED:

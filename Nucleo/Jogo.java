@@ -1,19 +1,16 @@
 package Nucleo;
 
-import Nucleo.Aux.EstadosJogo;
 import Nucleo.Controle.*;
 import Nucleo.Grafico.*;
 
 public class Jogo implements Runnable {
     Janela janela;
     Controle controle;
-    EstadosJogo estado;
     Thread thread;
 
     Jogo() {
-        estado = new EstadosJogo();
         controle = new Controle();
-        janela = new Janela(estado, controle);
+        janela = new Janela(controle);
         janela.requestFocus();
     }
 
