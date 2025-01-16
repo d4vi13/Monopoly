@@ -23,7 +23,7 @@ abstract class Grafico {
     }
 
     public void desenhaImagem(Graphics g, Image img, int w, int h, int x, int y) {
-        g.drawImage(img, x, y, null);
+        g.drawImage(img, x, y, w, h, null);
     }
 }
 
@@ -84,7 +84,8 @@ public class Janela extends JPanel {
     }
     
     public void atualizarDimensoes() {
-        instanciaAtual.setDimensoes(frame.getWidth(), frame.getHeight());
+        // vinte pixels de barra superior
+        instanciaAtual.setDimensoes(frame.getWidth(), frame.getHeight() - 20);
     }
 
     public void mouseAtualiza(MouseEvent e) {

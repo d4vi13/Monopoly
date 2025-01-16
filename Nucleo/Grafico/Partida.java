@@ -10,6 +10,9 @@ import Nucleo.Aux.Posicoes.Posicao;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
+
+import com.fasterxml.jackson.databind.annotation.JsonAppend.Prop;
+
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Stack;
@@ -34,7 +37,7 @@ public class Partida extends Grafico {
     private ArrayList<Integer> selecoes, imoveisIDs;
     private ArrayList<String> nomesImoveis, valoresImoveis;
     private Image marcado, desmarcado;
-    private Botao botaoDados, botaoVender, botaoComprar, botaoHipotecar, botaoUpgrade;
+    private Botao botaoDados, botaoVender, botaoComprar, botaoHipotecar, botaoMelhoria;
     private boolean dadosLigado, venderLigado, comprarLigado, hipotecarLigado, upgradeLigado;
     // Jogadores
     private PropriedadesG propriedades;
@@ -104,7 +107,7 @@ public class Partida extends Grafico {
         botaoPause = new Botao("Pause", fonteHighMount_45, 20, cores1);
         botaoDados = new Botao(new ImageIcon("./Dados/Imagens/dados.png").getImage(), 20, cores1);
         botaoComprar = new Botao("Comprar", fonteHighMount_45, 20, cores1);
-        botaoUpgrade = new Botao("Evoluir", fonteHighMount_45, 20, cores1);
+        botaoMelhoria = new Botao("Evoluir", fonteHighMount_45, 20, cores1);
         botaoVender = new Botao("Vender", fonteHighMount_25, 20, cores1);
         botaoHipotecar = new Botao("Hipotecar", fonteHighMount_25, 20, cores1);
         for (int i = 0; i < NUMERO_CASAS; i++) {
@@ -196,7 +199,7 @@ public class Partida extends Grafico {
         definirPosicaoTabuleiro();
         definirTamanhoComponentes();
         definirPosicaoComponentes();
-        propriedades.atualizarPosicoesUpgrades(tabuleiroPosx, tabuleiroPosy, tabuleiroComp);
+        propriedades.atualizarPosicoesMelhorias(tabuleiroPosx, tabuleiroPosy, tabuleiroComp);
         for (int i = 0; i < numeroJogadores; i++) {
             jogadores[i].atualizarPosicao(tabuleiroPosx, tabuleiroPosy, tabuleiroAlt);
             jogadores[i].atualizarPosicao();
@@ -235,15 +238,15 @@ public class Partida extends Grafico {
         if (falirLigado) pintarJogadorFaliu(g);
         if (cartaLigado) pintarCarta(g2d);
         if (comprarLigado) pintarComprar(g);
-        if (upgradeLigado) pintarUpgrade(g);
+        if (upgradeLigado) pintarMelhoria(g);
         if (pauseAtivado) pause.pintar(g);
     }
 
-    private void pintarUpgrade(Graphics g) {
+    private void pintarMelhoria(Graphics g) {
         int posY = botaoComprar.obterY() + botaoComprar.obterAlt();
         int valor = msg.obtemPropriedadeAtual().obtemValorPropriedade();
 
-        botaoUpgrade.pintar(g);
+        botaoMelhoria.pintar(g);
         pintarValorPropriedade(g, 20, posY + 10, Integer.toString(valor));
     }
 
@@ -357,8 +360,20 @@ public class Partida extends Grafico {
     }
 
     private void pintarTabuleiro(Graphics g) {
+        Image icone;
+        int x, y, w, h;
+
         desenhaImagem(g, tabuleiro, tabuleiroComp, tabuleiroAlt, tabuleiroPosx, tabuleiroPosy);
-        for (int i = 0; i < NUMERO_CASAS; i++) {/*desenhar upgrades*/}
+        for (int i = 0; i < NUMERO_CASAS; i++) {
+            if (!propriedades.temMelhoria(i)) continue;
+
+            icone = propriedades.obterImagemIconeUp(i);
+            x = propriedades.obterPosicaoIconeUp(i).posX;
+            y = propriedades.obterPosicaoIconeUp(i).posY;
+            w = propriedades.obterComp(i);
+            h = propriedades.obterAlt(i);
+            desenhaImagem(g, icone, x, y, w, h);
+        }
     }
 
     private void pintarIcones(Graphics g) {
@@ -452,7 +467,7 @@ public class Partida extends Grafico {
                 botaoPause.mouseMoveu(e);
                 if (dadosLigado) botaoDados.mouseMoveu(e);
                 if (comprarLigado) botaoComprar.mouseMoveu(e);
-                if (upgradeLigado) botaoUpgrade.mouseMoveu(e);
+                if (upgradeLigado) botaoMelhoria.mouseMoveu(e);
                 if (venderLigado) botaoVender.mouseMoveu(e);
                 if (hipotecarLigado) botaoHipotecar.mouseMoveu(e);
                 if (venderLigado || hipotecarLigado) {
@@ -464,7 +479,7 @@ public class Partida extends Grafico {
                 botaoPause.mousePressionado(e);
                 if (dadosLigado) botaoDados.mousePressionado(e);
                 if (comprarLigado) botaoComprar.mousePressionado(e);
-                if (upgradeLigado) botaoUpgrade.mousePressionado(e);
+                if (upgradeLigado) botaoMelhoria.mousePressionado(e);
                 if (venderLigado) botaoVender.mousePressionado(e);
                 if (hipotecarLigado) botaoHipotecar.mousePressionado(e);
                 if (venderLigado || hipotecarLigado) {
@@ -484,7 +499,7 @@ public class Partida extends Grafico {
                 }
 
                 if (upgradeLigado) {
-                    if (botaoUpgrade.mouseSolto(e)) {
+                    if (botaoMelhoria.mouseSolto(e)) {
                         janela.obterControle().acaoBotaoEvoluir();
                         atualizarPropriedades();
                         atualizarJogador();
@@ -553,7 +568,7 @@ public class Partida extends Grafico {
         botaoHipotecar.definirDimensoes(115, 33);
         botaoDados.definirDimensoes(80, 80);
         botaoComprar.definirDimensoes(170, 80);
-        botaoUpgrade.definirDimensoes(170, 80);
+        botaoMelhoria.definirDimensoes(170, 80);
         for (Botao b : marcadores) {b.definirDimensoes(20, 20);}
     }
 
@@ -564,7 +579,7 @@ public class Partida extends Grafico {
         botaoDados.definirLocalizacao(20, y);
         y += botaoDados.obterAlt() + 20;
         botaoComprar.definirLocalizacao(20, y);
-        botaoUpgrade.definirLocalizacao(20, y);
+        botaoMelhoria.definirLocalizacao(20, y);
     }
 
     private void ativarPause() {
@@ -632,29 +647,6 @@ public class Partida extends Grafico {
         Stack<Dupla<Integer, Integer>> pilha;
         Dupla<Integer, Integer> d;
         int casa, nivelCasa, acao;
-
-        acao = janela.obterControle().statusAtualizacoesPropriedades();
-        if (acao == 0) return;
-        
-        pilha = janela.obterControle().obtemAtualizacoesPropriedades();
-        while (!pilha.empty()) {
-            d = pilha.pop();
-            casa = d.primeiro;
-            nivelCasa = d.segundo;
-            switch (acao) {
-                case 1:
-                    propriedades.removerUpgrade(casa);
-                    break;
-                case 2:
-                    propriedades.atualizarUpgrade(casa, nivelCasa);
-                    break;
-                case 3:
-                    propriedades.adicionarUpgrade(casa, nivelCasa);
-                    break;
-                default:
-                    break;
-            }
-        }
     }
 
     /* Estados do jogo */

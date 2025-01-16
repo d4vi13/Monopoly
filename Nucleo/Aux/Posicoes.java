@@ -42,6 +42,10 @@ public class Posicoes {
      new Posicao(342, 1099),
      new Posicao(214, 1099)};
 
+    public static Posicao[] posCasas =
+    {
+     };
+
     public static int[][] x = 
     {{3, 40,  77, 3, 40, 77},
      {12, 49, 86, 12, 49, 86},
