@@ -4,7 +4,6 @@ import Nucleo.Grafico.Componente;
 
 import java.awt.*;
 import java.awt.event.*;
-import javax.swing.ImageIcon;
 import java.io.*;
 
 public class Cadastro extends Grafico {
@@ -12,27 +11,29 @@ public class Cadastro extends Grafico {
     private Janela janela;
     private int frameComprimento, frameAltura;
     private CaixaTexto[] caixas;
-    private Font fonteTitulo, fonteAviso;
+    private Font ftHighMount_40, ftHighMount_30;
     private String titulo, aviso;
     private int numeroJogadores;
+    private Botao btSair;
 
     public Cadastro(Janela j) {
         Color[] coresCaixa = {Color.BLACK, Color.WHITE, Color.LIGHT_GRAY};
+        Color[] coresBotao = {Color.BLACK, Color.LIGHT_GRAY, Color.GRAY, Color.WHITE};
         int raio = 40;
-        Font fonteCaixa;
+        Font ftTimesNRoman_28;
         File f1, f2;
 
         janela = j;
         numeroJogadores = 0;
         titulo = "Cadastro dos Jogadores";
         aviso = "Insira pelo menos dois jogadores";
-        fonteTitulo = fonteCaixa = null;
+        ftHighMount_40 = ftTimesNRoman_28 = null;
         f1 = new File("./Dados/Fontes/HighMount_PersonalUse.otf");
         f2 = new File("./Dados/Fontes/times_new_roman.ttf");
         try {
-            fonteTitulo = Font.createFont(Font.TRUETYPE_FONT, f1).deriveFont(40f);
-            fonteAviso = Font.createFont(Font.TRUETYPE_FONT, f1).deriveFont(30f);
-            fonteCaixa = Font.createFont(Font.TRUETYPE_FONT, f2).deriveFont(28f);
+            ftHighMount_40 = Font.createFont(Font.TRUETYPE_FONT, f1).deriveFont(40f);
+            ftHighMount_30 = Font.createFont(Font.TRUETYPE_FONT, f1).deriveFont(30f);
+            ftTimesNRoman_28 = Font.createFont(Font.TRUETYPE_FONT, f2).deriveFont(28f);
         } catch(FontFormatException | IOException e) {
             System.out.println("Erro ao carregar fonte");
             System.exit(1);
@@ -40,8 +41,10 @@ public class Cadastro extends Grafico {
 
         caixas = new CaixaTexto[NUMERO_CAIXAS];
         for (int i = 0; i < NUMERO_CAIXAS; i++) {
-            caixas[i] = new CaixaTexto(fonteCaixa, raio, coresCaixa);
+            caixas[i] = new CaixaTexto(ftTimesNRoman_28, raio, coresCaixa);
         }
+
+        btSair = new Botao("Sair", ftHighMount_40, 20, coresBotao);
     }
 
     @Override
@@ -49,6 +52,8 @@ public class Cadastro extends Grafico {
         this.frameComprimento = comprimento;
         this.frameAltura = altura;
         setDimensoesCaixas();
+        btSair.definirDimensoes(160, 48);
+        btSair.definirLocalizacao(20, 20);
     }
 
     @Override
@@ -56,7 +61,7 @@ public class Cadastro extends Grafico {
         FontMetrics fm;
         int compTitulo;
 
-        g.setFont(fonteTitulo);
+        g.setFont(ftHighMount_40);
         fm = g.getFontMetrics();
         compTitulo = fm.stringWidth(titulo);
         g.setColor(Color.BLACK);
@@ -64,14 +69,13 @@ public class Cadastro extends Grafico {
 
         if (numeroJogadores < 2) {
             g.setColor(Color.RED);
-            g.setFont(fonteAviso);
+            g.setFont(ftHighMount_30);
             compTitulo = g.getFontMetrics().stringWidth(aviso);
             g.drawString(aviso, 20, frameAltura - g.getFontMetrics().getHeight() - 10);
         }
 
-        for (int i = 0; i < NUMERO_CAIXAS; i++) {
-            caixas[i].pintar(g);
-        }
+        for (int i = 0; i < NUMERO_CAIXAS; i++) {caixas[i].pintar(g);}
+        btSair.pintar(g);
     }
 
     @Override
@@ -116,10 +120,15 @@ public class Cadastro extends Grafico {
             case MouseEvent.MOUSE_MOVED:
                 caixas[anterior].mouseMoveu(e);
                 caixas[atual].mouseMoveu(e);
+                btSair.mouseMoveu(e);
+                break;
+            case MouseEvent.MOUSE_PRESSED:
+                btSair.mousePressionado(e);
                 break;
             case MouseEvent.MOUSE_RELEASED:
                 caixas[anterior].mouseSolto(e);
                 caixas[atual].mouseSolto(e);
+                if (btSair.mouseSolto(e)) System.exit(0);
                 break;
             default:
                 break;

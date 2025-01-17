@@ -127,15 +127,15 @@ class MenuPause {
     
     private void definirPosicaoComponentes() {
         int posy, posx;
-        int alturaTotal = 3 * altComponentes + 2 * (int)(frameAltura / 40);
+        int alturaTotal = 3 * altComponentes + 2 * 30;
 
         posx = (frameComprimento - compComponentes) / 2;
         posy = (frameAltura - alturaTotal) / 2;
         botaoSalvar.definirLocalizacao(posx, posy);
         caixaBackup.definirLocalizacao(posx + compComponentes + 10, posy);
-        posy += altComponentes + (int)(frameAltura / 40);
+        posy += altComponentes + 30;
         botaoVoltar.definirLocalizacao(posx, posy);
-        posy += altComponentes + (int)(frameAltura / 40);
+        posy += altComponentes + 30;
         botaoSair.definirLocalizacao(posx, posy);
     }
 }

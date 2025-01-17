@@ -7,11 +7,6 @@ import javax.swing.ImageIcon;
 import java.io.*;
 
 class Menu extends Grafico {
-    private enum Estado{
-        NAO_BACKUP,
-        BACKUP;
-    }
-
     private Janela janela;
     private int frameComprimento, frameAltura;
     private int logoAlt, logoComp, logoPosx, logoPosy;
@@ -19,7 +14,9 @@ class Menu extends Grafico {
     private Image monopoly_logo;
     private Botao botaoIniciar, botaoBackup, botaoSair;
     private CaixaTexto caixaBackup;
-    private Estado estado;
+    private int estado;
+    private final int NAO_BACKUP = 0;
+    private final int BACKUP = 1;
 
     public Menu(Janela j) {
         Color[] coresBotoes = {Color.BLACK, Color.LIGHT_GRAY, Color.GRAY, Color.WHITE};
@@ -29,7 +26,7 @@ class Menu extends Grafico {
         File f1, f2;
 
         janela = j;
-        estado = Estado.NAO_BACKUP;
+        estado = NAO_BACKUP;
         fonteBotoes = fonteCaixa = null;
         f1 = new File("./Dados/Fontes/HighMount_PersonalUse.otf");
         f2 = new File("./Dados/Fontes/times_new_roman.ttf");
@@ -66,19 +63,19 @@ class Menu extends Grafico {
     @Override
     public void pintar(Graphics g) {
         g.drawImage(monopoly_logo, logoPosx, logoPosy, logoComp, logoAlt, null);
-        if (estado == Estado.NAO_BACKUP) {
+        if (estado == NAO_BACKUP) {
             botaoIniciar.pintar(g);
-            botaoBackup.pintar(g);
-        } else if (estado == Estado.BACKUP) {
+        } else if (estado == BACKUP) {
             caixaBackup.pintar(g);
         }
         
+        botaoBackup.pintar(g);
         botaoSair.pintar(g);
     }
 
     @Override
     public void tecladoAtualiza(KeyEvent e) {
-        if (estado == Estado.BACKUP) {
+        if (estado == BACKUP) {
             switch (e.getID()) {
                 case KeyEvent.KEY_TYPED:
                     caixaBackup.teclaDigitada(e);
@@ -112,14 +109,14 @@ class Menu extends Grafico {
                 botaoSair.mousePressionado(e);               
                 break;
             case MouseEvent.MOUSE_RELEASED:
-                if (estado == Estado.BACKUP) {
+                if (estado == BACKUP) {
                     caixaBackup.mouseSolto(e);
                 } else {
                     if (botaoIniciar.mouseSolto(e)) {   
                         janela.obterControle().acaoBotaoNovaPartida();
                         janela.atualizarEstado(CADASTRO);
                     } else if (botaoBackup.mouseSolto(e)) {
-                        estado = Estado.BACKUP;
+                        estado = BACKUP;
                     }
                 }
                 if (botaoSair.mouseSolto(e)) System.exit(0);
@@ -155,13 +152,13 @@ class Menu extends Grafico {
         int posx, backupPosy, iniciarPosy, sairPosy;
 
         posx = (frameComprimento - compComponentes) / 2;
-        iniciarPosy = logoPosy + logoAlt + frameAltura / 10;
-        backupPosy = iniciarPosy + altComponentes + frameAltura / 40;
-        sairPosy = backupPosy + altComponentes + frameAltura / 40;
+        iniciarPosy = logoPosy + logoAlt + 110;
+        backupPosy = iniciarPosy + altComponentes + 30;
+        sairPosy = backupPosy + altComponentes + 30;
         
-        caixaBackup.definirLocalizacao(posx, backupPosy);
         botaoIniciar.definirLocalizacao(posx, iniciarPosy);
-        botaoBackup.definirLocalizacao(posx, backupPosy);
         botaoSair.definirLocalizacao(posx, sairPosy);
+        botaoBackup.definirLocalizacao(posx, backupPosy);
+        caixaBackup.definirLocalizacao(posx  + compComponentes + 10, backupPosy);
     }
 }

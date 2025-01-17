@@ -26,7 +26,6 @@ public class Partida extends Grafico {
     // Pause
     private boolean pauseAtivado;
     private MenuPause pause;
-    private Botao btPause;
     private float opacidade;
     // Botoes
     private Botao[] marcadores;
@@ -34,7 +33,7 @@ public class Partida extends Grafico {
     private ArrayList<Integer> selecoes, imoveisIDs;
     private ArrayList<String> nomesImoveis, valoresImoveis;
     private Image marcado, desmarcado;
-    private Botao btDados, btVender, btComprar, btHipotecar, btMelhoria, btPular;
+    private Botao btDados, btVender, btComprar, btHipotecar, btMelhoria, btPular, btPause;
     private boolean dadosLigado, venderLigado, comprarLigado, hipotecarLigado, upgradeLigado;
     // Jogadores
     private PropriedadesG propriedades;
@@ -44,9 +43,8 @@ public class Partida extends Grafico {
     private boolean falirLigado, cartaLigado;
     private int altIcone, compIcone, idJogadorAtual, casaDestino, casaAtual, numJogadores;
     // Fontes
-    private Font ftHighMount_25, ftHighMount_31, ftHighMount_45;
-    private Font ftTimesNRoman_45, ftTimesNRoman_80, ftTimesNRoman_25;
-    private Font ftNumberInGothic_45, ftNumberInGothic_25;
+    private Font ftHighMount_25, ftHighMount_45;
+    private Font ftBebas_45, ftBebas_80, ftBebas_25;
     // Timers
     private Timer tempPulos, tempGenerico, tempGanhoPerda;
     private boolean foiGanho, ligadoGanhoPerda;
@@ -81,17 +79,13 @@ public class Partida extends Grafico {
 
     private void carregarFontes() {
         File f1 = new File("./Dados/Fontes/HighMount_PersonalUse.otf");
-        File f2 = new File("./Dados/Fontes/Crashnumberinggothic.ttf");
-        File f3 = new File("./Dados/Fontes/times_new_roman.ttf");
+        File f3 = new File("./Dados/Fontes/Bebas.ttf");
         try {
             ftHighMount_45 = Font.createFont(Font.TRUETYPE_FONT, f1).deriveFont(40f);
             ftHighMount_25 = Font.createFont(Font.TRUETYPE_FONT, f1).deriveFont(25f);
-            ftNumberInGothic_45 = Font.createFont(Font.TRUETYPE_FONT, f2).deriveFont(45f);
-            ftNumberInGothic_25 = Font.createFont(Font.TRUETYPE_FONT, f2).deriveFont(25f);
-            ftTimesNRoman_80 = Font.createFont(Font.TRUETYPE_FONT, f3).deriveFont(80f);
-            ftHighMount_31 = Font.createFont(Font.TRUETYPE_FONT, f1).deriveFont(31f);
-            ftTimesNRoman_45 = Font.createFont(Font.TRUETYPE_FONT, f3).deriveFont(45f);
-            ftTimesNRoman_25 = Font.createFont(Font.TRUETYPE_FONT, f3).deriveFont(25f);
+            ftBebas_80 = Font.createFont(Font.TRUETYPE_FONT, f3).deriveFont(80f);
+            ftBebas_45 = Font.createFont(Font.TRUETYPE_FONT, f3).deriveFont(45f);
+            ftBebas_25 = Font.createFont(Font.TRUETYPE_FONT, f3).deriveFont(25f);
         } catch(FontFormatException | IOException e) {
             System.out.println("Erro ao carregar ft");
             System.exit(1);
@@ -99,7 +93,7 @@ public class Partida extends Grafico {
     }
 
     private void carregarBotoes() {
-        Color[] cores1 = new Color[]{Color.BLACK, Color.LIGHT_GRAY, Color.GRAY, Color.WHITE};
+        Color[] cores1 = {Color.BLACK, Color.LIGHT_GRAY, Color.GRAY, Color.WHITE};
 
         btPause = new Botao("Pause", ftHighMount_45, 20, cores1);
         btDados = new Botao(new ImageIcon("./Dados/Imagens/dados.png").getImage(), 20, cores1);
@@ -233,7 +227,7 @@ public class Partida extends Grafico {
             if (venderLigado) {
                 btVender.definirLocalizacao(posX, posY);
                 btVender.pintar(g);
-                posX += btVender.obterComp() + 10;
+                posY += btVender.obterAlt() + 10;
             } 
             if (hipotecarLigado) {
                 btHipotecar.definirLocalizacao(posX, posY);
@@ -257,7 +251,7 @@ public class Partida extends Grafico {
         s.append(valorGanhoPerda);
         
         String str = s.toString();
-        g.setFont(ftTimesNRoman_45);
+        g.setFont(ftBebas_45);
         g.setColor(Color.BLACK);
         FontMetrics fm = g.getFontMetrics();
         g.drawString(str, frameComp - fm.stringWidth(str) - 10, frameAlt - 10);
@@ -277,14 +271,14 @@ public class Partida extends Grafico {
     private void pintarValorPropriedade(Graphics g, int posX, int posY, String valorStr) {
         int comp, alt;
 
-        g.setFont(ftTimesNRoman_25);
+        g.setFont(ftBebas_25);
         alt = g.getFontMetrics().getAscent();
         posY += alt;
         comp = g.getFontMetrics().stringWidth("$ ");
         g.setColor(Color.BLACK);
         g.drawString("$ ", posX, posY);
         posX += comp;
-        g.setFont(ftNumberInGothic_25);
+        g.setFont(ftBebas_25);
         g.drawString(valorStr, posX, posY);
     }
 
@@ -296,7 +290,7 @@ public class Partida extends Grafico {
         for (int i = 0; i < numJogadores; i++) {
             if (jogadores[i].estaFalido()) continue;
 
-            g.setFont(ftTimesNRoman_45);
+            g.setFont(ftBebas_45);
             saldo = jogadores[i].obterNome() + ": " + "$" + Integer.toString(saldosInt[i]);
             y += g.getFontMetrics().getAscent();
             x = frameComp - g.getFontMetrics().stringWidth(saldo) - 10;
@@ -318,7 +312,7 @@ public class Partida extends Grafico {
         for (int i = 0; i < nomesImoveis.size(); i++) {
             marcadores[i].definirLocalizacao(posX, posY);
             marcadores[i].pintar(g);
-            g.setFont(ftTimesNRoman_25);
+            g.setFont(ftBebas_25);
             f = g.getFontMetrics();
             g.drawString(nomesImoveis.get(i), posX + comp, posY + alt);
             if (estadosMarcadores[i]) img = marcado;
@@ -385,7 +379,7 @@ public class Partida extends Grafico {
         String str = jogadores[idJogadorAtual].obterNome() + " acaba de falir :(";
 
         g.setColor(Color.BLACK);
-        g.setFont(ftTimesNRoman_80);
+        g.setFont(ftBebas_80);
         fm = g.getFontMetrics();
         comp = fm.stringWidth(str);
         alt = fm.getAscent();
@@ -393,7 +387,7 @@ public class Partida extends Grafico {
     }
 
     private void pintarInformaJogador(Graphics g) {
-        g.setFont(ftTimesNRoman_45);
+        g.setFont(ftBebas_45);
         g.setColor(Color.BLACK);
         g.drawString(informaJogador[idJogadorAtual], 20, frameAlt - 20);
     }
@@ -404,7 +398,7 @@ public class Partida extends Grafico {
         int x = bd.obterX(), y = bd.obterY(), w = bd.obterComp(), h = bd.obterAlt(), wF, hF;
         final int raio = 20;
 
-        g2D.setFont(ftNumberInGothic_45);
+        g2D.setFont(ftBebas_45);
         fm = g2D.getFontMetrics();
         hF = fm.getAscent() - fm.getDescent();
         
