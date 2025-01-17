@@ -11,8 +11,6 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 
-import com.fasterxml.jackson.databind.annotation.JsonAppend.Prop;
-
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Stack;
@@ -20,43 +18,43 @@ import java.util.Arrays;
 
 public class Partida extends Grafico {  
     private Janela janela;
-    private int frameComprimento, frameAltura;
+    private int frameComp, frameAlt;
     // Tabuleiro
-    private int tabuleiroComp, tabuleiroAlt, tabuleiroPosx, tabuleiroPosy;
-    private Image tabuleiro;
+    private int tabComp, tabAlt, tabPosx, tabPosy;
+    private Image tab;
     private final int NUMERO_CASAS = 32;
     // Pause
     private boolean pauseAtivado;
     private MenuPause pause;
-    private Botao botaoPause;
+    private Botao btPause;
     private float opacidade;
     // Botoes
-    private Font fonteHighMount_45;
     private Botao[] marcadores;
     private boolean[] estadosMarcadores;
     private ArrayList<Integer> selecoes, imoveisIDs;
     private ArrayList<String> nomesImoveis, valoresImoveis;
     private Image marcado, desmarcado;
-    private Botao botaoDados, botaoVender, botaoComprar, botaoHipotecar, botaoMelhoria;
+    private Botao btDados, btVender, btComprar, btHipotecar, btMelhoria, btPular;
     private boolean dadosLigado, venderLigado, comprarLigado, hipotecarLigado, upgradeLigado;
     // Jogadores
     private PropriedadesG propriedades;
-    private int numeroJogadores;
     private JogadorG[] jogadores;
     private int[] saldosInt;
-    private int altIcone, compIcone;
-    private int idJogadorAtual;
     private String[] informaJogador;
-    private int casaDestino, casaAtual;
     private boolean falirLigado, cartaLigado;
-    private Font fonteHighMount_25, fonteHighMount_31, fonteHighMount_34;
-    private Font fonteTimesNRoman_45, fonteTimesNRoman_80, fonteTimesNRoman_25;
+    private int altIcone, compIcone, idJogadorAtual, casaDestino, casaAtual, numJogadores;
+    // Fontes
+    private Font ftHighMount_25, ftHighMount_31, ftHighMount_45;
+    private Font ftTimesNRoman_45, ftTimesNRoman_80, ftTimesNRoman_25;
+    private Font ftNumberInGothic_45, ftNumberInGothic_25;
     // Timers
-    private Timer temporizadorPulos, temporizadorGenerico;
+    private Timer tempPulos, tempGenerico, tempGanhoPerda;
+    private boolean foiGanho, ligadoGanhoPerda;
+    private String valorGanhoPerda, jogadorGanhoPerda;
+    private int contador;
     // Dados
     private int[] valoresDados;
     private boolean valoresLigado;
-    private Font fonteNumberInGothic_45, fonteNumberInGothic_25;
     private MensagemJogador msg;
     // Estados
     private int estadoAtual;
@@ -64,7 +62,7 @@ public class Partida extends Grafico {
     public Partida(Janela j) {
         janela = j;
         opacidade = 1.0f;
-        pauseAtivado = false;
+        pauseAtivado = ligadoGanhoPerda = false;
         pause = new MenuPause(this);
         
         carregarFontes();
@@ -76,7 +74,7 @@ public class Partida extends Grafico {
     }
 
     private void carregarImagens() {
-        tabuleiro = new ImageIcon("./Dados/Imagens/tabuleiro.png").getImage();
+        tab = new ImageIcon("./Dados/Imagens/tabuleiro.png").getImage();
         marcado = new ImageIcon("./Dados/Imagens/marcado.png").getImage();
         desmarcado = new ImageIcon("./Dados/Imagens/desmarcado.png").getImage();
     }
@@ -86,17 +84,16 @@ public class Partida extends Grafico {
         File f2 = new File("./Dados/Fontes/Crashnumberinggothic.ttf");
         File f3 = new File("./Dados/Fontes/times_new_roman.ttf");
         try {
-            fonteHighMount_45 = Font.createFont(Font.TRUETYPE_FONT, f1).deriveFont(40f);
-            fonteHighMount_34 = Font.createFont(Font.TRUETYPE_FONT, f1).deriveFont(34f);
-            fonteHighMount_25 = Font.createFont(Font.TRUETYPE_FONT, f1).deriveFont(25f);
-            fonteNumberInGothic_45 = Font.createFont(Font.TRUETYPE_FONT, f2).deriveFont(45f);
-            fonteNumberInGothic_25 = Font.createFont(Font.TRUETYPE_FONT, f2).deriveFont(25f);
-            fonteTimesNRoman_80 = Font.createFont(Font.TRUETYPE_FONT, f3).deriveFont(80f);
-            fonteHighMount_31 = Font.createFont(Font.TRUETYPE_FONT, f1).deriveFont(31f);
-            fonteTimesNRoman_45 = Font.createFont(Font.TRUETYPE_FONT, f3).deriveFont(45f);
-            fonteTimesNRoman_25 = Font.createFont(Font.TRUETYPE_FONT, f3).deriveFont(25f);
+            ftHighMount_45 = Font.createFont(Font.TRUETYPE_FONT, f1).deriveFont(40f);
+            ftHighMount_25 = Font.createFont(Font.TRUETYPE_FONT, f1).deriveFont(25f);
+            ftNumberInGothic_45 = Font.createFont(Font.TRUETYPE_FONT, f2).deriveFont(45f);
+            ftNumberInGothic_25 = Font.createFont(Font.TRUETYPE_FONT, f2).deriveFont(25f);
+            ftTimesNRoman_80 = Font.createFont(Font.TRUETYPE_FONT, f3).deriveFont(80f);
+            ftHighMount_31 = Font.createFont(Font.TRUETYPE_FONT, f1).deriveFont(31f);
+            ftTimesNRoman_45 = Font.createFont(Font.TRUETYPE_FONT, f3).deriveFont(45f);
+            ftTimesNRoman_25 = Font.createFont(Font.TRUETYPE_FONT, f3).deriveFont(25f);
         } catch(FontFormatException | IOException e) {
-            System.out.println("Erro ao carregar fonte");
+            System.out.println("Erro ao carregar ft");
             System.exit(1);
         }
     }
@@ -104,14 +101,14 @@ public class Partida extends Grafico {
     private void carregarBotoes() {
         Color[] cores1 = new Color[]{Color.BLACK, Color.LIGHT_GRAY, Color.GRAY, Color.WHITE};
 
-        botaoPause = new Botao("Pause", fonteHighMount_45, 20, cores1);
-        botaoDados = new Botao(new ImageIcon("./Dados/Imagens/dados.png").getImage(), 20, cores1);
-        botaoComprar = new Botao("Comprar", fonteHighMount_45, 20, cores1);
-        botaoMelhoria = new Botao("Evoluir", fonteHighMount_45, 20, cores1);
-        botaoVender = new Botao("Vender", fonteHighMount_25, 20, cores1);
-        botaoHipotecar = new Botao("Hipotecar", fonteHighMount_25, 20, cores1);
+        btPause = new Botao("Pause", ftHighMount_45, 20, cores1);
+        btDados = new Botao(new ImageIcon("./Dados/Imagens/dados.png").getImage(), 20, cores1);
+        btComprar = new Botao("Comprar", ftHighMount_45, 20, cores1);
+        btMelhoria = new Botao("Evoluir", ftHighMount_45, 20, cores1);
+        btVender = new Botao("Vender", ftHighMount_25, 20, cores1);
+        btHipotecar = new Botao("Hipotecar", ftHighMount_25, 20, cores1);
         for (int i = 0; i < NUMERO_CASAS; i++) {
-            marcadores[i] = new Botao("", fonteHighMount_45, 10, cores1);
+            marcadores[i] = new Botao("", ftHighMount_45, 10, cores1);
         }
     }
 
@@ -119,10 +116,10 @@ public class Partida extends Grafico {
         int idAtual, idIni, idCasa;
         Controle controle = janela.obterControle();
 
-        numeroJogadores = janela.obterControle().obterNumeroJogadores();
+        numJogadores = janela.obterControle().obterNumeroJogadores();
         jogadores = janela.obterControle().obterJogadoresG();
-        saldosInt = new int[numeroJogadores];
-        informaJogador = new String[numeroJogadores];
+        saldosInt = new int[numJogadores];
+        informaJogador = new String[numJogadores];
         propriedades = new PropriedadesG();
         marcadores = new Botao[32];
         estadosMarcadores = new boolean[32];
@@ -136,7 +133,7 @@ public class Partida extends Grafico {
         // Propriedades Iniciais
         atualizarPropriedades();
     
-        for (int i = 0; i < numeroJogadores; i++) {
+        for (int i = 0; i < numJogadores; i++) {
             informaJogador[i] = jogadores[i].obterNome() + " joga";
         }
         
@@ -150,7 +147,17 @@ public class Partida extends Grafico {
     }
 
     private void carregarTemporizadores() {
-        temporizadorPulos = new Timer(200, e -> {
+        contador = 0;
+        tempGanhoPerda = new Timer(200, e -> {
+            ligadoGanhoPerda = !ligadoGanhoPerda;
+            contador++;
+            if (contador == 9) {
+                contador = 0;
+                tempGanhoPerda.stop();
+            }
+        });
+
+        tempPulos = new Timer(200, e -> {
             boolean soma;
             if (casaDestino < casaAtual) {
                 if (32 - casaAtual + casaDestino > casaAtual - casaDestino) {
@@ -180,32 +187,32 @@ public class Partida extends Grafico {
             jogadores[idJogadorAtual].atualizarPosicao();
 
             if (casaAtual == casaDestino) {
-                temporizadorPulos.stop();
+                tempPulos.stop();
                 fimTemporizadorPulos();
             }
         });
 
-        temporizadorGenerico = new Timer(2200, e -> {
+        tempGenerico = new Timer(2200, e -> {
             fimTemporizadorGenerico();
-            temporizadorGenerico.stop();
+            tempGenerico.stop();
         });
     }
 
     @Override
     public void setDimensoes(int comprimento, int altura) {
-        this.frameComprimento = comprimento;
-        this.frameAltura = altura;
+        this.frameComp = comprimento;
+        this.frameAlt = altura;
         definirTamanhoTabuleiro();
         definirPosicaoTabuleiro();
         definirTamanhoComponentes();
         definirPosicaoComponentes();
-        propriedades.atualizarPosicoesMelhorias(tabuleiroPosx, tabuleiroPosy, tabuleiroComp);
-        for (int i = 0; i < numeroJogadores; i++) {
-            jogadores[i].atualizarPosicao(tabuleiroPosx, tabuleiroPosy, tabuleiroAlt);
+        propriedades.atualizarPosicoesMelhorias(tabPosx, tabPosy, tabComp);
+        for (int i = 0; i < numJogadores; i++) {
+            jogadores[i].atualizarPosicao(tabPosx, tabPosy, tabAlt);
             jogadores[i].atualizarPosicao();
         }
         
-        altIcone = compIcone = (int)(35 * tabuleiroComp / 1156.f);
+        altIcone = compIcone = (int)(35 * tabComp / 1156.f);
     }
 
     public void pintar(Graphics g) {
@@ -214,61 +221,70 @@ public class Partida extends Grafico {
         
         g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, opacidade));
         
-        botaoPause.pintar(g);
+        btPause.pintar(g);
         pintarTabuleiro(g);
         pintarIcones(g);
         pintarSaldoJogadores(g);
         pintarInformaJogador(g);
 
         if (venderLigado || hipotecarLigado) {
-            posX = botaoComprar.obterX() + botaoComprar.obterComp() + 20;
+            posX = btComprar.obterX() + btComprar.obterComp() + 20;
             posY = pintarSeleciona(g);
             if (venderLigado) {
-                botaoVender.definirLocalizacao(posX, posY);
-                botaoVender.pintar(g);
-                posX += botaoVender.obterComp() + 10;
+                btVender.definirLocalizacao(posX, posY);
+                btVender.pintar(g);
+                posX += btVender.obterComp() + 10;
             } 
             if (hipotecarLigado) {
-                botaoHipotecar.definirLocalizacao(posX, posY);
-                botaoHipotecar.pintar(g);
+                btHipotecar.definirLocalizacao(posX, posY);
+                btHipotecar.pintar(g);
             }
         }
-        if (dadosLigado) botaoDados.pintar(g);
+        if (dadosLigado) btDados.pintar(g);
         if (valoresLigado) pintarValoresDados(g2d);
         if (falirLigado) pintarJogadorFaliu(g);
         if (cartaLigado) pintarCarta(g2d);
-        if (comprarLigado) pintarComprar(g);
-        if (upgradeLigado) pintarMelhoria(g);
+        if (comprarLigado || upgradeLigado) pintarComprarMelhoria(g);
         if (pauseAtivado) pause.pintar(g);
+        if (ligadoGanhoPerda) pintarGanhoPerda(g);
     }
 
-    private void pintarMelhoria(Graphics g) {
-        int posY = botaoComprar.obterY() + botaoComprar.obterAlt();
-        int valor = msg.obtemPropriedadeAtual().obtemValorPropriedade();
-
-        botaoMelhoria.pintar(g);
-        pintarValorPropriedade(g, 20, posY + 10, Integer.toString(valor));
+    private void pintarGanhoPerda(Graphics g) {
+        StringBuilder s = new StringBuilder();
+        s.append(jogadorGanhoPerda);
+        if (foiGanho) s.append(" ganha $");
+        else s.append(" perde $");
+        s.append(valorGanhoPerda);
+        
+        String str = s.toString();
+        g.setFont(ftTimesNRoman_45);
+        g.setColor(Color.BLACK);
+        FontMetrics fm = g.getFontMetrics();
+        g.drawString(str, frameComp - fm.stringWidth(str) - 10, frameAlt - 10);
     }
 
-    private void pintarComprar(Graphics g) {
-        int posY = botaoComprar.obterY() + botaoComprar.obterAlt();
+    private void pintarComprarMelhoria(Graphics g) {
+        int posY = btComprar.obterY() + btComprar.obterAlt();
         int valor = msg.obtemPropriedadeAtual().obtemValorPropriedade();
 
-        botaoComprar.pintar(g);
+        if (upgradeLigado)
+            btMelhoria.pintar(g);
+        else
+            btComprar.pintar(g);
         pintarValorPropriedade(g, 20, posY + 10, Integer.toString(valor));
     }
 
     private void pintarValorPropriedade(Graphics g, int posX, int posY, String valorStr) {
         int comp, alt;
 
-        g.setFont(fonteTimesNRoman_25);
+        g.setFont(ftTimesNRoman_25);
         alt = g.getFontMetrics().getAscent();
         posY += alt;
         comp = g.getFontMetrics().stringWidth("$ ");
         g.setColor(Color.BLACK);
         g.drawString("$ ", posX, posY);
         posX += comp;
-        g.setFont(fonteNumberInGothic_25);
+        g.setFont(ftNumberInGothic_25);
         g.drawString(valorStr, posX, posY);
     }
 
@@ -277,13 +293,13 @@ public class Partida extends Grafico {
         String saldo;
 
         y = 15;
-        for (int i = 0; i < numeroJogadores; i++) {
+        for (int i = 0; i < numJogadores; i++) {
             if (jogadores[i].estaFalido()) continue;
 
-            g.setFont(fonteTimesNRoman_45);
-            saldo = jogadores[i].obterNome() + " - " + "$" + Integer.toString(saldosInt[i]);
+            g.setFont(ftTimesNRoman_45);
+            saldo = jogadores[i].obterNome() + ": " + "$" + Integer.toString(saldosInt[i]);
             y += g.getFontMetrics().getAscent();
-            x = frameComprimento - g.getFontMetrics().stringWidth(saldo) - 10;
+            x = frameComp - g.getFontMetrics().stringWidth(saldo) - 10;
             g.drawString(saldo, x, y);
         }
     }
@@ -295,14 +311,14 @@ public class Partida extends Grafico {
 
         comp = marcadores[0].obterComp();
         alt = marcadores[0].obterAlt();
-        posY = botaoDados.obterY();
-        posX = botaoComprar.obterX() + botaoComprar.obterComp() + 20;
+        posY = btDados.obterY();
+        posX = btComprar.obterX() + btComprar.obterComp() + 20;
 
         g.setColor(Color.BLACK);
         for (int i = 0; i < nomesImoveis.size(); i++) {
             marcadores[i].definirLocalizacao(posX, posY);
             marcadores[i].pintar(g);
-            g.setFont(fonteTimesNRoman_25);
+            g.setFont(ftTimesNRoman_25);
             f = g.getFontMetrics();
             g.drawString(nomesImoveis.get(i), posX + comp, posY + alt);
             if (estadosMarcadores[i]) img = marcado;
@@ -318,44 +334,19 @@ public class Partida extends Grafico {
     }
 
     private void pintarCarta(Graphics2D g2D) {
-        int h = (int)(0.5 * frameAltura), w = (int)(0.6 * h), hTmp, wF, hF;
-        int x = (frameComprimento - w) / 2, y = (frameAltura - h) / 2;
-        String vetStr[], str, numero;
-        int tipo = msg.obtemCartaSorteada().obtemTipo();
-        final int raio = 20;
+        int h = (int)(0.25 * frameAlt), w = (int)(1.25 * h);
+        int x = (frameComp - w) / 2, y = (frameAlt - h) / 2;
+        int acumulador = 0;
+        String vet[];
 
+        desenhaRetanguloBorda(g2D, w, h, x, y, 20, 4, Color.BLACK, Color.LIGHT_GRAY);
+        vet = msg.obtemCartaSorteada().obtemDescricao();
         g2D.setColor(Color.BLACK);
-        g2D.fillRoundRect(x, y, w, h, raio, raio);
-        g2D.setColor(Color.LIGHT_GRAY);
-        g2D.fillRoundRect(x + 4, y + 4, w - 8, h - 8, raio, raio);
-        g2D.setColor(Color.BLACK);
-
-        vetStr = msg.obtemCartaSorteada().obtemDescricao();
-        g2D.setFont(fonteHighMount_45);
-        hF = g2D.getFontMetrics().getAscent() - g2D.getFontMetrics().getDescent();
-        wF = g2D.getFontMetrics().stringWidth("Carta");
-        g2D.drawString("Carta", x + (w - wF) / 2, y + hF + 20);
-        hTmp = h;
-        g2D.setFont(fonteHighMount_31);
-        for (String s : vetStr) {
-            wF = g2D.getFontMetrics().stringWidth(s);
-            g2D.drawString(s, x + (w - wF) / 2, y + hTmp / 2);
-            hTmp += g2D.getFontMetrics().getHeight() + 30;
-        }
-
-        if (tipo == 0 || tipo == 6 || tipo == 1) {
-            if (tipo == 0 || tipo == 6) str = "+";
-            else str = "-";
-
-            numero = Integer.toString(msg.obtemCartaSorteada().obtemValor());
-            g2D.setFont(fonteNumberInGothic_45);
-            wF = g2D.getFontMetrics().stringWidth(numero);
-            g2D.setFont(fonteTimesNRoman_45);
-            wF += g2D.getFontMetrics().stringWidth(str);
-            g2D.drawString(str, x + (w - wF) / 2, y + h - 50);
-            wF -= 2 * g2D.getFontMetrics().stringWidth(str);
-            g2D.setFont(fonteNumberInGothic_45);
-            g2D.drawString(numero, x + (w - wF) / 2, y + h - 50);
+        g2D.setFont(ftHighMount_45);
+        FontMetrics fm = g2D.getFontMetrics();
+        for (String s : vet) {
+            g2D.drawString(s, x + (w - fm.stringWidth(s)) / 2, y + h / 2 + acumulador);
+            acumulador += fm.getHeight() + 10;
         }
     }
 
@@ -363,7 +354,7 @@ public class Partida extends Grafico {
         Image icone;
         int x, y, w, h;
 
-        desenhaImagem(g, tabuleiro, tabuleiroComp, tabuleiroAlt, tabuleiroPosx, tabuleiroPosy);
+        desenhaImagem(g, tab, tabComp, tabAlt, tabPosx, tabPosy);
         for (int i = 0; i < NUMERO_CASAS; i++) {
             if (!propriedades.temMelhoria(i)) continue;
 
@@ -380,10 +371,9 @@ public class Partida extends Grafico {
         JogadorG j;
         Posicao p;
 
-        for (int i = 0; i < numeroJogadores; i++) {
+        for (int i = 0; i < numJogadores; i++) {
+            if (jogadores[i].estaFalido()) continue;
             j = jogadores[i];
-            if (j.estaFalido()) continue;
-
             p = j.obterPosicaoJogador();
             g.drawImage(j.obterIcone(), p.posX, p.posY, compIcone, altIcone, null);
         }
@@ -395,26 +385,26 @@ public class Partida extends Grafico {
         String str = jogadores[idJogadorAtual].obterNome() + " acaba de falir :(";
 
         g.setColor(Color.BLACK);
-        g.setFont(fonteTimesNRoman_80);
+        g.setFont(ftTimesNRoman_80);
         fm = g.getFontMetrics();
         comp = fm.stringWidth(str);
         alt = fm.getAscent();
-        g.drawString(str, (frameComprimento - comp) / 2, frameAltura / 3 + alt / 2);
+        g.drawString(str, (frameComp - comp) / 2, frameAlt / 3 + alt / 2);
     }
 
     private void pintarInformaJogador(Graphics g) {
-        g.setFont(fonteTimesNRoman_45);
+        g.setFont(ftTimesNRoman_45);
         g.setColor(Color.BLACK);
-        g.drawString(informaJogador[idJogadorAtual], 20, frameAltura - 20);
+        g.drawString(informaJogador[idJogadorAtual], 20, frameAlt - 20);
     }
 
     private void pintarValoresDados(Graphics2D g2D) {
-        Botao bd = botaoDados;
+        Botao bd = btDados;
         FontMetrics fm;
         int x = bd.obterX(), y = bd.obterY(), w = bd.obterComp(), h = bd.obterAlt(), wF, hF;
         final int raio = 20;
 
-        g2D.setFont(fonteNumberInGothic_45);
+        g2D.setFont(ftNumberInGothic_45);
         fm = g2D.getFontMetrics();
         hF = fm.getAscent() - fm.getDescent();
         
@@ -442,21 +432,16 @@ public class Partida extends Grafico {
             pause.tecladoAtualiza(e);
             return;
         }
-
-        if (comprarLigado || upgradeLigado) {
-            if (e.getID() ==  KeyEvent.KEY_RELEASED && e.getKeyCode() == KeyEvent.VK_ENTER) {
-                atualizarJogador();
-            }
-        }
     }
 
     @Override
     public void mouseAtualiza(MouseEvent e) {
         int acao = 0;
+        boolean gastou = false;
 
         if (pauseAtivado == true) {
             if (e.getID() == MouseEvent.MOUSE_MOVED) {
-                botaoPause.mouseMoveu(e);
+                btPause.mouseMoveu(e);
             }
             pause.mouseAtualiza(e);
             return;
@@ -464,45 +449,47 @@ public class Partida extends Grafico {
 
         switch (e.getID()) {
             case MouseEvent.MOUSE_MOVED:
-                botaoPause.mouseMoveu(e);
-                if (dadosLigado) botaoDados.mouseMoveu(e);
-                if (comprarLigado) botaoComprar.mouseMoveu(e);
-                if (upgradeLigado) botaoMelhoria.mouseMoveu(e);
-                if (venderLigado) botaoVender.mouseMoveu(e);
-                if (hipotecarLigado) botaoHipotecar.mouseMoveu(e);
+                btPause.mouseMoveu(e);
+                if (dadosLigado) btDados.mouseMoveu(e);
+                if (comprarLigado) btComprar.mouseMoveu(e);
+                if (upgradeLigado) btMelhoria.mouseMoveu(e);
+                if (venderLigado) btVender.mouseMoveu(e);
+                if (hipotecarLigado) btHipotecar.mouseMoveu(e);
                 if (venderLigado || hipotecarLigado) {
                     for (int i = 0; i < nomesImoveis.size(); i++)
                         marcadores[i].mouseMoveu(e);
                 }
                 break;
             case MouseEvent.MOUSE_PRESSED:
-                botaoPause.mousePressionado(e);
-                if (dadosLigado) botaoDados.mousePressionado(e);
-                if (comprarLigado) botaoComprar.mousePressionado(e);
-                if (upgradeLigado) botaoMelhoria.mousePressionado(e);
-                if (venderLigado) botaoVender.mousePressionado(e);
-                if (hipotecarLigado) botaoHipotecar.mousePressionado(e);
+                btPause.mousePressionado(e);
+                if (dadosLigado) btDados.mousePressionado(e);
+                if (comprarLigado) btComprar.mousePressionado(e);
+                if (upgradeLigado) btMelhoria.mousePressionado(e);
+                if (venderLigado) btVender.mousePressionado(e);
+                if (hipotecarLigado) btHipotecar.mousePressionado(e);
                 if (venderLigado || hipotecarLigado) {
                     for (int i = 0; i < nomesImoveis.size(); i++)
                         marcadores[i].mousePressionado(e);
                 }
                 break;
             case MouseEvent.MOUSE_RELEASED:
-                if (botaoPause.mouseSolto(e)) ativarPause();
-                if (dadosLigado) {if (botaoDados.mouseSolto(e)) dadosJogados();}
+                if (btPause.mouseSolto(e)) ativarPause();
+                if (dadosLigado) {if (btDados.mouseSolto(e)) dadosJogados();}
                 if (comprarLigado) {
-                    if (botaoComprar.mouseSolto(e)) {
+                    if (btComprar.mouseSolto(e)) {
                         janela.obterControle().acaoBotaoComprar();
                         carregarSaldos();
                         atualizarJogador();
+                        gastou = true;
                     }
                 }
 
                 if (upgradeLigado) {
-                    if (botaoMelhoria.mouseSolto(e)) {
+                    if (btMelhoria.mouseSolto(e)) {
                         janela.obterControle().acaoBotaoEvoluir();
                         atualizarPropriedades();
                         atualizarJogador();
+                        gastou = true;
                     }
                 }
                 
@@ -514,9 +501,9 @@ public class Partida extends Grafico {
                             selecoes.add(imoveisIDs.get(i));
                     }
 
-                    if (botaoVender.mouseSolto(e))
+                    if (btVender.mouseSolto(e))
                         acao = janela.obterControle().acaoBotaoVender(selecoes);
-                    else if (botaoHipotecar.mouseSolto(e))
+                    else if (btHipotecar.mouseSolto(e))
                         acao = janela.obterControle().acaoBotaoHipotecar(selecoes);
 
                     if (acao != 0) {
@@ -535,6 +522,15 @@ public class Partida extends Grafico {
             default:
                 break;
         }
+
+        if (gastou) {
+            foiGanho = false;
+            ligadoGanhoPerda = true;
+            jogadorGanhoPerda = jogadores[idJogadorAtual].obterNome();
+            valorGanhoPerda = Integer.toString(msg.obtemPropriedadeAtual().obtemValorPropriedade());
+            tempGanhoPerda.start();
+        }
+
         carregarSaldos();
     }
 
@@ -552,40 +548,41 @@ public class Partida extends Grafico {
     }
 
     private void definirTamanhoTabuleiro() {
-        int tmp1 = (int)(frameComprimento * 0.6), tmp2 = frameAltura - 100;
-        if (tmp1 <= tmp2) tabuleiroComp = tabuleiroAlt = tmp1;
-        else tabuleiroComp = tabuleiroAlt = tmp2;
+        int tmp1 = (int)(frameComp * 0.6), tmp2 = frameAlt - 100;
+        if (tmp1 <= tmp2) tabComp = tabAlt = tmp1;
+        else tabComp = tabAlt = tmp2;
     }
 
     private void definirPosicaoTabuleiro() {
-        tabuleiroPosy = (frameAltura - tabuleiroAlt) / 2;
-        tabuleiroPosx = (frameComprimento - tabuleiroComp) / 2;
+        tabPosy = (frameAlt - tabAlt) / 2;
+        tabPosx = (frameComp - tabComp) / 2;
     }
 
     private void definirTamanhoComponentes() {
-        botaoPause.definirDimensoes(160, 48);
-        botaoVender.definirDimensoes(115, 33);
-        botaoHipotecar.definirDimensoes(115, 33);
-        botaoDados.definirDimensoes(80, 80);
-        botaoComprar.definirDimensoes(170, 80);
-        botaoMelhoria.definirDimensoes(170, 80);
+        btPause.definirDimensoes(160, 48);
+        btVender.definirDimensoes(115, 33);
+        btHipotecar.definirDimensoes(115, 33);
+        btDados.definirDimensoes(80, 80);
+        btComprar.definirDimensoes(170, 80);
+        btMelhoria.definirDimensoes(170, 80);
         for (Botao b : marcadores) {b.definirDimensoes(20, 20);}
     }
 
     private void definirPosicaoComponentes() {
-        int y = tabuleiroPosy;
-        botaoPause.definirLocalizacao(20, y);
-        y += botaoPause.obterAlt() + 50;
-        botaoDados.definirLocalizacao(20, y);
-        y += botaoDados.obterAlt() + 20;
-        botaoComprar.definirLocalizacao(20, y);
-        botaoMelhoria.definirLocalizacao(20, y);
+        int y = tabPosy;
+        btPause.definirLocalizacao(20, y);
+        y += btPause.obterAlt() + 50;
+        btDados.definirLocalizacao(20, y);
+        y += btDados.obterAlt() + 20;
+        btComprar.definirLocalizacao(20, y);
+        btMelhoria.definirLocalizacao(20, y);
     }
 
     private void ativarPause() {
-        pause.setDimensoes(frameComprimento, frameAltura);
+        pause.setDimensoes(frameComp, frameAlt);
         opacidade = 0.5f;
         pauseAtivado = true;
+        pause.reconfigurar();
     }
 
     void desativarPause() {
@@ -608,7 +605,7 @@ public class Partida extends Grafico {
             case JOGADOR_NA_CASA:
                 if (evento == Eventos.tirouCartaDeMovimento) {
                     casaDestino = (casaDestino + msg.obtemDeslocamentoDoJogador()) & 0x1f;
-                    temporizadorPulos.start();
+                    tempPulos.start();
                 } else {
                     if (evento == Eventos.jogadorFaliu) {
                         jogadores[idJogadorAtual].defineFalido();
@@ -678,19 +675,20 @@ public class Partida extends Grafico {
         msg = controle.decifraCasa(casaDestino);
         if (msg.obtemTipoEvento() == Eventos.jogadorTaPreso ||
             msg.obtemTipoEvento() == Eventos.jogadorNoCAAD) {
-            temporizadorGenerico.start();
+            tempGenerico.start();
         } else {
-            temporizadorPulos.start();
+            tempPulos.start();
         }
     }
 
     public void jogadorNaCasa() {
+        int tipoMsg;
         estadoAtual = JOGADOR_NA_CASA;
         switch (msg.obtemTipoEvento()) {
             case Eventos.jogadorFaliu:
                 carregarSaldos();
                 falirLigado = true;
-                temporizadorGenerico.start();
+                tempGenerico.start();
                 break;
             case Eventos.semDonoPodeComprar:
                 comprarLigado = true;
@@ -700,11 +698,19 @@ public class Partida extends Grafico {
                 break;
             case Eventos.tirouCarta:
                 cartaLigado = true;
-                temporizadorGenerico.start();
+                tipoMsg = msg.obtemCartaSorteada().obtemTipo();
+                if (tipoMsg == 0 || tipoMsg == 1 || tipoMsg == 6) {
+                    foiGanho = (tipoMsg != 1);
+                    valorGanhoPerda = Integer.toString(msg.obtemCartaSorteada().obtemValor());
+                    jogadorGanhoPerda = jogadores[idJogadorAtual].obterNome();
+                    ligadoGanhoPerda = true;
+                    tempGanhoPerda.start();
+                }
+                tempGenerico.start();
                 break;
             case Eventos.tirouCartaDeMovimento:
                 cartaLigado = true;
-                temporizadorGenerico.start();
+                tempGenerico.start();
                 break;
             case Eventos.vendaOuHipoteca:
                 selecoes.clear();

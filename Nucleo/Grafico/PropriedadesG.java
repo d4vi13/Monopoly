@@ -21,6 +21,7 @@ public class PropriedadesG {
         nivelMelhorias = new int[NUMERO_CASAS];
         for (int i = 0; i < NUMERO_CASAS; i++) {
             nivelMelhorias[i] = -1;
+            posMelhorias[i] = new Posicao();
         }
 
         up1 = new ImageIcon("./Dados/Imagens/servidorN1.png").getImage();
@@ -47,7 +48,6 @@ public class PropriedadesG {
 
     public void adicionarMelhoria(int casa, int nivel) {
         nivelMelhorias[casa] = nivel;
-        posMelhorias[casa] = new Posicao();
         atualizarPosicaoMelhoria(casa, posMelhorias[casa]);
     }
 

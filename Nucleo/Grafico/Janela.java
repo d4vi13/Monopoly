@@ -25,6 +25,15 @@ abstract class Grafico {
     public void desenhaImagem(Graphics g, Image img, int w, int h, int x, int y) {
         g.drawImage(img, x, y, w, h, null);
     }
+
+    public void desenhaRetanguloBorda(Graphics2D g2d, int w, int h, int x, int y, int raio,
+                                      int espessura, Color Borda, Color Interior) {
+        int esp = espessura;
+        g2d.setColor(Borda);
+        g2d.fillRoundRect(x, y, w, h, raio, raio);
+        g2d.setColor(Interior);
+        g2d.fillRoundRect(x + esp, y + esp, w - esp*2, h - esp*2, raio, raio);
+    }
 }
 
 public class Janela extends JPanel {

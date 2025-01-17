@@ -193,6 +193,10 @@ class CaixaTexto extends Componente {
     public String obterString() {
         return texto.toString();
     }
+
+    public void novaString() {
+        texto = new StringBuilder(15);
+    }
  
     public void pintar(Graphics g) {
         int altT, compT;
