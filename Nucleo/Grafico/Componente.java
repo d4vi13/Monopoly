@@ -1,6 +1,10 @@
 package Nucleo.Grafico;
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.font.FontRenderContext;
+import java.awt.geom.Rectangle2D;
+
+import javax.swing.*;
 
 abstract class Componente {
     protected int posx, posy, comp, alt;
@@ -97,6 +101,16 @@ class Botao extends Componente {
         return mouseSobre;
     }
 
+    public String obterIdentificacao() {
+        return identificacao;
+    }
+
+    public int obterCompIdent() {
+        FontRenderContext frc = new FontRenderContext(null, true, true);
+        Rectangle2D rect = fonte.getStringBounds(identificacao, frc);
+        return (int)rect.getWidth();
+    }
+
     public void pintar(Graphics g) {
         int compT, altT;
         Graphics2D g2D = (Graphics2D)g;
@@ -127,6 +141,8 @@ class CaixaTexto extends Componente {
     private boolean selecionado, mouseSobre;
     private StringBuilder texto;
     private Font fonte;
+    private Timer timerCursor;
+    private boolean cursorLigado;
 
     public CaixaTexto(Font f, int r, Color[] vetCor) {
         fonte = f;
@@ -135,10 +151,13 @@ class CaixaTexto extends Componente {
         corBorda = corTexto = vetCor[0];
         corLivre = vetCor[1];
         corBloqueado = corAtual = vetCor[2];
-        selecionado = false;
+        selecionado = cursorLigado = false;
         mouseSobre = true;
 
-        texto = new StringBuilder(14);
+        texto = new StringBuilder(15);
+        timerCursor = new Timer(200, _ -> {
+            cursorLigado = !cursorLigado;
+        });
     }
 
     public void mouseMoveu(MouseEvent e) {
@@ -154,11 +173,14 @@ class CaixaTexto extends Componente {
             if (mouseSobre == true) {
                 selecionado = true;
                 corAtual = corLivre;
+                timerCursor.start();
             }
             mouseSobre = true; 
         } else {
             mouseSobre = selecionado = false;
             corAtual = corBloqueado;
+            timerCursor.stop();
+            cursorLigado = false;
         }
     }
  
@@ -184,15 +206,20 @@ class CaixaTexto extends Componente {
     public String obterString() {
         return texto.toString();
     }
+
+    public void novaString() {
+        texto = new StringBuilder(15);
+    }
  
     public void pintar(Graphics g) {
-        int altT;
+        int altT, compT;
         Graphics2D g2D = (Graphics2D)g;
         FontMetrics fm;
 
         g2D.setFont(fonte);
         fm = g2D.getFontMetrics();
         altT = fm.getAscent();
+        compT = fm.stringWidth(texto.toString());
 
         g2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g2D.setColor(corBorda);
@@ -200,6 +227,10 @@ class CaixaTexto extends Componente {
         g2D.setColor(corAtual);
         g2D.fillRoundRect(posx + 2, posy + 2, comp - 4, alt - 4, raio, raio);
         g2D.setColor(corTexto);
-        g2D.drawString(texto.toString(), (int)(posx * 1.01), posy + (alt + altT) / 2);
+        g2D.drawString(texto.toString(), posx + 2, posy + (alt + altT) / 2);
+        if (cursorLigado) {
+            g2D.setColor(Color.BLACK);
+            g2D.fillRect(posx + compT + 3, posy + (alt - altT) / 2, 2, altT);
+        }
     }
 }

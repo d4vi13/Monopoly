@@ -6,7 +6,7 @@ import java.awt.*;
 import javax.swing.ImageIcon;
 import java.io.*;
 
-public class Final {
+public class Final extends Grafico {
     private int frameComprimento, frameAltura;
     private Janela janela;
     private String nome;
@@ -52,11 +52,13 @@ public class Final {
         temporizador.start();
     }
 
+    @Override
     public void setDimensoes(int comprimento, int altura) {
         frameAltura = altura;
         frameComprimento = comprimento;
     }
 
+    @Override
     public void pintar(Graphics g) {
         int altT, compT;
         String tmp = nome + " Ganhou";

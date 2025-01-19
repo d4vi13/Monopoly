@@ -21,7 +21,6 @@ public class Controle {
     private JogadorG[] jogadoresG;
     // Pilha com posicao da casa e nivel da casa
     private Stack<Dupla<Integer, Integer>> propriedades;
-    private int operacaoPropriedades;
     // Tabuleiro
     private Tabuleiro tabuleiro;
     // Banco
@@ -43,7 +42,6 @@ public class Controle {
         d6 = new D6();
         numerosD6 = new int[2];
         serializador = new Serializador();
-        operacaoPropriedades = 0;
     }
 
     // 0 -> Precisa vender mais, mesmo hipotecando todas as outras propriedades nao vai bastar
@@ -68,8 +66,7 @@ public class Controle {
         banco.receber(jogador.obtemId(), valorTotalVenda);
         tabuleiro.removeDono(propriedades);
         jogador.desapropriaPropriedade(propriedades);
-        tabuleiro.inserePropriedadeNaPilha(jogador.obtemPosicao());
-		operacaoPropriedades = 1;
+        tabuleiro.inserePropriedadeNaPilha(propriedades, -1);
 
         if (divida >= 0)
             return 2;
@@ -97,8 +94,7 @@ public class Controle {
       
         banco.receber(jogador.obtemId(), valorTotalVenda);
         tabuleiro.hipotecaPropriedade(propriedades);
-	    tabuleiro.inserePropriedadeNaPilha(jogador.obtemPosicao());
-        operacaoPropriedades = 1;
+        tabuleiro.inserePropriedadeNaPilha(propriedades, -1);
 
         if (divida >= 0)
             return 2;
@@ -111,8 +107,6 @@ public class Controle {
         Jogador jogadorAtual = jogadores.getIteradorElem();
         valorPropriedade = tabuleiro.obtemValorPropriedade(jogadorAtual);
         idPropriedade = jogadorAtual.obtemPosicao();
-    	  tabuleiro.inserePropriedadeNaPilha(jogadorAtual.obtemPosicao());
-        operacaoPropriedades = 3;
 
         if (!tabuleiro.estaHipotecada(idPropriedade)){
             banco.debitar(jogadorAtual.obtemId(), valorPropriedade);
@@ -129,12 +123,9 @@ public class Controle {
     public void acaoBotaoEvoluir() {
         Jogador jogadorAtual = jogadores.getIteradorElem();
 
-        if (tabuleiro.obtemNivelPropriedade(jogadorAtual.obtemPosicao()) == 0) {
-            operacaoPropriedades = 3;
-        } else {
-            operacaoPropriedades = 2;
-        }
-
+        // nao estava debitando?
+        // obs: minha tentativa de debitar 
+        banco.debitar(jogadorAtual.obtemId(), tabuleiro.obterAtualValorMelhoria(jogadorAtual));
         tabuleiro.evoluirImovel(jogadorAtual.obtemPosicao());
         tabuleiro.inserePropriedadeNaPilha(jogadorAtual.obtemPosicao());
     }
@@ -157,37 +148,28 @@ public class Controle {
     }
 
     // Passa os valores, nomes e IDs das propriedades do jogador atual
-    public void carregarPropriedades(ArrayList<String> nomes, ArrayList<String> valores, ArrayList<Integer> IDs) {
+    public ArrayList<Tripla<String, String, Integer>> obterPropriedades() {
         Jogador j = jogadores.getIteradorElem();
-        ArrayList<Integer> propriedadeIDs = j.obtemPropriedadesJogador();
-        int p;
-        
-        nomes.clear();
-        valores.clear();
-        IDs.clear();
-        for (int i = 0; i < propriedadeIDs.size(); i++) {
-            p = propriedadeIDs.get(i);
-            if (tabuleiro.estaHipotecada(p)) continue;
-            nomes.add(tabuleiro.obtemNomeCasa(p));
-            valores.add(tabuleiro.obtemValorPropriedade(p));
-            IDs.add(p);
+        ArrayList<Integer> arr = j.obtemPropriedadesJogador();
+        ArrayList<Tripla<String, String, Integer>> info = new ArrayList<>();
+        int id;
+
+        String nome, valor;
+        for (int i = 0; i < arr.size(); i++) {
+            id = arr.get(i);
+            if (tabuleiro.estaHipotecada(id)) continue;
+            nome = new String(tabuleiro.obtemNomeCasa(id));
+            valor = tabuleiro.obtemValorPropriedade(id);
+            info.add(new Tripla<String, String, Integer>(nome, valor, id));
         }
+
+        return info;
     }
 
     // Ao iniciar um backup, pilha deve conter todas as propriedades
     // Caso seja novo jogo, pilha deve estar vazia
     public Stack<Dupla<Integer, Integer>> obtemAtualizacoesPropriedades() {
         return propriedades;
-    }
-
-    // 0 -> Nada muda
-    // 1 -> Remover propriedades (vender/hipotecar)
-    // 2 -> Atualizar propriedade (evoluir)
-    // 3 -> Adicionar propriedade (comprar)
-    public int statusAtualizacoesPropriedades() {
-        int op = operacaoPropriedades;
-        operacaoPropriedades = 0;
-        return op;
     }
 
     // Define os eventos monetários relacionados ao jogador dependendo do valor cobrado
@@ -255,11 +237,6 @@ public class Controle {
         cartaSorteada = mensagemJogador.obtemCartaSorteada();
 
         switch (mensagemJogador.obtemTipoEvento()) {
-            case Eventos.casaInicial:
-                // Jogador recebe salário do banco
-                banco.pagaSalario(jogadorAtual.obtemId());
-                break;
-
             case Eventos.propriedadeComDono:
                 propriedadeAtual = mensagemJogador.obtemPropriedadeAtual();
                 if (jogadorAtual.ehDono(propriedadeAtual.obtemId())) {
@@ -468,7 +445,6 @@ public class Controle {
 
     public void acaoBotaoCarregarBackup(String nomeArquivo) {
         tabuleiro.gerarVetorCasas(nomeArquivo);
-        operacaoPropriedades = 2;
         serializador.restaurarBackup(caminhoBackup + nomeArquivo);
         numeroJogadores = serializador.carregar(numeroJogadores);
         numeroJogadoresInicial = serializador.carregar(numeroJogadores);

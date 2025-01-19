@@ -1,6 +1,5 @@
 package Nucleo.Grafico;
 
-import Nucleo.Aux.EstadosJogo;
 import Nucleo.Controle.Controle;
 import static Nucleo.Aux.EstadosJogo.*;
 
@@ -8,28 +7,55 @@ import java.awt.*;
 import javax.swing.*;
 import java.awt.event.*;
 
+abstract class Grafico {
+    abstract public void pintar(Graphics g);
+    abstract public void setDimensoes(int comprimento, int altura);
+    public void tecladoAtualiza(KeyEvent e) {};
+    public void mouseAtualiza(MouseEvent e) {};
+
+
+    public void desenhaString() {
+
+    }
+
+    public void desenhaVetorStrings() {
+
+    }
+
+    public void desenhaImagem(Graphics g, Image img, int w, int h, int x, int y) {
+        g.drawImage(img, x, y, w, h, null);
+    }
+
+    public void desenhaRetanguloBorda(Graphics2D g2d, int w, int h, int x, int y, int raio,
+                                      int espessura, Color Borda, Color Interior) {
+        int esp = espessura;
+        g2d.setColor(Borda);
+        g2d.fillRoundRect(x, y, w, h, raio, raio);
+        g2d.setColor(Interior);
+        g2d.fillRoundRect(x + esp, y + esp, w - esp*2, h - esp*2, raio, raio);
+    }
+}
+
 public class Janela extends JPanel {
     private JFrame frame;
     private EventosTeclado eventosTeclado;
     private EventosMouse eventosMouse;
-    private EventosTela eventosTela;
-    private EstadosJogo estado;
-    private Menu instanciaMenu;
-    private Cadastro instanciaCadastro;
-    private Partida instanciaPartida;
-    private Final instanciaFinal;
     private Controle instanciaControle;
+    private Grafico instanciaAtual;
+    private Timer fade;
     private float opacidade;
 
-    public Janela(EstadosJogo e, Controle c) {
-        estado = e;
-        instanciaControle = c;
-        instanciaMenu = new Menu(this);
-
+    public Janela(Controle c) {
         iniciarFrame();
         iniciarPanel();
-        estado.atual = MENU;
+        instanciaControle = c;
         opacidade = 0.0f;
+        instanciaAtual = new Menu(this);
+        atualizarDimensoes();
+        addKeyListener(eventosTeclado);
+        addMouseListener(eventosMouse);
+        addMouseMotionListener(eventosMouse);
+        frame.setVisible(true);
     }
 
     public Controle obterControle() {
@@ -41,149 +67,59 @@ public class Janela extends JPanel {
         Graphics2D g2d = (Graphics2D)g;
         super.paint(g);
         
-        switch (estado.atual) {
-            case MENU:
-                instanciaMenu.pintar(g);
-                break;
-            case CADASTRO:
-                instanciaCadastro.pintar(g);
-                break;
-            case JOGATINA:
-                instanciaPartida.pintar(g);
-                break;
-            case FINAL:
-                instanciaFinal.pintar(g);
-                break;
-            default:
-                break;
-        }
-
+        instanciaAtual.pintar(g);
         g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, opacidade));
         g2d.setColor(Color.BLACK);
         g2d.fillRect(0, 0, frame.getWidth(), frame.getHeight());
-        
-        g.dispose();
+        g2d.dispose();
     }
 
     public void atualizarEstado(int novoEstado) {
-        switch (novoEstado) {
-            case CADASTRO:
-                instanciaCadastro = new Cadastro(this);
-                break;
-            case JOGATINA:
-                instanciaPartida = new Partida(this);
-                break;
-            case FINAL:
-                instanciaFinal = new Final(this);
-                break;
-            default:
-                break;
-        }
-
-        Timer timer = new Timer(30, e -> {
+        fade = new Timer(30, _ -> {
             opacidade += 0.05f;
             if (opacidade > 1.0f) {
                 opacidade = 0.0f;
-                ((Timer) e.getSource()).stop();
-                estado.atual = novoEstado;
+                fade.stop();
+                switch (novoEstado) {
+                    case CADASTRO: instanciaAtual = new Cadastro(this); break;
+                    case JOGATINA: instanciaAtual = new Partida(this); break;
+                    case FINAL: instanciaAtual = new Final(this); break;
+                    default: break;
+                }
                 atualizarDimensoes();
             }
         });
-        timer.start();
+        fade.start();
     }
     
     public void atualizarDimensoes() {
-        switch (estado.atual) {
-            case MENU:
-                instanciaMenu.setDimensoes(frame.getWidth(), frame.getHeight());
-                break;
-            case CADASTRO:
-                instanciaCadastro.setDimensoes(frame.getWidth(), frame.getHeight());
-                break;
-            case JOGATINA:
-                instanciaPartida.setDimensoes(frame.getWidth(), frame.getHeight());
-                break;
-            case FINAL:
-                instanciaFinal.setDimensoes(frame.getWidth(), frame.getHeight());
-                break;
-            default:
-                break;
-        }
+        // vinte pixels de barra superior
+        instanciaAtual.setDimensoes(frame.getWidth(), frame.getHeight() - 20);
     }
 
     public void mouseAtualiza(MouseEvent e) {
-        switch (estado.atual) {
-            case MENU:
-                instanciaMenu.mouseAtualiza(e);
-                break;
-            case CADASTRO:
-                instanciaCadastro.mouseAtualiza(e);
-                break;
-            case JOGATINA:
-                instanciaPartida.mouseAtualiza(e);
-                break;   
-            default:
-                break;
-        }
+        instanciaAtual.mouseAtualiza(e);
     }
 
     public void tecladoAtualiza(KeyEvent e) {
-        switch (estado.atual) {
-            case MENU:
-                instanciaMenu.tecladoAtualiza(e);
-                break;
-            case CADASTRO:
-                instanciaCadastro.tecladoAtualiza(e);
-                break;
-            case JOGATINA:
-                instanciaPartida.tecladoAtualiza(e);
-                break;    
-            default:
-                break;
-        }
+        instanciaAtual.tecladoAtualiza(e);
     }
 
     private void iniciarFrame() {
-        Dimension dimensaoTela = Toolkit.getDefaultToolkit().getScreenSize();
-        Insets configuracaoTela = Toolkit.getDefaultToolkit()
-                                         .getScreenInsets(GraphicsEnvironment
-                                         .getLocalGraphicsEnvironment()
-                                         .getDefaultScreenDevice().getDefaultConfiguration());
-        int comp, alt;
+        int comp = 1920, alt = 1000;
 
-        comp = (dimensaoTela.width);
-        alt = (dimensaoTela.height - configuracaoTela.bottom);
         frame = new JFrame();
         frame.setSize(comp, alt);
         frame.add(this);
-        eventosTela = new EventosTela(this);
-        frame.addComponentListener(eventosTela);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setLocationRelativeTo(null);
-        frame.setVisible(true);
     }
 
     private void iniciarPanel() {
         eventosTeclado = new EventosTeclado(this);
         eventosMouse = new EventosMouse(this);
-        addKeyListener(eventosTeclado);
-        addMouseListener(eventosMouse);
-        addMouseMotionListener(eventosMouse);
         setLayout(null);
         setBackground(new Color(0xd4fcd9));
-    }
-}
-
-class EventosTela extends ComponentAdapter {
-    private Janela janela;
-
-    public EventosTela(Janela janela) {
-        this.janela = janela;
-    }
-
-    @Override
-    public void componentResized(ComponentEvent e) {
-        janela.atualizarDimensoes();
     }
 }
 

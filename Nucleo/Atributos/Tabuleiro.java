@@ -451,6 +451,14 @@ public class Tabuleiro {
             pilhaPropriedades.push(new Dupla<Integer,Integer>(imovelId, imovelNivel));
         }
     }
+
+    public void inserePropriedadeNaPilha(ArrayList<Integer> propriedades, int nivel) {
+        for (Integer casa : propriedades) {
+            if (casasTabuleiro[casa].obtemTipo() == Config.tipoImovel) {
+                pilhaPropriedades.push(new Dupla<Integer, Integer>(casa, nivel));
+            }
+        }
+    }
   
     public String obtemNomeCasa(int id) {
         return casasTabuleiro[id].obtemNome();
@@ -458,6 +466,10 @@ public class Tabuleiro {
 
     public String obtemValorPropriedade(int id) {
         return Integer.toString(((Propriedade)casasTabuleiro[id]).obtemValorPropriedade());
+    }
+
+    public int obterAtualValorMelhoria(Jogador jogadorAtual) {
+        return ((Imovel)casasTabuleiro[jogadorAtual.obtemPosicao()]).obtemPrecoEvolucao();
     }
 
     public int obtemNivelPropriedade(int id) {
