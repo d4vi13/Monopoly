@@ -451,6 +451,14 @@ public class Tabuleiro {
             pilhaPropriedades.push(new Dupla<Integer,Integer>(imovelId, imovelNivel));
         }
     }
+
+    public void inserePropriedadeNaPilha(ArrayList<Integer> propriedades, int nivel) {
+        for (Integer casa : propriedades) {
+            if (casasTabuleiro[casa].obtemTipo() == Config.tipoImovel) {
+                pilhaPropriedades.push(new Dupla<Integer, Integer>(casa, nivel));
+            }
+        }
+    }
   
     public String obtemNomeCasa(int id) {
         return casasTabuleiro[id].obtemNome();

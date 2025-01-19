@@ -21,7 +21,6 @@ public class Controle {
     private JogadorG[] jogadoresG;
     // Pilha com posicao da casa e nivel da casa
     private Stack<Dupla<Integer, Integer>> propriedades;
-    private int operacaoPropriedades;
     // Tabuleiro
     private Tabuleiro tabuleiro;
     // Banco
@@ -43,7 +42,6 @@ public class Controle {
         d6 = new D6();
         numerosD6 = new int[2];
         serializador = new Serializador();
-        operacaoPropriedades = 0;
     }
 
     // 0 -> Precisa vender mais, mesmo hipotecando todas as outras propriedades nao vai bastar
@@ -68,8 +66,7 @@ public class Controle {
         banco.receber(jogador.obtemId(), valorTotalVenda);
         tabuleiro.removeDono(propriedades);
         jogador.desapropriaPropriedade(propriedades);
-        tabuleiro.inserePropriedadeNaPilha(jogador.obtemPosicao());
-		operacaoPropriedades = 1;
+        tabuleiro.inserePropriedadeNaPilha(propriedades, -1);
 
         if (divida >= 0)
             return 2;
@@ -97,8 +94,7 @@ public class Controle {
       
         banco.receber(jogador.obtemId(), valorTotalVenda);
         tabuleiro.hipotecaPropriedade(propriedades);
-	    tabuleiro.inserePropriedadeNaPilha(jogador.obtemPosicao());
-        operacaoPropriedades = 1;
+        tabuleiro.inserePropriedadeNaPilha(propriedades, -1);
 
         if (divida >= 0)
             return 2;
@@ -111,8 +107,6 @@ public class Controle {
         Jogador jogadorAtual = jogadores.getIteradorElem();
         valorPropriedade = tabuleiro.obtemValorPropriedade(jogadorAtual);
         idPropriedade = jogadorAtual.obtemPosicao();
-    	tabuleiro.inserePropriedadeNaPilha(jogadorAtual.obtemPosicao());
-        operacaoPropriedades = 3;
 
         if (!tabuleiro.estaHipotecada(idPropriedade)){
             banco.debitar(jogadorAtual.obtemId(), valorPropriedade);
@@ -129,11 +123,11 @@ public class Controle {
     public void acaoBotaoEvoluir() {
         Jogador jogadorAtual = jogadores.getIteradorElem();
 
-        tabuleiro.inserePropriedadeNaPilha(jogadorAtual.obtemPosicao());
         // nao estava debitando?
         // obs: minha tentativa de debitar 
         banco.debitar(jogadorAtual.obtemId(), tabuleiro.obterAtualValorMelhoria(jogadorAtual));
         tabuleiro.evoluirImovel(jogadorAtual.obtemPosicao());
+        tabuleiro.inserePropriedadeNaPilha(jogadorAtual.obtemPosicao());
     }
 
     public void acaoBotaoJogarDados() {
@@ -163,6 +157,7 @@ public class Controle {
         String nome, valor;
         for (int i = 0; i < arr.size(); i++) {
             id = arr.get(i);
+            if (tabuleiro.estaHipotecada(id)) continue;
             nome = new String(tabuleiro.obtemNomeCasa(id));
             valor = tabuleiro.obtemValorPropriedade(id);
             info.add(new Tripla<String, String, Integer>(nome, valor, id));
@@ -242,11 +237,6 @@ public class Controle {
         cartaSorteada = mensagemJogador.obtemCartaSorteada();
 
         switch (mensagemJogador.obtemTipoEvento()) {
-            case Eventos.casaInicial:
-                // Jogador recebe salário do banco
-                banco.pagaSalario(jogadorAtual.obtemId());
-                break;
-
             case Eventos.propriedadeComDono:
                 propriedadeAtual = mensagemJogador.obtemPropriedadeAtual();
                 if (jogadorAtual.ehDono(propriedadeAtual.obtemId())) {
@@ -455,7 +445,6 @@ public class Controle {
 
     public void acaoBotaoCarregarBackup(String nomeArquivo) {
         tabuleiro.gerarVetorCasas(nomeArquivo);
-        operacaoPropriedades = 2;
         serializador.restaurarBackup(caminhoBackup + nomeArquivo);
         numeroJogadores = serializador.carregar(numeroJogadores);
         numeroJogadoresInicial = serializador.carregar(numeroJogadores);

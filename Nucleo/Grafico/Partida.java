@@ -34,7 +34,7 @@ public class Partida extends Grafico {
     private ArrayList<Tripla<String, String, Integer>> imoveisInfo;
     private Image marcado, desmarcado;
     private Botao btDados, btVender, btComprar, btHipotecar, btMelhoria, btPular, btPause;
-    private boolean dadosLigado, venderLigado, comprarLigado, hipotecarLigado, upgradeLigado;
+    private boolean dadosLigado, venderLigado, comprarLigado, hipotecarLigado, melhoriaLigado;
     // Jogadores
     private PropriedadesG propriedades;
     private JogadorG[] jogadores;
@@ -43,7 +43,7 @@ public class Partida extends Grafico {
     private boolean falirLigado, cartaLigado;
     private int altIcone, compIcone, idJogadorAtual, casaDestino, casaAtual, numJogadores, saldo;
     // Fontes
-    private Font ftHighMount_25, ftHighMount_45;
+    private Font ftHighMount_45;
     private Font ftBebas_45, ftBebas_80, ftBebas_25;
     // Timers
     private Timer tempPulos, tempGenerico, tempGanhoPerda;
@@ -82,7 +82,6 @@ public class Partida extends Grafico {
         File f3 = new File("./Dados/Fontes/Bebas.ttf");
         try {
             ftHighMount_45 = Font.createFont(Font.TRUETYPE_FONT, f1).deriveFont(40f);
-            ftHighMount_25 = Font.createFont(Font.TRUETYPE_FONT, f1).deriveFont(25f);
             ftBebas_80 = Font.createFont(Font.TRUETYPE_FONT, f3).deriveFont(80f);
             ftBebas_45 = Font.createFont(Font.TRUETYPE_FONT, f3).deriveFont(45f);
             ftBebas_25 = Font.createFont(Font.TRUETYPE_FONT, f3).deriveFont(25f);
@@ -96,11 +95,12 @@ public class Partida extends Grafico {
         Color[] cores1 = {Color.BLACK, Color.LIGHT_GRAY, Color.GRAY, Color.WHITE};
 
         btPause = new Botao("Pause", ftHighMount_45, 20, cores1);
+        btPular = new Botao("Pular", ftHighMount_45, 20, cores1);
         btDados = new Botao(new ImageIcon("./Dados/Imagens/dados.png").getImage(), 20, cores1);
         btComprar = new Botao("Comprar", ftHighMount_45, 20, cores1);
         btMelhoria = new Botao("Evoluir", ftHighMount_45, 20, cores1);
-        btVender = new Botao("Vender", ftHighMount_25, 20, cores1);
-        btHipotecar = new Botao("Hipotecar", ftHighMount_25, 20, cores1);
+        btVender = new Botao("Vender (75%)", ftBebas_25, 20, cores1);
+        btHipotecar = new Botao("Hipotecar (50%)", ftBebas_25, 20, cores1);
         for (int i = 0; i < NUMERO_CASAS; i++) {
             marcadores[i] = new Botao("", ftHighMount_45, 10, cores1);
         }
@@ -235,9 +235,12 @@ public class Partida extends Grafico {
         if (valoresLigado) pintarValoresDados(g2d);
         if (falirLigado) pintarJogadorFaliu(g);
         if (cartaLigado) pintarCarta(g2d);
-        if (comprarLigado || upgradeLigado) pintarComprarMelhoria(g);
-        if (pauseAtivado) pause.pintar(g);
+        if (comprarLigado || melhoriaLigado) {
+            pintarComprarMelhoria(g);
+            btPular.pintar(g);
+        }
         if (ligadoGanhoPerda) pintarGanhoPerda(g);
+        if (pauseAtivado) pause.pintar(g);
     }
 
     private void pintarGanhoPerda(Graphics g) {
@@ -258,7 +261,7 @@ public class Partida extends Grafico {
         int posY = btComprar.obterY() + btComprar.obterAlt();
         int valor;
 
-        if (upgradeLigado) {
+        if (melhoriaLigado) {
             valor = msg.obtemValorEvolucao();
             btMelhoria.pintar(g);
         }
@@ -278,7 +281,7 @@ public class Partida extends Grafico {
         posY += alt;
         comp = g.getFontMetrics().stringWidth("$ ");
         g.setColor(Color.BLACK);
-        g.drawString("$ ", posX, posY);
+        g.drawString("$", posX, posY);
         posX += comp;
         g.setFont(ftBebas_25);
         g.drawString(valorStr, posX, posY);
@@ -359,7 +362,7 @@ public class Partida extends Grafico {
             y = propriedades.obterPosicaoIconeUp(i).posY;
             w = propriedades.obterComp(i);
             h = propriedades.obterAlt(i);
-            desenhaImagem(g, icone, x, y, w, h);
+            desenhaImagem(g, icone, w, h, x, y);
         }
     }
 
@@ -424,10 +427,7 @@ public class Partida extends Grafico {
 
     @Override
     public void tecladoAtualiza(KeyEvent e) {
-        if (pauseAtivado) {
-            pause.tecladoAtualiza(e);
-            return;
-        }
+        if (pauseAtivado) {pause.tecladoAtualiza(e);}
     }
 
     @Override
@@ -448,7 +448,8 @@ public class Partida extends Grafico {
                 btPause.mouseMoveu(e);
                 if (dadosLigado) btDados.mouseMoveu(e);
                 if (comprarLigado) btComprar.mouseMoveu(e);
-                if (upgradeLigado) btMelhoria.mouseMoveu(e);
+                if (melhoriaLigado) btMelhoria.mouseMoveu(e);
+                if (comprarLigado || melhoriaLigado) btPular.mouseMoveu(e);
                 if (venderLigado) btVender.mouseMoveu(e);
                 if (hipotecarLigado) btHipotecar.mouseMoveu(e);
                 if (venderLigado || hipotecarLigado) {
@@ -460,7 +461,8 @@ public class Partida extends Grafico {
                 btPause.mousePressionado(e);
                 if (dadosLigado) btDados.mousePressionado(e);
                 if (comprarLigado) btComprar.mousePressionado(e);
-                if (upgradeLigado) btMelhoria.mousePressionado(e);
+                if (melhoriaLigado) btMelhoria.mousePressionado(e);
+                if (comprarLigado || melhoriaLigado) btPular.mousePressionado(e);
                 if (venderLigado) btVender.mousePressionado(e);
                 if (hipotecarLigado) btHipotecar.mousePressionado(e);
                 if (venderLigado || hipotecarLigado) {
@@ -485,17 +487,20 @@ public class Partida extends Grafico {
                     dadosJogados();
                 } else if ((comprouOuMelhorou = (comprarLigado && btComprar.mouseSolto(e)))) {
                     janela.obterControle().acaoBotaoComprar();
-                } else if ((comprouOuMelhorou = (upgradeLigado && btMelhoria.mouseSolto(e)))) {
+                } else if ((comprouOuMelhorou = (melhoriaLigado && btMelhoria.mouseSolto(e)))) {
                     janela.obterControle().acaoBotaoEvoluir();
                 } else if ((vendeuOuHipotecou = (venderLigado && btVender.mouseSolto(e)))) {
                     acao = janela.obterControle().acaoBotaoVender(selecionados());
                 } else if ((vendeuOuHipotecou = (hipotecarLigado && btHipotecar.mouseSolto(e)))) {
                     acao = janela.obterControle().acaoBotaoHipotecar(selecionados());
+                } else if ((comprarLigado || melhoriaLigado) && btPular.mouseSolto(e)) {
+                    atualizarJogador();
                 }
 
                 if (comprouOuMelhorou) {
                     carregarSaldos();
                     ativarGanhoPerda(false);
+                    atualizarPropriedades();
                     atualizarJogador();
                 } else if (vendeuOuHipotecou) {
                     if (acao != 0) {
@@ -551,8 +556,9 @@ public class Partida extends Grafico {
 
     private void definirTamanhoComponentes() {
         btPause.definirDimensoes(160, 48);
-        btVender.definirDimensoes(115, 33);
-        btHipotecar.definirDimensoes(115, 33);
+        btPular.definirDimensoes(160, 48);
+        btVender.definirDimensoes(btVender.obterCompIdent() + 5, 35);
+        btHipotecar.definirDimensoes(btHipotecar.obterCompIdent() + 5, 35);
         btDados.definirDimensoes(80, 80);
         btComprar.definirDimensoes(170, 80);
         btMelhoria.definirDimensoes(170, 80);
@@ -562,6 +568,7 @@ public class Partida extends Grafico {
     private void definirPosicaoComponentes() {
         int y = tabPosy;
         btPause.definirLocalizacao(20, y);
+        btPular.definirLocalizacao(20 + btPause.obterComp() + 5, y);
         y += btPause.obterAlt() + 50;
         btDados.definirLocalizacao(20, y);
         y += btDados.obterAlt() + 20;
@@ -600,16 +607,15 @@ public class Partida extends Grafico {
                 } else {
                     if (evento == Eventos.jogadorFaliu) {
                         jogadores[idJogadorAtual].defineFalido();
+                    } else if (evento == Eventos.tirouCarta) {
+                        tipoMsg = msg.obtemCartaSorteada().obtemTipo();
+                        if (tipoMsg == 0 || tipoMsg == 1 || tipoMsg == 6) {
+                            carregarSaldos();
+                            ativarGanhoPerda(tipoMsg != 1);
+                        } 
                     }
+
                     atualizarJogador();
-                }
-                
-                if (evento == Eventos.tirouCartaDeMovimento || evento == Eventos.tirouCarta) {
-                    tipoMsg = msg.obtemCartaSorteada().obtemTipo();
-                    if (tipoMsg == 0 || tipoMsg == 1 || tipoMsg == 6) {
-                        carregarSaldos();
-                        ativarGanhoPerda(tipoMsg != 1);
-                    } 
                 }
                 
                 break;
@@ -638,7 +644,15 @@ public class Partida extends Grafico {
     private void atualizarPropriedades() {
         Stack<Dupla<Integer, Integer>> pilha;
         Dupla<Integer, Integer> d;
-        int casa, nivelCasa, acao;
+        int casa, nivelCasa;
+
+        pilha = janela.obterControle().obtemAtualizacoesPropriedades();
+        while (!pilha.isEmpty()) {
+            d = pilha.pop();
+            casa = d.primeiro;
+            nivelCasa = d.segundo;
+            propriedades.atualizarMelhoria(casa, nivelCasa);
+        }
     }
 
     /* Estados do jogo */
@@ -648,11 +662,12 @@ public class Partida extends Grafico {
         dadosLigado = true;
         valoresLigado = false;
         comprarLigado = false;
-        upgradeLigado = false;
+        melhoriaLigado = false;
         venderLigado = false;
         hipotecarLigado = false;
         falirLigado = false;
         cartaLigado = false;
+        saldo = saldosInt[idJogadorAtual];
     }
     
     public void dadosJogados() {
@@ -678,7 +693,6 @@ public class Partida extends Grafico {
 
     public void jogadorNaCasa() {
         estadoAtual = JOGADOR_NA_CASA;
-        saldo = saldosInt[idJogadorAtual];
         switch (msg.obtemTipoEvento()) {
             case Eventos.jogadorFaliu:
                 carregarSaldos();
@@ -689,7 +703,7 @@ public class Partida extends Grafico {
                 comprarLigado = true;
                 break;
             case Eventos.ehDonoPodeEvoluir:
-                upgradeLigado = true;
+                melhoriaLigado = true;
                 break;
             case Eventos.tirouCarta:
             case Eventos.tirouCartaDeMovimento:
@@ -702,8 +716,11 @@ public class Partida extends Grafico {
                 venderLigado = hipotecarLigado = true;
                 break;
             case Eventos.temDonoEPodePagar:
+                carregarSaldos();
+                ativarGanhoPerda(false);
             case Eventos.jogadorNaRecepcao:
-                janela.obterControle().carregarSaldos(saldosInt);
+                carregarSaldos();
+                ativarGanhoPerda(false);
             default:
                 atualizarJogador();
                 break;

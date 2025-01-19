@@ -1,6 +1,9 @@
 package Nucleo.Grafico;
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.font.FontRenderContext;
+import java.awt.geom.Rectangle2D;
+
 import javax.swing.*;
 
 abstract class Componente {
@@ -96,6 +99,16 @@ class Botao extends Componente {
         }
         
         return mouseSobre;
+    }
+
+    public String obterIdentificacao() {
+        return identificacao;
+    }
+
+    public int obterCompIdent() {
+        FontRenderContext frc = new FontRenderContext(null, true, true);
+        Rectangle2D rect = fonte.getStringBounds(identificacao, frc);
+        return (int)rect.getWidth();
     }
 
     public void pintar(Graphics g) {

@@ -35,28 +35,18 @@ public class PropriedadesG {
         tabY = tabPosy;
         escala = tabDim / 1156.0;
         for (int i = 0; i < NUMERO_CASAS; i++) {
-            if (nivelMelhorias[i] != -1) {
-                atualizarPosicaoMelhoria(i, posMelhorias[i]);
-            }
+            atualizarPosicaoMelhoria(i, posMelhorias[i]);
         }
     }
 
     private void atualizarPosicaoMelhoria(int casa, Posicao p) {
+        if (Posicoes.posUpgrades[casa] == null) return;
         p.posX = (int)(escala * Posicoes.posUpgrades[casa].posX) + tabX;
         p.posY = (int)(escala * Posicoes.posUpgrades[casa].posY) + tabY;
     }
 
-    public void adicionarMelhoria(int casa, int nivel) {
-        nivelMelhorias[casa] = nivel;
-        atualizarPosicaoMelhoria(casa, posMelhorias[casa]);
-    }
-
     public void atualizarMelhoria(int casa, int nivel) {
         nivelMelhorias[casa] = nivel;
-    }
-
-    public void removerMelhoria(int casa) {
-        nivelMelhorias[casa] = -1;
     }
 
     public boolean temMelhoria(int casa) {
