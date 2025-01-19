@@ -460,6 +460,10 @@ public class Tabuleiro {
         return Integer.toString(((Propriedade)casasTabuleiro[id]).obtemValorPropriedade());
     }
 
+    public int obterAtualValorMelhoria(Jogador jogadorAtual) {
+        return ((Imovel)casasTabuleiro[jogadorAtual.obtemPosicao()]).obtemPrecoEvolucao();
+    }
+
     public int obtemNivelPropriedade(int id) {
         int imovelNivel = 0;
     

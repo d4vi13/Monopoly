@@ -111,7 +111,7 @@ public class Controle {
         Jogador jogadorAtual = jogadores.getIteradorElem();
         valorPropriedade = tabuleiro.obtemValorPropriedade(jogadorAtual);
         idPropriedade = jogadorAtual.obtemPosicao();
-    	  tabuleiro.inserePropriedadeNaPilha(jogadorAtual.obtemPosicao());
+    	tabuleiro.inserePropriedadeNaPilha(jogadorAtual.obtemPosicao());
         operacaoPropriedades = 3;
 
         if (!tabuleiro.estaHipotecada(idPropriedade)){
@@ -129,14 +129,11 @@ public class Controle {
     public void acaoBotaoEvoluir() {
         Jogador jogadorAtual = jogadores.getIteradorElem();
 
-        if (tabuleiro.obtemNivelPropriedade(jogadorAtual.obtemPosicao()) == 0) {
-            operacaoPropriedades = 3;
-        } else {
-            operacaoPropriedades = 2;
-        }
-
-        tabuleiro.evoluirImovel(jogadorAtual.obtemPosicao());
         tabuleiro.inserePropriedadeNaPilha(jogadorAtual.obtemPosicao());
+        // nao estava debitando?
+        // obs: minha tentativa de debitar 
+        banco.debitar(jogadorAtual.obtemId(), tabuleiro.obterAtualValorMelhoria(jogadorAtual));
+        tabuleiro.evoluirImovel(jogadorAtual.obtemPosicao());
     }
 
     public void acaoBotaoJogarDados() {
@@ -157,37 +154,27 @@ public class Controle {
     }
 
     // Passa os valores, nomes e IDs das propriedades do jogador atual
-    public void carregarPropriedades(ArrayList<String> nomes, ArrayList<String> valores, ArrayList<Integer> IDs) {
+    public ArrayList<Tripla<String, String, Integer>> obterPropriedades() {
         Jogador j = jogadores.getIteradorElem();
-        ArrayList<Integer> propriedadeIDs = j.obtemPropriedadesJogador();
-        int p;
-        
-        nomes.clear();
-        valores.clear();
-        IDs.clear();
-        for (int i = 0; i < propriedadeIDs.size(); i++) {
-            p = propriedadeIDs.get(i);
-            if (tabuleiro.estaHipotecada(p)) continue;
-            nomes.add(tabuleiro.obtemNomeCasa(p));
-            valores.add(tabuleiro.obtemValorPropriedade(p));
-            IDs.add(p);
+        ArrayList<Integer> arr = j.obtemPropriedadesJogador();
+        ArrayList<Tripla<String, String, Integer>> info = new ArrayList<>();
+        int id;
+
+        String nome, valor;
+        for (int i = 0; i < arr.size(); i++) {
+            id = arr.get(i);
+            nome = new String(tabuleiro.obtemNomeCasa(id));
+            valor = tabuleiro.obtemValorPropriedade(id);
+            info.add(new Tripla<String, String, Integer>(nome, valor, id));
         }
+
+        return info;
     }
 
     // Ao iniciar um backup, pilha deve conter todas as propriedades
     // Caso seja novo jogo, pilha deve estar vazia
     public Stack<Dupla<Integer, Integer>> obtemAtualizacoesPropriedades() {
         return propriedades;
-    }
-
-    // 0 -> Nada muda
-    // 1 -> Remover propriedades (vender/hipotecar)
-    // 2 -> Atualizar propriedade (evoluir)
-    // 3 -> Adicionar propriedade (comprar)
-    public int statusAtualizacoesPropriedades() {
-        int op = operacaoPropriedades;
-        operacaoPropriedades = 0;
-        return op;
     }
 
     // Define os eventos monetários relacionados ao jogador dependendo do valor cobrado

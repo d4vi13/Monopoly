@@ -6,6 +6,7 @@ import Nucleo.Aux.MensagemJogador;
 import Nucleo.Aux.MensagemJogador.Eventos;
 import Nucleo.Aux.Dupla;
 import Nucleo.Aux.Posicoes.Posicao;
+import Nucleo.Aux.Tripla;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -30,8 +31,7 @@ public class Partida extends Grafico {
     // Botoes
     private Botao[] marcadores;
     private boolean[] estadosMarcadores;
-    private ArrayList<Integer> selecoes, imoveisIDs;
-    private ArrayList<String> nomesImoveis, valoresImoveis;
+    private ArrayList<Tripla<String, String, Integer>> imoveisInfo;
     private Image marcado, desmarcado;
     private Botao btDados, btVender, btComprar, btHipotecar, btMelhoria, btPular, btPause;
     private boolean dadosLigado, venderLigado, comprarLigado, hipotecarLigado, upgradeLigado;
@@ -41,7 +41,7 @@ public class Partida extends Grafico {
     private int[] saldosInt;
     private String[] informaJogador;
     private boolean falirLigado, cartaLigado;
-    private int altIcone, compIcone, idJogadorAtual, casaDestino, casaAtual, numJogadores;
+    private int altIcone, compIcone, idJogadorAtual, casaDestino, casaAtual, numJogadores, saldo;
     // Fontes
     private Font ftHighMount_25, ftHighMount_45;
     private Font ftBebas_45, ftBebas_80, ftBebas_25;
@@ -117,10 +117,6 @@ public class Partida extends Grafico {
         propriedades = new PropriedadesG();
         marcadores = new Botao[32];
         estadosMarcadores = new boolean[32];
-        selecoes = new ArrayList<Integer>();
-        nomesImoveis = new ArrayList<String>();
-        valoresImoveis = new ArrayList<String>();
-        imoveisIDs = new ArrayList<Integer>();
 
         // Saldos Iniciais
         carregarSaldos();
@@ -170,6 +166,7 @@ public class Partida extends Grafico {
                 if (++casaAtual == 32 && msg.obtemTipoEvento() != Eventos.tirouCartaDeMovimento) {
                     janela.obterControle().jogadorRecebeSalario();
                     janela.obterControle().carregarSaldos(saldosInt);
+                    ativarGanhoPerda(true);
                 }
                 casaAtual &= 0x1f;
             } else {
@@ -259,12 +256,17 @@ public class Partida extends Grafico {
 
     private void pintarComprarMelhoria(Graphics g) {
         int posY = btComprar.obterY() + btComprar.obterAlt();
-        int valor = msg.obtemPropriedadeAtual().obtemValorPropriedade();
+        int valor;
 
-        if (upgradeLigado)
+        if (upgradeLigado) {
+            valor = msg.obtemValorEvolucao();
             btMelhoria.pintar(g);
-        else
+        }
+        else {
+            valor = msg.obtemPropriedadeAtual().obtemValorInicial();
             btComprar.pintar(g);
+        }
+
         pintarValorPropriedade(g, 20, posY + 10, Integer.toString(valor));
     }
 
@@ -309,18 +311,18 @@ public class Partida extends Grafico {
         posX = btComprar.obterX() + btComprar.obterComp() + 20;
 
         g.setColor(Color.BLACK);
-        for (int i = 0; i < nomesImoveis.size(); i++) {
+        for (int i = 0; i < imoveisInfo.size(); i++) {
             marcadores[i].definirLocalizacao(posX, posY);
             marcadores[i].pintar(g);
             g.setFont(ftBebas_25);
             f = g.getFontMetrics();
-            g.drawString(nomesImoveis.get(i), posX + comp, posY + alt);
+            g.drawString(imoveisInfo.get(i).primeiro, posX + comp, posY + alt);
             if (estadosMarcadores[i]) img = marcado;
             else img = desmarcado;
-            g.drawImage(img, posX + comp + f.stringWidth(nomesImoveis.get(i)) + 4, posY, comp + 2, alt, null);
+            g.drawImage(img, posX + comp + f.stringWidth(imoveisInfo.get(i).primeiro) + 4, posY, comp + 2, alt, null);
 
             posY += marcadores[i].obterAlt() + 2;
-            pintarValorPropriedade(g, posX, posY, valoresImoveis.get(i));
+            pintarValorPropriedade(g, posX, posY, imoveisInfo.get(i).segundo);
             posY += 30;
         }
 
@@ -430,8 +432,8 @@ public class Partida extends Grafico {
 
     @Override
     public void mouseAtualiza(MouseEvent e) {
-        int acao = 0;
-        boolean gastou = false;
+        int acao;
+        boolean comprouOuMelhorou, vendeuOuHipotecou;
 
         if (pauseAtivado == true) {
             if (e.getID() == MouseEvent.MOUSE_MOVED) {
@@ -450,7 +452,7 @@ public class Partida extends Grafico {
                 if (venderLigado) btVender.mouseMoveu(e);
                 if (hipotecarLigado) btHipotecar.mouseMoveu(e);
                 if (venderLigado || hipotecarLigado) {
-                    for (int i = 0; i < nomesImoveis.size(); i++)
+                    for (int i = 0; i < imoveisInfo.size(); i++)
                         marcadores[i].mouseMoveu(e);
                 }
                 break;
@@ -462,83 +464,78 @@ public class Partida extends Grafico {
                 if (venderLigado) btVender.mousePressionado(e);
                 if (hipotecarLigado) btHipotecar.mousePressionado(e);
                 if (venderLigado || hipotecarLigado) {
-                    for (int i = 0; i < nomesImoveis.size(); i++)
+                    for (int i = 0; i < imoveisInfo.size(); i++)
                         marcadores[i].mousePressionado(e);
                 }
                 break;
             case MouseEvent.MOUSE_RELEASED:
-                if (btPause.mouseSolto(e)) ativarPause();
-                if (dadosLigado) {if (btDados.mouseSolto(e)) dadosJogados();}
-                if (comprarLigado) {
-                    if (btComprar.mouseSolto(e)) {
-                        janela.obterControle().acaoBotaoComprar();
-                        carregarSaldos();
-                        atualizarJogador();
-                        gastou = true;
-                    }
-                }
-
-                if (upgradeLigado) {
-                    if (btMelhoria.mouseSolto(e)) {
-                        janela.obterControle().acaoBotaoEvoluir();
-                        atualizarPropriedades();
-                        atualizarJogador();
-                        gastou = true;
-                    }
-                }
-                
+                acao = 0;
+                comprouOuMelhorou = vendeuOuHipotecou = false;
                 if (venderLigado || hipotecarLigado) {
-                    for (int i = 0; i < nomesImoveis.size(); i++) {
-                        if (marcadores[i].mouseSolto(e)) 
-                            estadosMarcadores[i] = estadosMarcadores[i] ^ true;
-                        if (estadosMarcadores[i]) 
-                            selecoes.add(imoveisIDs.get(i));
+                    for (int i = 0; i < imoveisInfo.size(); i++) {
+                        if (marcadores[i].mouseSolto(e)) {
+                            estadosMarcadores[i] ^= true;
+                        }
                     }
+                }
 
-                    if (btVender.mouseSolto(e))
-                        acao = janela.obterControle().acaoBotaoVender(selecoes);
-                    else if (btHipotecar.mouseSolto(e))
-                        acao = janela.obterControle().acaoBotaoHipotecar(selecoes);
+                if (btPause.mouseSolto(e)) {
+                    ativarPause();
+                } else if (dadosLigado && btDados.mouseSolto(e)) {
+                    dadosJogados();
+                } else if ((comprouOuMelhorou = (comprarLigado && btComprar.mouseSolto(e)))) {
+                    janela.obterControle().acaoBotaoComprar();
+                } else if ((comprouOuMelhorou = (upgradeLigado && btMelhoria.mouseSolto(e)))) {
+                    janela.obterControle().acaoBotaoEvoluir();
+                } else if ((vendeuOuHipotecou = (venderLigado && btVender.mouseSolto(e)))) {
+                    acao = janela.obterControle().acaoBotaoVender(selecionados());
+                } else if ((vendeuOuHipotecou = (hipotecarLigado && btHipotecar.mouseSolto(e)))) {
+                    acao = janela.obterControle().acaoBotaoHipotecar(selecionados());
+                }
 
+                if (comprouOuMelhorou) {
+                    carregarSaldos();
+                    ativarGanhoPerda(false);
+                    atualizarJogador();
+                } else if (vendeuOuHipotecou) {
                     if (acao != 0) {
-                        atualizarPropriedades(); 
-                        limparSelecionados();
-
+                        imoveisInfo = janela.obterControle().obterPropriedades();
+                        atualizarPropriedades();
+                        saldo = saldosInt[idJogadorAtual];
+                        carregarSaldos();
+                        ativarGanhoPerda(true);
                         if (acao == 2) {
                             venderLigado = hipotecarLigado = false; 
                             atualizarJogador();
                         }
                     }
-                    selecoes.clear(); 
                 }
 
                 break;
             default:
                 break;
         }
-
-        if (gastou) {
-            foiGanho = false;
-            ligadoGanhoPerda = true;
-            jogadorGanhoPerda = jogadores[idJogadorAtual].obterNome();
-            valorGanhoPerda = Integer.toString(msg.obtemPropriedadeAtual().obtemValorPropriedade());
-            tempGanhoPerda.start();
-        }
-
-        carregarSaldos();
     }
 
-    private void limparSelecionados() {
-        int aux;
+    private void ativarGanhoPerda(boolean ganhou) {
+        foiGanho = ganhou;
+        ligadoGanhoPerda = true;
+        jogadorGanhoPerda = jogadores[idJogadorAtual].obterNome();
+        valorGanhoPerda = Integer.toString(Math.abs(saldo - saldosInt[idJogadorAtual]));
+        tempGanhoPerda.start();
+    }
 
-        aux = imoveisIDs.size();
-        for (int i = 0; i < aux; i++) {
-            if (estadosMarcadores[i] == false) continue;
-            imoveisIDs.remove(i);
-            nomesImoveis.remove(i);
-            valoresImoveis.remove(i);
+    private ArrayList<Integer> selecionados() {
+        ArrayList<Integer> arr = new ArrayList<>();
+
+        for (int i = 0; i < imoveisInfo.size(); i++) {
+            if (estadosMarcadores[i] == true) {
+                arr.add(imoveisInfo.get(i).terceiro);
+            }
         }
         Arrays.fill(estadosMarcadores, false);
+
+        return arr;
     }
 
     private void definirTamanhoTabuleiro() {
@@ -589,7 +586,7 @@ public class Partida extends Grafico {
     }
 
     private void fimTemporizadorGenerico() {
-        int evento = msg.obtemTipoEvento();
+        int evento = msg.obtemTipoEvento(), tipoMsg;
         switch (estadoAtual) {
             // Jogador na prisao
             case ATUALIZA_DADOS:
@@ -606,11 +603,15 @@ public class Partida extends Grafico {
                     }
                     atualizarJogador();
                 }
-
+                
                 if (evento == Eventos.tirouCartaDeMovimento || evento == Eventos.tirouCarta) {
-                    carregarSaldos();
+                    tipoMsg = msg.obtemCartaSorteada().obtemTipo();
+                    if (tipoMsg == 0 || tipoMsg == 1 || tipoMsg == 6) {
+                        carregarSaldos();
+                        ativarGanhoPerda(tipoMsg != 1);
+                    } 
                 }
-
+                
                 break;
             default:
                 break;
@@ -676,8 +677,8 @@ public class Partida extends Grafico {
     }
 
     public void jogadorNaCasa() {
-        int tipoMsg;
         estadoAtual = JOGADOR_NA_CASA;
+        saldo = saldosInt[idJogadorAtual];
         switch (msg.obtemTipoEvento()) {
             case Eventos.jogadorFaliu:
                 carregarSaldos();
@@ -691,27 +692,13 @@ public class Partida extends Grafico {
                 upgradeLigado = true;
                 break;
             case Eventos.tirouCarta:
-                cartaLigado = true;
-                tipoMsg = msg.obtemCartaSorteada().obtemTipo();
-                if (tipoMsg == 0 || tipoMsg == 1 || tipoMsg == 6) {
-                    foiGanho = (tipoMsg != 1);
-                    valorGanhoPerda = Integer.toString(msg.obtemCartaSorteada().obtemValor());
-                    jogadorGanhoPerda = jogadores[idJogadorAtual].obterNome();
-                    ligadoGanhoPerda = true;
-                    tempGanhoPerda.start();
-                }
-                tempGenerico.start();
-                break;
             case Eventos.tirouCartaDeMovimento:
                 cartaLigado = true;
                 tempGenerico.start();
                 break;
             case Eventos.vendaOuHipoteca:
-                selecoes.clear();
-                carregarSaldos();
                 Arrays.fill(estadosMarcadores, false);
-                carregarSaldos();
-                janela.obterControle().carregarPropriedades(nomesImoveis, valoresImoveis, imoveisIDs);
+                imoveisInfo = janela.obterControle().obterPropriedades();
                 venderLigado = hipotecarLigado = true;
                 break;
             case Eventos.temDonoEPodePagar:
